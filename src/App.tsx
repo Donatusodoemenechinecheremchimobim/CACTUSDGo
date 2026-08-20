@@ -461,12 +461,7 @@ export default function App() {
           }}
           className="flex items-center gap-3 group"
         >
-          <img
-            src="/favicon.png"
-            alt="Cactus Bear Icon"
-            className="w-7 h-7 object-contain rounded-sm border border-[#EFFF00]/30 group-hover:border-[#EFFF00] transition-colors"
-          />
-          <div className="w-10 h-5 rotate-[-15deg] transition-transform group-hover:rotate-[15deg]">
+          <div className="w-12 h-6 rotate-[-15deg] transition-transform group-hover:rotate-[15deg]">
             <GlowCrown size="100%" color="#EFFF00" glow={true} />
           </div>
           <span className="font-sans font-extrabold text-[#EFFF00] text-sm tracking-[0.2em] uppercase transition-colors">
