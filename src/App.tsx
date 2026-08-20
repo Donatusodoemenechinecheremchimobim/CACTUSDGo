@@ -451,7 +451,7 @@ export default function App() {
       </div>
 
       {/* PERSISTENT HIGH-END STATIONS HEADER */}
-      <header className="fixed top-0 inset-x-0 md:sticky z-40 h-16 md:h-20 bg-black/95 backdrop-blur-xl border-b border-zinc-900 px-4 md:px-8 lg:px-12 xl:px-16 flex justify-between items-center transition-all">
+      <header className="fixed top-0 inset-x-0 md:sticky z-40 h-16 md:h-auto bg-black/90 backdrop-blur-md border-b border-zinc-950 px-4 md:px-8 py-4 md:py-5 flex justify-between items-center">
         <a
           href="#"
           onClick={(e) => {
@@ -459,37 +459,34 @@ export default function App() {
             setSelectedProductId(null);
             setActivePage("home");
           }}
-          className="flex items-center gap-3.5 group flex-shrink-0"
+          className="flex items-center gap-3 group"
         >
           <img
             src="/favicon.png"
             alt="Cactus Bear Icon"
-            className="w-7 h-7 md:w-8 md:h-8 object-contain rounded-sm border border-[#EFFF00]/30 group-hover:border-[#EFFF00] transition-colors"
+            className="w-7 h-7 object-contain rounded-sm border border-[#EFFF00]/30 group-hover:border-[#EFFF00] transition-colors"
           />
-          <div className="w-9 h-5 md:w-10 md:h-5 rotate-[-15deg] transition-transform group-hover:rotate-[15deg]">
+          <div className="w-10 h-5 rotate-[-15deg] transition-transform group-hover:rotate-[15deg]">
             <GlowCrown size="100%" color="#EFFF00" glow={true} />
           </div>
-          <span className="font-sans font-extrabold text-[#EFFF00] text-sm md:text-[15px] tracking-[0.22em] uppercase transition-colors">
+          <span className="font-sans font-extrabold text-[#EFFF00] text-sm tracking-[0.2em] uppercase transition-colors">
             CACTUS BEAR
           </span>
         </a>
 
-        {/* Anchor Quick Jump Bridges - Spacious, neat, and organized */}
-        <nav className="hidden md:flex items-center gap-6 lg:gap-8 xl:gap-10 font-mono text-[11px] lg:text-[11.5px] font-semibold tracking-[0.14em] text-zinc-400">
+        {/* Anchor Quick Jump Bridges */}
+        <nav className="hidden md:flex items-center gap-8 font-mono text-[11px] font-semibold tracking-[0.12em] text-zinc-350">
           <button
             onClick={() => {
               setSelectedProductId(null);
               setActivePage("home");
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            className={`hover:text-[#EFFF00] transition-colors uppercase py-1 px-0.5 relative cursor-pointer ${
-              activePage === "home" ? "text-[#EFFF00] font-bold" : "hover:text-white"
+            className={`hover:text-[#EFFF00] transition-colors uppercase cursor-pointer ${
+              activePage === "home" ? "text-zinc-100 font-bold" : ""
             }`}
           >
             HOME
-            {activePage === "home" && (
-              <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#EFFF00]" />
-            )}
           </button>
           <button
             onClick={() => {
@@ -497,20 +494,17 @@ export default function App() {
               setActivePage("collection");
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            className={`hover:text-[#EFFF00] transition-colors uppercase py-1 px-0.5 relative cursor-pointer ${
-              activePage === "collection" ? "text-[#EFFF00] font-bold" : "hover:text-white"
+            className={`hover:text-[#EFFF00] transition-colors uppercase cursor-pointer ${
+              activePage === "collection" ? "text-[#EFFF00] font-bold" : ""
             }`}
           >
-            CATALOG
-            {activePage === "collection" && (
-              <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#EFFF00]" />
-            )}
+            SHOP CATALOG
           </button>
           <button
             onClick={() => handleNavToSection("customizer-lab")}
-            className="hover:text-[#EFFF00] transition-colors uppercase py-1 px-0.5 flex items-center gap-1.5 cursor-pointer hover:text-white"
+            className="hover:text-[#EFFF00] transition-colors uppercase flex items-center gap-1.5 cursor-pointer"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#EFFF00] animate-pulse" />
+            <span className="w-1 rounded-full bg-[#EFFF00] aspect-square animate-pulse" />
             STITCH LAB
           </button>
           <button
@@ -519,14 +513,11 @@ export default function App() {
               setActivePage("story");
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            className={`hover:text-[#EFFF00] transition-colors uppercase py-1 px-0.5 relative cursor-pointer ${
-              activePage === "story" ? "text-[#EFFF00] font-bold" : "hover:text-white"
+            className={`hover:text-[#EFFF00] transition-colors uppercase cursor-pointer ${
+              activePage === "story" ? "text-[#EFFF00] font-bold" : ""
             }`}
           >
             OUR STORY
-            {activePage === "story" && (
-              <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#EFFF00]" />
-            )}
           </button>
           <button
             onClick={() => {
@@ -534,28 +525,25 @@ export default function App() {
               setActivePage("drop");
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            className={`hover:text-[#EFFF00] transition-colors uppercase py-1 px-0.5 relative cursor-pointer ${
-              activePage === "drop" ? "text-[#EFFF00] font-bold" : "hover:text-white"
+            className={`hover:text-[#EFFF00] transition-colors uppercase cursor-pointer ${
+              activePage === "drop" ? "text-[#EFFF00] font-bold" : ""
             }`}
           >
             UPCOMING DROP
-            {activePage === "drop" && (
-              <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-[#EFFF00]" />
-            )}
           </button>
           <button 
             onClick={() => setOrdersLookupOpen(true)}
-            className="hover:text-[#EFFF00] transition-colors uppercase py-1 px-0.5 cursor-pointer text-left hover:text-white"
+            className="hover:text-[#EFFF00] transition-colors uppercase font-mono text-[11px] font-semibold tracking-[0.12em] text-zinc-350 cursor-pointer text-left"
           >
             TRACK ORDER
           </button>
         </nav>
 
-         {/* Navigation Actions and login buttons with clean spacing */}
-        <div className="flex items-center gap-3 lg:gap-4 flex-shrink-0">
+         {/* Navigation Actions and login buttons */}
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Seek & Search Catalog Bar */}
-          <div className="relative flex items-center w-36 lg:w-44 border border-zinc-850 bg-zinc-950/90 py-2 px-3 transition-all focus-within:border-[#EFFF00]">
-            <Search size={12} className="text-zinc-500 mr-2 flex-shrink-0" />
+          <div className="relative flex items-center w-32 sm:w-40 border border-zinc-900 bg-zinc-950 py-1.5 px-2.5 transition-all focus-within:border-[#EFFF00]">
+            <Search size={11} className="text-zinc-600 mr-1.5 flex-shrink-0" />
             <input
               type="text"
               value={headerSearchQuery}
@@ -566,7 +554,7 @@ export default function App() {
                 }
               }}
               placeholder="SEARCH CATALOGUE"
-              className="w-full bg-transparent font-mono text-[9px] lg:text-[9.5px] uppercase tracking-[0.1em] text-white placeholder-zinc-600 outline-none"
+              className="w-full bg-transparent font-mono text-[9px] uppercase tracking-[0.1em] text-white placeholder-zinc-700 outline-none"
             />
             {headerSearchQuery && (
               <button
@@ -582,7 +570,7 @@ export default function App() {
             <div className="relative hidden md:block">
               <button
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                className="flex items-center gap-2.5 border border-zinc-850 bg-zinc-950 hover:border-[#EFFF00] px-3.5 py-2 transition-all outline-none rounded-none cursor-pointer"
+                className="flex items-center gap-2 border border-zinc-900 bg-zinc-950 hover:border-[#EFFF00] px-3 py-1.5 transition-all outline-none rounded-none cursor-pointer"
                 title="Account ledger and trackers"
               >
                 <img
@@ -591,10 +579,10 @@ export default function App() {
                   className="w-5 h-5 rounded-full border border-[#EFFF00]/40 flex-shrink-0 object-cover"
                   referrerPolicy="no-referrer"
                 />
-                <span className="font-mono text-[9.5px] tracking-wider text-zinc-300 uppercase truncate max-w-[85px]">
+                <span className="font-mono text-[9px] tracking-wider text-zinc-300 uppercase truncate max-w-[80px]">
                   {currentUser.displayName.split(" ")[0]}
                 </span>
-                <span className="text-zinc-500 text-[8px]">▼</span>
+                <span className="text-zinc-600 text-[8px]">▼</span>
               </button>
 
               {/* FLOATING ACTION LEDGER DROPDOWN */}
@@ -684,9 +672,9 @@ export default function App() {
           ) : (
             <button
               onClick={() => setAuthOpen(true)}
-              className="hidden md:flex items-center gap-2.5 border border-[#EFFF00]/25 bg-black hover:border-[#EFFF00] font-mono text-[9.5px] tracking-widest px-3.5 py-2 text-white hover:text-[#EFFF00] transition-all rounded-none cursor-pointer"
+              className="hidden md:flex items-center gap-2 border border-[#EFFF00]/25 bg-black hover:border-[#EFFF00] font-mono text-[9px] tracking-widest px-3 py-1.5 text-white hover:text-[#EFFF00] transition-all rounded-none cursor-pointer"
             >
-              <svg className="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 flex-shrink-0" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
@@ -699,9 +687,9 @@ export default function App() {
           {/* Vault cart trigger button - Hidden on mobile as it's persistently on bottom navbar */}
           <button
             onClick={() => setCartOpen(true)}
-            className="hidden md:flex items-center gap-2 border border-zinc-850 bg-zinc-950 hover:border-[#EFFF00] font-mono text-[10px] tracking-widest px-4 py-2 hover:text-[#EFFF00] transition-all rounded-none cursor-pointer"
+            className="hidden md:flex items-center gap-1.5 sm:gap-2 border border-zinc-900 bg-zinc-950 hover:border-[#EFFF00] font-mono text-[10px] tracking-widest px-3 sm:px-4 py-2 hover:text-[#EFFF00] transition-all rounded-none cursor-pointer"
           >
-            <ShoppingBag size={13} className="text-[#EFFF00]" />
+            <ShoppingBag size={12} className="text-[#EFFF00]" />
             <span>BAG ({cartItemsCount})</span>
           </button>
         </div>
@@ -741,7 +729,7 @@ export default function App() {
                 }}
                 className={`hover:text-[#EFFF00] text-left transition-all block ${activePage === "collection" ? "text-[#EFFF00]" : ""}`}
               >
-                CATALOG
+                SHOP CATALOG
               </button>
               <button
                 onClick={() => {
