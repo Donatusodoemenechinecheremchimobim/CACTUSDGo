@@ -399,7 +399,8 @@ export default function App() {
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "ClothingStore",
-    "name": "Cactus Bear Design Labs",
+    "name": "CACTUS BEAR",
+    "alternateName": "Cactus Bear",
     "image": "https://ais-pre-idoac2ds4ux6jkzbphimca-337745108430.europe-west2.run.app/cb-og-image.jpg",
     "@id": `${window.location.origin}/#store`,
     "url": window.location.origin,
@@ -440,7 +441,8 @@ export default function App() {
   const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "Cactus Bear",
+    "name": "CACTUS BEAR",
+    "alternateName": "Cactus Bear",
     "url": window.location.origin,
     "potentialAction": {
       "@type": "SearchAction",
@@ -1175,15 +1177,6 @@ export default function App() {
 
           {/* Staggered brand typography block */}
           <div className="flex flex-col items-center max-w-5xl px-4 relative">
-            <motion.div
-              initial={{ y: 10, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-black/90 border border-[#EFFF00]/50 text-[#EFFF00] font-mono text-[10px] sm:text-[11px] uppercase font-bold tracking-[0.25em] mb-4 shadow-[0_0_15px_rgba(239,255,0,0.15)]"
-            >
-              <span className="w-2 h-2 rounded-full bg-[#EFFF00] animate-ping" />
-              <span>CACTUS BEAR • LUXURY STREETWEAR & 3D STUDIO</span>
-            </motion.div>
-
             <motion.h1 
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
