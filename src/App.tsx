@@ -38,6 +38,7 @@ import GoogleAuthModal from "./components/GoogleAuthModal";
 import AdminWorkspaceModal from "./components/AdminWorkspaceModal";
 import OrdersLookupModal from "./components/OrdersLookupModal";
 import OrderHistoryModal from "./components/OrderHistoryModal";
+import PrivacyPolicyModal from "./components/PrivacyPolicyModal";
 
 export default function App() {
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -50,6 +51,10 @@ export default function App() {
   
   const [activePage, setActivePage] = useState<"home" | "collection" | "story" | "drop">("home");
   const [toasts, setToasts] = useState<{ id: string; message: string; type: "success" | "info" | "alert"; timestamp: string }[]>([]);
+
+  // Legal & Privacy modal states
+  const [privacyModalOpen, setPrivacyModalOpen] = useState<boolean>(false);
+  const [privacyTab, setPrivacyTab] = useState<"privacy" | "terms">("privacy");
 
   const addToast = (message: string, type: "success" | "info" | "alert" = "success") => {
     const id = Math.random().toString(36).substring(2, 9);
@@ -253,7 +258,7 @@ export default function App() {
     };
   }, []);
 
-  // Monitor scroll height to conditionally reveal back-to-top luxury quick navigation
+  // Monitor scroll height and URL hash (#privacy, #terms) for direct deep linking
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 450) {
@@ -263,7 +268,25 @@ export default function App() {
       }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    // Check direct hash deep link
+    const checkHash = () => {
+      const hash = window.location.hash.toLowerCase();
+      if (hash === "#privacy" || hash === "#privacypolicy") {
+        setPrivacyTab("privacy");
+        setPrivacyModalOpen(true);
+      } else if (hash === "#terms" || hash === "#termsofservice") {
+        setPrivacyTab("terms");
+        setPrivacyModalOpen(true);
+      }
+    };
+    checkHash();
+    window.addEventListener("hashchange", checkHash);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("hashchange", checkHash);
+    };
   }, []);
 
   // Sync state helpers
@@ -1483,6 +1506,28 @@ export default function App() {
             <span>LAGOS & YABA DESIGNS, NIGERIA</span>
           </div>
 
+          <div className="flex flex-wrap gap-4 items-center">
+            <button
+              onClick={() => {
+                setPrivacyTab("privacy");
+                setPrivacyModalOpen(true);
+              }}
+              className="text-zinc-400 hover:text-[#EFFF00] underline uppercase cursor-pointer transition-colors"
+            >
+              PRIVACY POLICY
+            </button>
+            <span className="text-zinc-700">•</span>
+            <button
+              onClick={() => {
+                setPrivacyTab("terms");
+                setPrivacyModalOpen(true);
+              }}
+              className="text-zinc-400 hover:text-[#EFFF00] underline uppercase cursor-pointer transition-colors"
+            >
+              TERMS OF SERVICE
+            </button>
+          </div>
+
           <div className="flex flex-col md:items-end gap-1 text-zinc-500">
             <span>Cactus Bear Studio</span>
             <span>Lagos Streetwear & Heavyweight Garments</span>
@@ -1540,6 +1585,13 @@ export default function App() {
           onRefreshProducts={refreshDynamicProducts}
         />
       )}
+
+      {/* PRIVACY POLICY & TERMS MODAL */}
+      <PrivacyPolicyModal
+        isOpen={privacyModalOpen}
+        onClose={() => setPrivacyModalOpen(false)}
+        defaultTab={privacyTab}
+      />
 
       {/* TOASTS STACK INTERACTIVE CONTAINER */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none">
