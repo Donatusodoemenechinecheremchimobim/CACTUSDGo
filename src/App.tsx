@@ -1178,10 +1178,10 @@ export default function App() {
             <motion.div
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              className="inline-flex items-center gap-3 px-5 py-2 bg-black border-2 border-[#EFFF00]/60 text-[#EFFF00] font-mono text-[11px] uppercase font-black tracking-[0.28em] mb-6 shadow-[0_0_20px_rgba(239,255,0,0.2)]"
+              className="inline-flex items-center gap-3 px-5 py-2 bg-black border-2 border-[#EFFF00]/60 text-[#EFFF00] font-mono text-[11px] uppercase font-black tracking-[0.28em] mb-4 shadow-[0_0_20px_rgba(239,255,0,0.2)]"
             >
               <span className="w-2 h-2 rounded-full bg-[#EFFF00] animate-ping" />
-              <span>CACTUS BEAR // DIGITAL ATELIER & APPAREL LAB</span>
+              <span>APPLICATION NAME: CACTUS BEAR</span>
             </motion.div>
 
             <motion.h1 
@@ -1202,14 +1202,50 @@ export default function App() {
               HEAVYWEIGHT STREETWEAR • 3D DESIGN STUDIO • LAGOS, NIGERIA
             </motion.p>
 
-            <motion.p
+            {/* HIGH-VISIBILITY APPLICATION PURPOSE DISCLOSURE CARD */}
+            <motion.div
               initial={{ y: 15, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="text-zinc-200 font-sans text-sm sm:text-base max-w-2xl text-center mt-5 mb-9 leading-relaxed font-normal"
+              transition={{ delay: 0.45 }}
+              className="w-full max-w-3xl bg-black/90 border-2 border-[#EFFF00]/70 p-5 sm:p-6 mt-6 mb-7 text-left shadow-[0_0_30px_rgba(239,255,0,0.15)] relative overflow-hidden"
             >
-              Official direct-to-consumer e-commerce storefront and bespoke design atelier for limited Nigerian heavyweight drops, structured cargo pieces, and interactive 3D customized streetwear.
-            </motion.p>
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-zinc-800 font-mono text-[11px]">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 bg-[#EFFF00] inline-block animate-pulse" />
+                  <span className="text-[#EFFF00] font-black uppercase tracking-wider text-xs sm:text-sm">
+                    APPLICATION PURPOSE & OVERVIEW
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-[10px] text-zinc-400">
+                  <span className="px-2 py-0.5 bg-zinc-900 border border-zinc-700 text-white font-bold">APP: CACTUS BEAR</span>
+                  <span className="px-2 py-0.5 bg-zinc-900 border border-zinc-700 text-[#EFFF00] font-bold">E-COMMERCE & 3D STUDIO</span>
+                </div>
+              </div>
+
+              <div className="space-y-2.5 text-zinc-200 font-sans text-xs sm:text-sm leading-relaxed">
+                <p>
+                  <strong className="text-white font-black">CACTUS BEAR</strong> is an independent streetwear e-commerce platform and 3D digital design studio based in Lagos, Nigeria. The application enables users to:
+                </p>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono text-[11px] text-zinc-300 pt-1">
+                  <li className="flex items-start gap-2 bg-zinc-950/80 p-2 border border-zinc-850">
+                    <span className="text-[#EFFF00] font-bold">✓</span>
+                    <span><strong>Shop Streetwear Drops:</strong> Browse & purchase limited 460GSM heavyweight cotton collections.</span>
+                  </li>
+                  <li className="flex items-start gap-2 bg-zinc-950/80 p-2 border border-zinc-850">
+                    <span className="text-[#EFFF00] font-bold">✓</span>
+                    <span><strong>3D Garment Customizer:</strong> Customize colors, placement, and artwork on bespoke 1-of-1 pieces.</span>
+                  </li>
+                  <li className="flex items-start gap-2 bg-zinc-950/80 p-2 border border-zinc-850">
+                    <span className="text-[#EFFF00] font-bold">✓</span>
+                    <span><strong>Google Sign-In:</strong> Securely save customized 3D designs, shopping carts, and order history.</span>
+                  </li>
+                  <li className="flex items-start gap-2 bg-zinc-950/80 p-2 border border-zinc-850">
+                    <span className="text-[#EFFF00] font-bold">✓</span>
+                    <span><strong>Nationwide Dispatch:</strong> Live courier tracking and verified pre-orders across all 36 Nigerian states.</span>
+                  </li>
+                </ul>
+              </div>
+            </motion.div>
 
             <motion.div
               initial={{ y: 15, opacity: 0 }}
