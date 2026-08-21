@@ -1188,9 +1188,18 @@ export default function App() {
               initial={{ y: 15, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="text-zinc-400 font-mono text-xs tracking-[0.22em] h-5 mb-8 text-[#EFFF00] uppercase mt-5"
+              className="text-zinc-400 font-mono text-xs tracking-[0.22em] text-[#EFFF00] uppercase mt-5"
             >
               PREMIUM STREETWEAR DESIGNED IN NIGERIA
+            </motion.p>
+
+            <motion.p
+              initial={{ y: 15, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="text-zinc-400 font-sans text-xs sm:text-sm max-w-xl text-center mt-3 mb-8 leading-relaxed"
+            >
+              <strong>CACTUS BEAR</strong> is a premier streetwear e-commerce platform and bespoke garment customizer. Explore seasonal heavyweight drops, tailor custom pieces in our Stitch Lab, and manage verified pre-orders nationwide.
             </motion.p>
 
             <motion.div
@@ -1486,6 +1495,91 @@ export default function App() {
                   )}
                 </AnimatePresence>
                 
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION 06: APPLICATION PURPOSE & GOOGLE AUTHENTICATION DISCLOSURE */}
+        <section id="app-purpose" className="w-full bg-[#080809] border-t border-zinc-900 py-16 px-4 md:px-8 relative z-10">
+          <div className="max-w-7xl mx-auto">
+            <div className="border border-zinc-800 bg-[#0d0d0f] p-6 md:p-10 relative overflow-hidden">
+              
+              <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 pb-6 border-b border-zinc-800/80">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="w-2 h-2 rounded-full bg-[#EFFF00] animate-pulse" />
+                    <span className="font-mono text-[10px] text-[#EFFF00] font-black uppercase tracking-widest">
+                      ABOUT THIS APPLICATION // CACTUS BEAR
+                    </span>
+                  </div>
+                  <h3 className="font-sans text-2xl md:text-3xl font-black uppercase text-white tracking-tight">
+                    APPLICATION PURPOSE & PLATFORM DISCLOSURE
+                  </h3>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-[9px] text-zinc-500 uppercase px-3 py-1.5 bg-zinc-950 border border-zinc-800">
+                    APP NAME: CACTUS BEAR
+                  </span>
+                  <span className="font-mono text-[9px] text-[#EFFF00] uppercase px-3 py-1.5 bg-[#171708] border border-[#EFFF00]/30 font-bold">
+                    STATUS: ACTIVE
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8 font-sans">
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-2 text-white font-mono text-xs font-bold uppercase tracking-wider">
+                    <span className="text-[#EFFF00]">01.</span> APPAREL E-COMMERCE & DROPS
+                  </div>
+                  <p className="text-zinc-400 text-xs leading-relaxed">
+                    <strong>CACTUS BEAR</strong> operates as an online storefront and atelier for limited-edition Nigerian heavyweight streetwear. Customers can browse curated outerwear, heavyweight graphic tees, and utility cargos crafted in Lagos, Nigeria.
+                  </p>
+                </div>
+
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-2 text-white font-mono text-xs font-bold uppercase tracking-wider">
+                    <span className="text-[#EFFF00]">02.</span> 3D STITCH LAB CUSTOMIZER
+                  </div>
+                  <p className="text-zinc-400 text-xs leading-relaxed">
+                    The platform features a 2D/3D custom design studio allowing users to stage custom textures, typography, emblems, and fabric color palettes before placing bespoke garment pre-orders.
+                  </p>
+                </div>
+
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-2 text-white font-mono text-xs font-bold uppercase tracking-wider">
+                    <span className="text-[#EFFF00]">03.</span> GOOGLE AUTHENTICATION PURPOSE
+                  </div>
+                  <p className="text-zinc-400 text-xs leading-relaxed">
+                    <strong>Google Sign-In</strong> is utilized strictly to verify customer identity, synchronize custom garment designs, manage shopping bag/wishlist persistence across sessions, authorize checkout, and provide real-time order tracking. We never share or sell personal user data.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-zinc-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-mono text-[10px] text-zinc-500">
+                <span>HEADQUARTERS: LAGOS & YABA CREATIVE DISTRICT, NIGERIA • SUPPORT: CHIBUNDUSADIQ@GMAIL.COM</span>
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => {
+                      setPrivacyTab("privacy");
+                      setPrivacyModalOpen(true);
+                    }}
+                    className="text-[#EFFF00] hover:underline uppercase cursor-pointer"
+                  >
+                    VIEW PRIVACY POLICY ➔
+                  </button>
+                  <button
+                    onClick={() => {
+                      setPrivacyTab("terms");
+                      setPrivacyModalOpen(true);
+                    }}
+                    className="text-zinc-400 hover:text-white hover:underline uppercase cursor-pointer"
+                  >
+                    TERMS OF SERVICE ➔
+                  </button>
+                </div>
               </div>
 
             </div>
