@@ -1178,72 +1178,47 @@ export default function App() {
             <motion.div
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              className="inline-flex items-center gap-3 px-5 py-2 bg-black border-2 border-[#EFFF00]/60 text-[#EFFF00] font-mono text-[11px] uppercase font-black tracking-[0.28em] mb-4 shadow-[0_0_20px_rgba(239,255,0,0.2)]"
+              className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-black/90 border border-[#EFFF00]/50 text-[#EFFF00] font-mono text-[10px] sm:text-[11px] uppercase font-bold tracking-[0.25em] mb-4 shadow-[0_0_15px_rgba(239,255,0,0.15)]"
             >
               <span className="w-2 h-2 rounded-full bg-[#EFFF00] animate-ping" />
-              <span>APPLICATION NAME: CACTUS BEAR</span>
+              <span>CACTUS BEAR • LUXURY STREETWEAR & 3D STUDIO</span>
             </motion.div>
 
             <motion.h1 
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] font-sans tracking-tighter font-black uppercase text-white leading-none selection:bg-[#EFFF00] selection:text-black"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-sans tracking-tight font-black uppercase text-white leading-none whitespace-nowrap selection:bg-[#EFFF00] selection:text-black"
             >
-              CACTUS <span className="text-[#EFFF00] drop-shadow-[0_0_35px_rgba(239,255,0,0.45)]">BEAR</span>
+              CACTUS <span className="text-[#EFFF00] drop-shadow-[0_0_25px_rgba(239,255,0,0.35)]">BEAR</span>
             </motion.h1>
             
             <motion.p
               initial={{ y: 15, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="font-mono text-xs sm:text-sm tracking-[0.32em] text-[#EFFF00] font-black uppercase mt-5"
+              transition={{ delay: 0.35 }}
+              className="font-mono text-[11px] sm:text-xs tracking-[0.28em] text-[#EFFF00] font-bold uppercase mt-3"
             >
-              HEAVYWEIGHT STREETWEAR • 3D DESIGN STUDIO • LAGOS, NIGERIA
+              HEAVYWEIGHT STREETWEAR • 3D BESPOKE ATELIER • LAGOS, NIGERIA
             </motion.p>
 
-            {/* HIGH-VISIBILITY APPLICATION PURPOSE DISCLOSURE CARD */}
+            {/* STYLISH EDITORIAL LIFESTYLE & BRAND STATEMENT */}
             <motion.div
               initial={{ y: 15, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.45 }}
-              className="w-full max-w-3xl bg-black/90 border-2 border-[#EFFF00]/70 p-5 sm:p-6 mt-6 mb-7 text-left shadow-[0_0_30px_rgba(239,255,0,0.15)] relative overflow-hidden"
+              className="max-w-3xl text-center mt-6 mb-8 px-2"
             >
-              <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-zinc-800 font-mono text-[11px]">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 bg-[#EFFF00] inline-block animate-pulse" />
-                  <span className="text-[#EFFF00] font-black uppercase tracking-wider text-xs sm:text-sm">
-                    APPLICATION PURPOSE & OVERVIEW
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-[10px] text-zinc-400">
-                  <span className="px-2 py-0.5 bg-zinc-900 border border-zinc-700 text-white font-bold">APP: CACTUS BEAR</span>
-                  <span className="px-2 py-0.5 bg-zinc-900 border border-zinc-700 text-[#EFFF00] font-bold">E-COMMERCE & 3D STUDIO</span>
-                </div>
-              </div>
-
-              <div className="space-y-2.5 text-zinc-200 font-sans text-xs sm:text-sm leading-relaxed">
-                <p>
-                  <strong className="text-white font-black">CACTUS BEAR</strong> is an independent streetwear e-commerce platform and 3D digital design studio based in Lagos, Nigeria. The application enables users to:
-                </p>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono text-[11px] text-zinc-300 pt-1">
-                  <li className="flex items-start gap-2 bg-zinc-950/80 p-2 border border-zinc-850">
-                    <span className="text-[#EFFF00] font-bold">✓</span>
-                    <span><strong>Shop Streetwear Drops:</strong> Browse & purchase limited 460GSM heavyweight cotton collections.</span>
-                  </li>
-                  <li className="flex items-start gap-2 bg-zinc-950/80 p-2 border border-zinc-850">
-                    <span className="text-[#EFFF00] font-bold">✓</span>
-                    <span><strong>3D Garment Customizer:</strong> Customize colors, placement, and artwork on bespoke 1-of-1 pieces.</span>
-                  </li>
-                  <li className="flex items-start gap-2 bg-zinc-950/80 p-2 border border-zinc-850">
-                    <span className="text-[#EFFF00] font-bold">✓</span>
-                    <span><strong>Google Sign-In:</strong> Securely save customized 3D designs, shopping carts, and order history.</span>
-                  </li>
-                  <li className="flex items-start gap-2 bg-zinc-950/80 p-2 border border-zinc-850">
-                    <span className="text-[#EFFF00] font-bold">✓</span>
-                    <span><strong>Nationwide Dispatch:</strong> Live courier tracking and verified pre-orders across all 36 Nigerian states.</span>
-                  </li>
-                </ul>
+              <p className="text-zinc-200 font-sans text-sm sm:text-base md:text-lg leading-relaxed font-light">
+                <strong className="text-white font-bold">CACTUS BEAR</strong> is more than apparel — we sell an authentic streetwear lifestyle born from the raw pulse, music, and underground culture of Lagos. We engineer limited-run 460GSM heavyweight cotton drops, modular utility cargos, and bespoke digital pieces for those who define modern luxury on their own terms.
+              </p>
+              
+              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mt-5 font-mono text-[11px] text-zinc-400">
+                <span className="text-[#EFFF00] font-bold">LIMITED SEASONAL DROPS</span>
+                <span className="text-zinc-700 hidden sm:inline">•</span>
+                <span className="text-zinc-300 font-medium">3D BESPOKE LAB</span>
+                <span className="text-zinc-700 hidden sm:inline">•</span>
+                <span className="text-zinc-300 font-medium">ALL 36 NIGERIAN STATES EXPRESS</span>
               </div>
             </motion.div>
 
@@ -1546,12 +1521,12 @@ export default function App() {
           </div>
         </section>
 
-        {/* SECTION 06: BRAND MANIFESTO & PLATFORM PURPOSE SPECIFICATIONS */}
-        <section id="atelier-manifesto" className="w-full bg-black border-t-2 border-zinc-900 py-24 px-4 md:px-8 relative z-10">
+        {/* SECTION 06: BRAND MANIFESTO & ATELIER IDENTITY */}
+        <section id="atelier-manifesto" className="w-full bg-black border-t-2 border-zinc-900 py-20 px-4 md:px-8 relative z-10">
           <div className="max-w-7xl mx-auto">
-            <div className="border-2 border-zinc-700/80 bg-gradient-to-b from-[#121215] via-[#09090b] to-black p-6 sm:p-10 md:p-14 relative overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+            <div className="border-2 border-zinc-800 bg-gradient-to-b from-[#121215] via-[#09090b] to-black p-8 sm:p-12 md:p-16 relative overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)]">
               
-              {/* Subtle ambient lighting */}
+              {/* Ambient lighting */}
               <div className="absolute -right-24 -top-24 w-96 h-96 bg-[#EFFF00]/10 rounded-full blur-3xl pointer-events-none" />
               <div className="absolute -left-24 -bottom-24 w-96 h-96 bg-zinc-700/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -1560,13 +1535,13 @@ export default function App() {
                 <div className="space-y-3">
                   <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 bg-black border-2 border-[#EFFF00]/60 font-mono text-[10px] text-[#EFFF00] font-black uppercase tracking-[0.25em] shadow-[0_0_15px_rgba(239,255,0,0.2)]">
                     <span className="w-2 h-2 rounded-full bg-[#EFFF00] animate-pulse" />
-                    ATELIER IDENTITY & PLATFORM SPECIFICATIONS
+                    ATELIER IDENTITY & CRAFTSMANSHIP
                   </div>
-                  <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase text-white tracking-tighter leading-none">
-                    PURPOSE, PROVENANCE & ARCHITECTURE
+                  <h3 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase text-white tracking-tighter leading-none">
+                    WE SELL A STREETWEAR LIFESTYLE
                   </h3>
                   <p className="font-mono text-xs sm:text-sm text-zinc-300 font-bold uppercase tracking-[0.2em]">
-                    CACTUS BEAR // INDEPENDENT NIGERIAN LUXURY STREETWEAR & 3D ATELIER
+                    CACTUS BEAR // INDEPENDENT NIGERIAN LUXURY ATELIER
                   </p>
                 </div>
 
@@ -1583,89 +1558,18 @@ export default function App() {
                 </div>
               </div>
 
-              {/* 4-Column Editorial Matrix */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-10 font-sans relative z-10">
-                
-                {/* Column 01: The Fashion House */}
-                <div className="p-7 bg-zinc-950/90 border-2 border-zinc-800 hover:border-[#EFFF00] transition-all duration-300 flex flex-col justify-between group shadow-xl hover:shadow-[0_0_25px_rgba(239,255,0,0.15)]">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between font-mono text-[10px]">
-                      <span className="text-[#EFFF00] font-black tracking-widest">[ 01 // TEXTILE CRAFT ]</span>
-                      <span className="text-zinc-400 font-bold uppercase">460GSM COTTON</span>
-                    </div>
-                    <h4 className="text-white font-sans font-black text-lg sm:text-xl uppercase tracking-tight group-hover:text-[#EFFF00] transition-colors">
-                      Heavyweight Streetwear
-                    </h4>
-                    <p className="text-zinc-300 text-xs leading-relaxed font-normal">
-                      <strong className="text-white font-bold">CACTUS BEAR</strong> is an independent fashion house founded in Lagos, Nigeria. We engineer heavyweight 460GSM cotton hoodies, structured utility cargo trousers, and distressed vintage graphic tees designed with architectural silhouettes and industrial topstitching.
-                    </p>
-                  </div>
-                  <div className="mt-6 pt-4 border-t border-zinc-800 font-mono text-[10px] text-zinc-400 font-bold uppercase">
-                    PROVENANCE: YABA CREATIVE LABS
-                  </div>
-                </div>
-
-                {/* Column 02: The Storefront */}
-                <div className="p-7 bg-zinc-950/90 border-2 border-zinc-800 hover:border-[#EFFF00] transition-all duration-300 flex flex-col justify-between group shadow-xl hover:shadow-[0_0_25px_rgba(239,255,0,0.15)]">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between font-mono text-[10px]">
-                      <span className="text-[#EFFF00] font-black tracking-widest">[ 02 // COMMERCE ]</span>
-                      <span className="text-zinc-400 font-bold uppercase">LIMITED CAPSULES</span>
-                    </div>
-                    <h4 className="text-white font-sans font-black text-lg sm:text-xl uppercase tracking-tight group-hover:text-[#EFFF00] transition-colors">
-                      E-Commerce Storefront
-                    </h4>
-                    <p className="text-zinc-300 text-xs leading-relaxed font-normal">
-                      Our platform serves as the direct-to-consumer digital storefront for scheduled seasonal drops. Collectors can explore lookbooks, verify garment inventory in real time, and place authenticated pre-orders backed by licensed payment processors.
-                    </p>
-                  </div>
-                  <div className="mt-6 pt-4 border-t border-zinc-800 font-mono text-[10px] text-zinc-400 font-bold uppercase">
-                    LOGISTICS: NATIONWIDE TRACKING
-                  </div>
-                </div>
-
-                {/* Column 03: 3D Customizer */}
-                <div className="p-7 bg-zinc-950/90 border-2 border-zinc-800 hover:border-[#EFFF00] transition-all duration-300 flex flex-col justify-between group shadow-xl hover:shadow-[0_0_25px_rgba(239,255,0,0.15)]">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between font-mono text-[10px]">
-                      <span className="text-[#EFFF00] font-black tracking-widest">[ 03 // 3D LAB ]</span>
-                      <span className="text-zinc-400 font-bold uppercase">DIGITAL ATELIER</span>
-                    </div>
-                    <h4 className="text-white font-sans font-black text-lg sm:text-xl uppercase tracking-tight group-hover:text-[#EFFF00] transition-colors">
-                      Interactive 3D Customizer
-                    </h4>
-                    <p className="text-zinc-300 text-xs leading-relaxed font-normal">
-                      The in-browser Customizer Lab empowers clients to craft one-of-a-kind streetwear pieces. Experiment with custom colorways, stage embroidered crown motifs, and generate high-resolution garment specifications before production.
-                    </p>
-                  </div>
-                  <div className="mt-6 pt-4 border-t border-zinc-800 font-mono text-[10px] text-zinc-400 font-bold uppercase">
-                    ENGINE: CLIENT-SIDE CANVAS LAB
-                  </div>
-                </div>
-
-                {/* Column 04: Google Account Security */}
-                <div className="p-7 bg-zinc-950/90 border-2 border-[#EFFF00]/50 hover:border-[#EFFF00] transition-all duration-300 flex flex-col justify-between group shadow-xl hover:shadow-[0_0_25px_rgba(239,255,0,0.25)]">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between font-mono text-[10px]">
-                      <span className="text-[#EFFF00] font-black tracking-widest">[ 04 // CLIENT HUB ]</span>
-                      <span className="text-[#EFFF00] uppercase font-black">GOOGLE AUTH</span>
-                    </div>
-                    <h4 className="text-white font-sans font-black text-lg sm:text-xl uppercase tracking-tight group-hover:text-[#EFFF00] transition-colors">
-                      Account & Identity Sync
-                    </h4>
-                    <p className="text-zinc-300 text-xs leading-relaxed font-normal">
-                      <strong className="text-[#EFFF00] font-bold">Google Sign-In</strong> is seamlessly integrated to securely verify customer identity, synchronize personalized 3D design mockups across devices, maintain persistent shopping bags, and grant instant access to real-time parcel dispatch telemetry.
-                    </p>
-                  </div>
-                  <div className="mt-6 pt-4 border-t border-zinc-800 font-mono text-[10px] text-[#EFFF00] font-bold uppercase">
-                    DATA PRIVACY: ZERO THIRD-PARTY SALES
-                  </div>
-                </div>
-
+              {/* Fluid Editorial Narrative */}
+              <div className="py-10 space-y-6 text-zinc-200 font-sans text-sm sm:text-base leading-relaxed max-w-4xl relative z-10 font-light">
+                <p>
+                  <strong className="text-white font-black text-base sm:text-lg">CACTUS BEAR</strong> is an independent fashion house and direct-to-consumer digital atelier based in Lagos, Nigeria. We craft ultra-heavyweight 460GSM cotton hoodies, structured utility cargo trousers, and distressed vintage tees designed with architectural silhouettes and industrial topstitching.
+                </p>
+                <p>
+                  Our digital platform features an interactive in-browser 3D Customizer Lab to personalize bespoke one-of-one streetwear garments, secure checkout with nationwide Nigerian courier tracking, and Google Sign-In integration for safeguarding your custom designs and shopping wardrobe across devices.
+                </p>
               </div>
 
               {/* Bottom compliance, location & direct legal bridges */}
-              <div className="mt-12 pt-8 border-t-2 border-zinc-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 font-mono text-[11px] text-zinc-300 relative z-10">
+              <div className="pt-8 border-t-2 border-zinc-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 font-mono text-[11px] text-zinc-300 relative z-10">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 font-bold">
                   <span className="text-white">CACTUS BEAR APPAREL GROUP</span>
                   <span className="hidden sm:inline text-zinc-600">•</span>
