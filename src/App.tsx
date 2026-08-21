@@ -1174,13 +1174,13 @@ export default function App() {
           </motion.div>
 
           {/* Staggered brand typography block */}
-          <div className="flex flex-col items-center max-w-4xl px-4 relative">
+          <div className="flex flex-col items-center max-w-5xl px-4 relative">
             <motion.div
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-zinc-950 border border-zinc-800 text-[#EFFF00] font-mono text-[10px] uppercase font-bold tracking-[0.25em] mb-6 shadow-lg"
+              className="inline-flex items-center gap-3 px-5 py-2 bg-black border-2 border-[#EFFF00]/60 text-[#EFFF00] font-mono text-[11px] uppercase font-black tracking-[0.28em] mb-6 shadow-[0_0_20px_rgba(239,255,0,0.2)]"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#EFFF00] animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-[#EFFF00] animate-ping" />
               <span>CACTUS BEAR // DIGITAL ATELIER & APPAREL LAB</span>
             </motion.div>
 
@@ -1188,16 +1188,16 @@ export default function App() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-sans tracking-tighter font-black uppercase text-white leading-none selection:bg-white"
+              className="text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] font-sans tracking-tighter font-black uppercase text-white leading-none selection:bg-[#EFFF00] selection:text-black"
             >
-              CACTUS <span className="text-[#EFFF00] glow-text-yellow">BEAR</span>
+              CACTUS <span className="text-[#EFFF00] drop-shadow-[0_0_35px_rgba(239,255,0,0.45)]">BEAR</span>
             </motion.h1>
             
             <motion.p
               initial={{ y: 15, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="font-mono text-[11px] sm:text-xs tracking-[0.28em] text-[#EFFF00] uppercase mt-4"
+              className="font-mono text-xs sm:text-sm tracking-[0.32em] text-[#EFFF00] font-black uppercase mt-5"
             >
               HEAVYWEIGHT STREETWEAR • 3D DESIGN STUDIO • LAGOS, NIGERIA
             </motion.p>
@@ -1206,9 +1206,9 @@ export default function App() {
               initial={{ y: 15, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="text-zinc-400 font-sans text-xs sm:text-sm max-w-xl text-center mt-4 mb-8 leading-relaxed font-light"
+              className="text-zinc-200 font-sans text-sm sm:text-base max-w-2xl text-center mt-5 mb-9 leading-relaxed font-normal"
             >
-              Official e-commerce storefront and bespoke design atelier for limited Nigerian heavyweight drops, structured cargo pieces, and interactive 3D customized streetwear.
+              Official direct-to-consumer e-commerce storefront and bespoke design atelier for limited Nigerian heavyweight drops, structured cargo pieces, and interactive 3D customized streetwear.
             </motion.p>
 
             <motion.div
@@ -1223,15 +1223,15 @@ export default function App() {
                   setActivePage("collection");
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
-                className="bg-[#EFFF00] hover:bg-white text-black font-mono font-black py-4 px-8 text-xs tracking-widest transition-all rounded-none uppercase flex items-center gap-2 cursor-pointer shadow-lg hover:shadow-[#EFFF00]/20"
+                className="bg-[#EFFF00] hover:bg-white text-black font-mono font-black py-4.5 px-9 text-xs sm:text-sm tracking-widest transition-all rounded-none uppercase flex items-center gap-3 cursor-pointer shadow-[0_0_30px_rgba(239,255,0,0.4)] hover:shadow-white/40"
               >
                 EXPLORE COLLECTION '01
-                <ChevronRight size={13} />
+                <ChevronRight size={16} className="stroke-[3]" />
               </button>
 
               <button
                 onClick={() => handleNavToSection("customizer-lab")}
-                className="bg-transparent border border-zinc-800 hover:border-[#EFFF00] font-mono text-zinc-300 hover:text-[#EFFF00] py-4 px-8 text-xs tracking-widest transition-colors rounded-none uppercase cursor-pointer"
+                className="bg-black/80 border-2 border-zinc-700 hover:border-[#EFFF00] font-mono font-black text-white hover:text-[#EFFF00] py-4.5 px-9 text-xs sm:text-sm tracking-widest transition-all rounded-none uppercase cursor-pointer hover:shadow-[0_0_20px_rgba(239,255,0,0.2)]"
               >
                 ENTER 3D CUSTOMIZER
               </button>
@@ -1511,37 +1511,37 @@ export default function App() {
         </section>
 
         {/* SECTION 06: BRAND MANIFESTO & PLATFORM PURPOSE SPECIFICATIONS */}
-        <section id="atelier-manifesto" className="w-full bg-[#050506] border-t border-zinc-900 py-20 px-4 md:px-8 relative z-10">
+        <section id="atelier-manifesto" className="w-full bg-black border-t-2 border-zinc-900 py-24 px-4 md:px-8 relative z-10">
           <div className="max-w-7xl mx-auto">
-            <div className="border border-zinc-800 bg-gradient-to-b from-[#0d0d10] via-[#09090b] to-[#050506] p-6 sm:p-10 md:p-14 relative overflow-hidden shadow-2xl">
+            <div className="border-2 border-zinc-700/80 bg-gradient-to-b from-[#121215] via-[#09090b] to-black p-6 sm:p-10 md:p-14 relative overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)]">
               
               {/* Subtle ambient lighting */}
-              <div className="absolute -right-24 -top-24 w-96 h-96 bg-[#EFFF00]/5 rounded-full blur-3xl pointer-events-none" />
-              <div className="absolute -left-24 -bottom-24 w-96 h-96 bg-zinc-800/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -right-24 -top-24 w-96 h-96 bg-[#EFFF00]/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -left-24 -bottom-24 w-96 h-96 bg-zinc-700/10 rounded-full blur-3xl pointer-events-none" />
 
               {/* Header metadata bar */}
-              <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b border-zinc-800/80 relative z-10">
-                <div className="space-y-2">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-black border border-zinc-800 font-mono text-[9px] text-[#EFFF00] font-bold uppercase tracking-[0.25em]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#EFFF00] animate-pulse" />
+              <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b-2 border-zinc-800 relative z-10">
+                <div className="space-y-3">
+                  <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 bg-black border-2 border-[#EFFF00]/60 font-mono text-[10px] text-[#EFFF00] font-black uppercase tracking-[0.25em] shadow-[0_0_15px_rgba(239,255,0,0.2)]">
+                    <span className="w-2 h-2 rounded-full bg-[#EFFF00] animate-pulse" />
                     ATELIER IDENTITY & PLATFORM SPECIFICATIONS
                   </div>
-                  <h3 className="font-sans text-2xl sm:text-3xl md:text-4xl font-black uppercase text-white tracking-tight leading-none">
+                  <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase text-white tracking-tighter leading-none">
                     PURPOSE, PROVENANCE & ARCHITECTURE
                   </h3>
-                  <p className="font-mono text-xs text-zinc-400 uppercase tracking-wider">
+                  <p className="font-mono text-xs sm:text-sm text-zinc-300 font-bold uppercase tracking-[0.2em]">
                     CACTUS BEAR // INDEPENDENT NIGERIAN LUXURY STREETWEAR & 3D ATELIER
                   </p>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 sm:gap-3 font-mono text-[9px]">
-                  <span className="px-3 py-1.5 bg-black border border-zinc-800 text-zinc-300 uppercase">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 font-mono text-[10px] font-bold">
+                  <span className="px-3.5 py-2 bg-black border border-zinc-700 text-white uppercase tracking-wider">
                     ORIGIN: LAGOS, NIGERIA
                   </span>
-                  <span className="px-3 py-1.5 bg-black border border-zinc-800 text-zinc-300 uppercase">
+                  <span className="px-3.5 py-2 bg-black border border-zinc-700 text-white uppercase tracking-wider">
                     SECURITY: GOOGLE OAUTH
                   </span>
-                  <span className="px-3 py-1.5 bg-[#171708] border border-[#EFFF00]/40 text-[#EFFF00] font-bold uppercase">
+                  <span className="px-3.5 py-2 bg-[#171708] border-2 border-[#EFFF00] text-[#EFFF00] font-black uppercase tracking-wider shadow-[0_0_15px_rgba(239,255,0,0.25)]">
                     DISPATCH: ALL 36 STATES
                   </span>
                 </div>
@@ -1551,77 +1551,77 @@ export default function App() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-10 font-sans relative z-10">
                 
                 {/* Column 01: The Fashion House */}
-                <div className="p-6 bg-zinc-950/70 border border-zinc-850 hover:border-zinc-700 transition-all flex flex-col justify-between group">
-                  <div className="space-y-3">
+                <div className="p-7 bg-zinc-950/90 border-2 border-zinc-800 hover:border-[#EFFF00] transition-all duration-300 flex flex-col justify-between group shadow-xl hover:shadow-[0_0_25px_rgba(239,255,0,0.15)]">
+                  <div className="space-y-4">
                     <div className="flex items-center justify-between font-mono text-[10px]">
-                      <span className="text-[#EFFF00] font-bold tracking-widest">[ 01 // TEXTILE CRAFT ]</span>
-                      <span className="text-zinc-600 uppercase">460GSM COTTON</span>
+                      <span className="text-[#EFFF00] font-black tracking-widest">[ 01 // TEXTILE CRAFT ]</span>
+                      <span className="text-zinc-400 font-bold uppercase">460GSM COTTON</span>
                     </div>
-                    <h4 className="text-white font-sans font-bold text-base uppercase tracking-tight group-hover:text-[#EFFF00] transition-colors">
+                    <h4 className="text-white font-sans font-black text-lg sm:text-xl uppercase tracking-tight group-hover:text-[#EFFF00] transition-colors">
                       Heavyweight Streetwear
                     </h4>
-                    <p className="text-zinc-400 text-xs leading-relaxed font-light">
-                      <strong>CACTUS BEAR</strong> is an independent fashion house founded in Lagos, Nigeria. We engineer heavyweight 460GSM cotton hoodies, structured utility cargo trousers, and distressed vintage graphic tees designed with architectural silhouettes and industrial topstitching.
+                    <p className="text-zinc-300 text-xs leading-relaxed font-normal">
+                      <strong className="text-white font-bold">CACTUS BEAR</strong> is an independent fashion house founded in Lagos, Nigeria. We engineer heavyweight 460GSM cotton hoodies, structured utility cargo trousers, and distressed vintage graphic tees designed with architectural silhouettes and industrial topstitching.
                     </p>
                   </div>
-                  <div className="mt-6 pt-4 border-t border-zinc-900 font-mono text-[9px] text-zinc-500 uppercase">
+                  <div className="mt-6 pt-4 border-t border-zinc-800 font-mono text-[10px] text-zinc-400 font-bold uppercase">
                     PROVENANCE: YABA CREATIVE LABS
                   </div>
                 </div>
 
                 {/* Column 02: The Storefront */}
-                <div className="p-6 bg-zinc-950/70 border border-zinc-850 hover:border-zinc-700 transition-all flex flex-col justify-between group">
-                  <div className="space-y-3">
+                <div className="p-7 bg-zinc-950/90 border-2 border-zinc-800 hover:border-[#EFFF00] transition-all duration-300 flex flex-col justify-between group shadow-xl hover:shadow-[0_0_25px_rgba(239,255,0,0.15)]">
+                  <div className="space-y-4">
                     <div className="flex items-center justify-between font-mono text-[10px]">
-                      <span className="text-[#EFFF00] font-bold tracking-widest">[ 02 // COMMERCE ]</span>
-                      <span className="text-zinc-600 uppercase">LIMITED CAPSULES</span>
+                      <span className="text-[#EFFF00] font-black tracking-widest">[ 02 // COMMERCE ]</span>
+                      <span className="text-zinc-400 font-bold uppercase">LIMITED CAPSULES</span>
                     </div>
-                    <h4 className="text-white font-sans font-bold text-base uppercase tracking-tight group-hover:text-[#EFFF00] transition-colors">
+                    <h4 className="text-white font-sans font-black text-lg sm:text-xl uppercase tracking-tight group-hover:text-[#EFFF00] transition-colors">
                       E-Commerce Storefront
                     </h4>
-                    <p className="text-zinc-400 text-xs leading-relaxed font-light">
+                    <p className="text-zinc-300 text-xs leading-relaxed font-normal">
                       Our platform serves as the direct-to-consumer digital storefront for scheduled seasonal drops. Collectors can explore lookbooks, verify garment inventory in real time, and place authenticated pre-orders backed by licensed payment processors.
                     </p>
                   </div>
-                  <div className="mt-6 pt-4 border-t border-zinc-900 font-mono text-[9px] text-zinc-500 uppercase">
+                  <div className="mt-6 pt-4 border-t border-zinc-800 font-mono text-[10px] text-zinc-400 font-bold uppercase">
                     LOGISTICS: NATIONWIDE TRACKING
                   </div>
                 </div>
 
                 {/* Column 03: 3D Customizer */}
-                <div className="p-6 bg-zinc-950/70 border border-zinc-850 hover:border-zinc-700 transition-all flex flex-col justify-between group">
-                  <div className="space-y-3">
+                <div className="p-7 bg-zinc-950/90 border-2 border-zinc-800 hover:border-[#EFFF00] transition-all duration-300 flex flex-col justify-between group shadow-xl hover:shadow-[0_0_25px_rgba(239,255,0,0.15)]">
+                  <div className="space-y-4">
                     <div className="flex items-center justify-between font-mono text-[10px]">
-                      <span className="text-[#EFFF00] font-bold tracking-widest">[ 03 // 3D LAB ]</span>
-                      <span className="text-zinc-600 uppercase">DIGITAL ATELIER</span>
+                      <span className="text-[#EFFF00] font-black tracking-widest">[ 03 // 3D LAB ]</span>
+                      <span className="text-zinc-400 font-bold uppercase">DIGITAL ATELIER</span>
                     </div>
-                    <h4 className="text-white font-sans font-bold text-base uppercase tracking-tight group-hover:text-[#EFFF00] transition-colors">
+                    <h4 className="text-white font-sans font-black text-lg sm:text-xl uppercase tracking-tight group-hover:text-[#EFFF00] transition-colors">
                       Interactive 3D Customizer
                     </h4>
-                    <p className="text-zinc-400 text-xs leading-relaxed font-light">
+                    <p className="text-zinc-300 text-xs leading-relaxed font-normal">
                       The in-browser Customizer Lab empowers clients to craft one-of-a-kind streetwear pieces. Experiment with custom colorways, stage embroidered crown motifs, and generate high-resolution garment specifications before production.
                     </p>
                   </div>
-                  <div className="mt-6 pt-4 border-t border-zinc-900 font-mono text-[9px] text-zinc-500 uppercase">
+                  <div className="mt-6 pt-4 border-t border-zinc-800 font-mono text-[10px] text-zinc-400 font-bold uppercase">
                     ENGINE: CLIENT-SIDE CANVAS LAB
                   </div>
                 </div>
 
                 {/* Column 04: Google Account Security */}
-                <div className="p-6 bg-zinc-950/70 border border-zinc-850 hover:border-[#EFFF00]/40 transition-all flex flex-col justify-between group">
-                  <div className="space-y-3">
+                <div className="p-7 bg-zinc-950/90 border-2 border-[#EFFF00]/50 hover:border-[#EFFF00] transition-all duration-300 flex flex-col justify-between group shadow-xl hover:shadow-[0_0_25px_rgba(239,255,0,0.25)]">
+                  <div className="space-y-4">
                     <div className="flex items-center justify-between font-mono text-[10px]">
-                      <span className="text-[#EFFF00] font-bold tracking-widest">[ 04 // CLIENT HUB ]</span>
-                      <span className="text-[#EFFF00] uppercase font-bold">GOOGLE AUTH</span>
+                      <span className="text-[#EFFF00] font-black tracking-widest">[ 04 // CLIENT HUB ]</span>
+                      <span className="text-[#EFFF00] uppercase font-black">GOOGLE AUTH</span>
                     </div>
-                    <h4 className="text-white font-sans font-bold text-base uppercase tracking-tight group-hover:text-[#EFFF00] transition-colors">
+                    <h4 className="text-white font-sans font-black text-lg sm:text-xl uppercase tracking-tight group-hover:text-[#EFFF00] transition-colors">
                       Account & Identity Sync
                     </h4>
-                    <p className="text-zinc-400 text-xs leading-relaxed font-light">
-                      <strong>Google Sign-In</strong> is seamlessly integrated to securely verify customer identity, synchronize personalized 3D design mockups across devices, maintain persistent shopping bags, and grant instant access to real-time parcel dispatch telemetry.
+                    <p className="text-zinc-300 text-xs leading-relaxed font-normal">
+                      <strong className="text-[#EFFF00] font-bold">Google Sign-In</strong> is seamlessly integrated to securely verify customer identity, synchronize personalized 3D design mockups across devices, maintain persistent shopping bags, and grant instant access to real-time parcel dispatch telemetry.
                     </p>
                   </div>
-                  <div className="mt-6 pt-4 border-t border-zinc-900 font-mono text-[9px] text-zinc-500 uppercase">
+                  <div className="mt-6 pt-4 border-t border-zinc-800 font-mono text-[10px] text-[#EFFF00] font-bold uppercase">
                     DATA PRIVACY: ZERO THIRD-PARTY SALES
                   </div>
                 </div>
@@ -1629,33 +1629,33 @@ export default function App() {
               </div>
 
               {/* Bottom compliance, location & direct legal bridges */}
-              <div className="mt-10 pt-6 border-t border-zinc-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono text-[10px] text-zinc-400 relative z-10">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                  <span className="text-white font-bold">CACTUS BEAR APPAREL GROUP</span>
-                  <span className="hidden sm:inline text-zinc-700">•</span>
+              <div className="mt-12 pt-8 border-t-2 border-zinc-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 font-mono text-[11px] text-zinc-300 relative z-10">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 font-bold">
+                  <span className="text-white">CACTUS BEAR APPAREL GROUP</span>
+                  <span className="hidden sm:inline text-zinc-600">•</span>
                   <span>LAGOS & YABA CREATIVE DISTRICT, NIGERIA</span>
-                  <span className="hidden sm:inline text-zinc-700">•</span>
-                  <span>SUPPORT: <a href="mailto:chibundusadiq@gmail.com" className="text-[#EFFF00] underline">CHIBUNDUSADIQ@GMAIL.COM</a></span>
+                  <span className="hidden sm:inline text-zinc-600">•</span>
+                  <span>SUPPORT: <a href="mailto:chibundusadiq@gmail.com" className="text-[#EFFF00] underline hover:text-white">CHIBUNDUSADIQ@GMAIL.COM</a></span>
                 </div>
                 
-                <div className="flex items-center gap-5">
+                <div className="flex items-center gap-6">
                   <button
                     onClick={() => {
                       setPrivacyTab("privacy");
                       setPrivacyModalOpen(true);
                     }}
-                    className="text-[#EFFF00] hover:text-white uppercase cursor-pointer transition-colors flex items-center gap-1 font-bold"
+                    className="text-[#EFFF00] hover:text-white uppercase cursor-pointer transition-colors flex items-center gap-1.5 font-black text-xs"
                   >
-                    PRIVACY POLICY <ChevronRight size={10} />
+                    PRIVACY POLICY <ChevronRight size={14} className="stroke-[3]" />
                   </button>
                   <button
                     onClick={() => {
                       setPrivacyTab("terms");
                       setPrivacyModalOpen(true);
                     }}
-                    className="text-zinc-400 hover:text-white uppercase cursor-pointer transition-colors flex items-center gap-1 font-bold"
+                    className="text-zinc-300 hover:text-[#EFFF00] uppercase cursor-pointer transition-colors flex items-center gap-1.5 font-black text-xs"
                   >
-                    TERMS OF SERVICE <ChevronRight size={10} />
+                    TERMS OF SERVICE <ChevronRight size={14} className="stroke-[3]" />
                   </button>
                 </div>
               </div>
