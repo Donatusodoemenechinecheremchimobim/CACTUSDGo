@@ -1288,7 +1288,7 @@ export default function App() {
         {/* SECTION 03: THE INTERACTIVE CUSTOM SEWING LAB */}
         <Customizer onAddCustomItem={handleAddToCart} />
 
-        {/* SECTION 04: EDITORIAL CONCEPT & SOUND NODE */}
+        {/* SECTION 04: CRAFT ARCHIVE & EDITORIAL LOOKBOOK */}
         <Lookbook />
 
         {/* SECTION 05: INCOMING DROP & COUNTDOWN PORTAL */}
