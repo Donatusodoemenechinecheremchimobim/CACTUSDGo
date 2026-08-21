@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X, Trash2, ShieldCheck, Truck, ShoppingCart, KeyRound, MapPin, Smartphone, Mail, Heart, CreditCard } from "lucide-react";
+import { X, Trash2, ShieldCheck, Truck, ShoppingCart, KeyRound, MapPin, Smartphone, Mail, Heart, CreditCard, Lock, UserCheck } from "lucide-react";
 import { CartItem, Product } from "../types";
 import GlowCrown from "./GlowCrown";
 import ProductThumbnail from "./ProductThumbnail";
-import { dbService } from "../services/firebase";
+import { dbService, UserSession } from "../services/firebase";
 import { NIGERIAN_STATES_AND_AREAS } from "../data/nigerianStates";
 
 interface CartDrawerProps {
@@ -18,6 +18,8 @@ interface CartDrawerProps {
   onToggleWishlist: (productId: string) => void;
   onAddToCart: (item: CartItem) => void;
   onAddToast?: (msg: string, type: "success" | "info" | "alert") => void;
+  currentUser?: UserSession | null;
+  onOpenAuth?: () => void;
 }
 
 export default function CartDrawer({
@@ -30,7 +32,9 @@ export default function CartDrawer({
   wishlist,
   onToggleWishlist,
   onAddToCart,
-  onAddToast
+  onAddToast,
+  currentUser,
+  onOpenAuth
 }: CartDrawerProps) {
   const [checkoutStep, setCheckoutStep] = useState<"cart" | "shipping" | "confirm">("cart");
   const [activeSection, setActiveSection] = useState<"bag" | "wishlist">("bag");
@@ -53,6 +57,17 @@ export default function CartDrawer({
     country: "Nigeria",
     cryptKey: ""
   });
+
+  // Automatically pre-fill name and email when user is authenticated
+  useEffect(() => {
+    if (currentUser) {
+      setShippingForm((prev) => ({
+        ...prev,
+        name: prev.name || currentUser.displayName || "",
+        email: prev.email || currentUser.email || ""
+      }));
+    }
+  }, [currentUser]);
 
   // Synchronize dynamic selections to shippingForm values
   React.useEffect(() => {
@@ -121,6 +136,15 @@ export default function CartDrawer({
     e.preventDefault();
     setSubmitting(true);
     setCheckoutError(null);
+
+    // Strict Gate: purchases cannot be made unless authenticated
+    if (!currentUser) {
+      onAddToast?.("AUTHENTICATION REQUIRED // PLEASE SIGN IN WITH GOOGLE TO PURCHASE", "alert");
+      setCheckoutError("AUTHENTICATION REQUIRED: You must be signed in with your Google account to make a purchase. Please sign in below to authorize this transaction.");
+      onOpenAuth?.();
+      setSubmitting(false);
+      return;
+    }
     
     try {
       if (paymentMethod === "flutterwave") {
@@ -188,6 +212,7 @@ export default function CartDrawer({
                 paymentStatus: "PAID",
                 paymentReference: String(verifiedTxRef),
                 flutterwaveTxId: transactionId || undefined,
+                userId: currentUser?.uid,
               }).then((savedOrder) => {
                 setOrderHash(savedOrder.id);
                 setPaymentRef(String(verifiedTxRef));
@@ -239,6 +264,7 @@ export default function CartDrawer({
           paymentMethod: "bank_transfer",
           paymentStatus: "PENDING_VERIFICATION",
           paymentReference: manualRef,
+          userId: currentUser?.uid,
         });
         setOrderHash(savedOrder.id);
         setPaymentRef(manualRef);
@@ -569,6 +595,40 @@ export default function CartDrawer({
                   {/* Step TWO: Shipping details */}
                   {checkoutStep === "shipping" && (
                     <form onSubmit={triggerSecureCheckout} className="flex flex-col gap-4">
+                      {/* Patron Authentication Status Banner */}
+                      {currentUser ? (
+                        <div className="bg-[#121207] border border-[#EFFF00]/30 p-3 flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-2 h-2 rounded-full bg-[#EFFF00] shrink-0 animate-pulse" />
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-mono text-[8px] text-zinc-500 uppercase tracking-wider">CHECKOUT AUTHORIZED FOR</span>
+                              <span className="font-mono text-[11px] text-white font-bold truncate">{currentUser.email}</span>
+                            </div>
+                          </div>
+                          <span className="font-mono text-[8px] text-[#EFFF00] font-black uppercase px-2 py-0.5 bg-[#1e1e07] border border-[#EFFF00]/25 shrink-0">
+                            LOGGED IN
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="bg-red-950/40 border border-red-500/40 p-3.5 flex flex-col gap-2">
+                          <div className="flex items-center gap-2 text-red-400">
+                            <Lock size={13} className="shrink-0" />
+                            <span className="font-mono text-[9.5px] font-black uppercase tracking-wider">LOGIN REQUIRED FOR CHECKOUT</span>
+                          </div>
+                          <p className="text-zinc-300 text-[11px] font-sans leading-snug">
+                            Purchases cannot be placed without an active user account. Please log in with your Google account before submitting your order.
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => onOpenAuth?.()}
+                            className="w-full bg-[#EFFF00] hover:bg-[#EFFF22] text-black font-mono font-black text-[10px] py-2 tracking-wider uppercase transition-colors flex items-center justify-center gap-1.5 cursor-pointer mt-1"
+                          >
+                            <Lock size={12} />
+                            SIGN IN WITH GOOGLE
+                          </button>
+                        </div>
+                      )}
+
                       <span className="font-mono text-[10px] text-[#EFFF00] tracking-wider block mb-2">
                         [ SHIPPING DETAILS ]
                       </span>
@@ -998,13 +1058,63 @@ export default function CartDrawer({
                 </div>
 
                 {checkoutStep === "cart" && (
-                  <button
-                    onClick={() => setCheckoutStep("shipping")}
-                    className="w-full bg-[#EFFF00] hover:bg-[#EFFF22] text-black font-mono font-black text-xs py-4 tracking-widest uppercase transition-colors rounded-none flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <ShieldCheck size={14} />
-                    PROCEED TO PRE-ORDER CHECKOUT
-                  </button>
+                  <>
+                    {currentUser ? (
+                      <div className="flex flex-col gap-2.5">
+                        <div className="bg-zinc-950 border border-zinc-800 px-3 py-2 flex items-center justify-between">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#EFFF00] shrink-0 animate-pulse" />
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-mono text-[8px] text-zinc-500 uppercase">LOGGED IN PATRON</span>
+                              <span className="font-mono text-[10px] text-white font-bold truncate">{currentUser.email}</span>
+                            </div>
+                          </div>
+                          <span className="font-mono text-[8px] text-[#EFFF00] uppercase font-black px-1.5 py-0.5 bg-[#1a1a08] border border-[#EFFF00]/20 shrink-0">
+                            VERIFIED
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => setCheckoutStep("shipping")}
+                          className="w-full bg-[#EFFF00] hover:bg-[#EFFF22] text-black font-mono font-black text-xs py-4 tracking-widest uppercase transition-colors rounded-none flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#EFFF00]/10"
+                        >
+                          <ShieldCheck size={14} />
+                          PROCEED TO PRE-ORDER CHECKOUT
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-3">
+                        <div className="bg-[#141407] border border-[#EFFF00]/30 p-3 flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-8 h-8 rounded-none bg-[#EFFF00]/10 border border-[#EFFF00]/30 flex items-center justify-center shrink-0">
+                              <Lock size={14} className="text-[#EFFF00]" />
+                            </div>
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-mono text-[9px] font-black text-[#EFFF00] uppercase tracking-wider">
+                                SIGN-IN REQUIRED TO PURCHASE
+                              </span>
+                              <span className="font-sans text-[10.5px] text-zinc-300 truncate">
+                                Login with your Google account to unlock checkout
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onOpenAuth?.();
+                            onAddToast?.("PLEASE SIGN IN WITH YOUR GOOGLE ACCOUNT TO COMPLETE PURCHASE", "info");
+                          }}
+                          className="w-full bg-[#EFFF00] hover:bg-[#EFFF22] text-black font-mono font-black text-xs py-4 tracking-widest uppercase transition-colors rounded-none flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#EFFF00]/15"
+                        >
+                          <Lock size={14} />
+                          SIGN IN WITH GOOGLE TO CHECKOUT
+                        </button>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             )}

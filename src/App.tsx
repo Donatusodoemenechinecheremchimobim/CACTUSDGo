@@ -1504,6 +1504,8 @@ export default function App() {
         onToggleWishlist={handleToggleWishlist}
         onAddToCart={handleAddToCart}
         onAddToast={addToast}
+        currentUser={currentUser}
+        onOpenAuth={() => setAuthOpen(true)}
       />
 
       {/* GOOGLE SIGN-IN MODAL */}
