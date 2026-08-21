@@ -1175,11 +1175,20 @@ export default function App() {
 
           {/* Staggered brand typography block */}
           <div className="flex flex-col items-center max-w-4xl px-4 relative">
+            <motion.div
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-zinc-950 border border-zinc-800 text-[#EFFF00] font-mono text-[10px] uppercase font-bold tracking-[0.25em] mb-6 shadow-lg"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#EFFF00] animate-ping" />
+              <span>CACTUS BEAR // DIGITAL ATELIER & APPAREL LAB</span>
+            </motion.div>
+
             <motion.h1 
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="text-5xl sm:text-6xl md:text-8xl font-sans tracking-tighter font-black uppercase text-white leading-none selection:bg-white"
+              className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-sans tracking-tighter font-black uppercase text-white leading-none selection:bg-white"
             >
               CACTUS <span className="text-[#EFFF00] glow-text-yellow">BEAR</span>
             </motion.h1>
@@ -1188,25 +1197,25 @@ export default function App() {
               initial={{ y: 15, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="text-zinc-400 font-mono text-xs tracking-[0.22em] text-[#EFFF00] uppercase mt-5"
+              className="font-mono text-[11px] sm:text-xs tracking-[0.28em] text-[#EFFF00] uppercase mt-4"
             >
-              PREMIUM STREETWEAR DESIGNED IN NIGERIA
+              HEAVYWEIGHT STREETWEAR • 3D DESIGN STUDIO • LAGOS, NIGERIA
             </motion.p>
 
             <motion.p
               initial={{ y: 15, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="text-zinc-400 font-sans text-xs sm:text-sm max-w-xl text-center mt-3 mb-8 leading-relaxed"
+              className="text-zinc-400 font-sans text-xs sm:text-sm max-w-xl text-center mt-4 mb-8 leading-relaxed font-light"
             >
-              <strong>CACTUS BEAR</strong> is a premier streetwear e-commerce platform and bespoke garment customizer. Explore seasonal heavyweight drops, tailor custom pieces in our Stitch Lab, and manage verified pre-orders nationwide.
+              Official e-commerce storefront and bespoke design atelier for limited Nigerian heavyweight drops, structured cargo pieces, and interactive 3D customized streetwear.
             </motion.p>
 
             <motion.div
               initial={{ y: 15, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="flex flex-col sm:flex-row items-center gap-4 mt-2"
+              className="flex flex-col sm:flex-row items-center gap-4"
             >
               <button
                 onClick={() => {
@@ -1214,7 +1223,7 @@ export default function App() {
                   setActivePage("collection");
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
-                className="bg-[#EFFF00] hover:bg-white text-black font-mono font-black py-4 px-8 text-xs tracking-widest transition-colors rounded-none uppercase flex items-center gap-2 cursor-pointer"
+                className="bg-[#EFFF00] hover:bg-white text-black font-mono font-black py-4 px-8 text-xs tracking-widest transition-all rounded-none uppercase flex items-center gap-2 cursor-pointer shadow-lg hover:shadow-[#EFFF00]/20"
               >
                 EXPLORE COLLECTION '01
                 <ChevronRight size={13} />
@@ -1222,16 +1231,16 @@ export default function App() {
 
               <button
                 onClick={() => handleNavToSection("customizer-lab")}
-                className="bg-transparent border border-zinc-800 hover:border-[#EFFF00] font-mono hover:text-[#EFFF00] py-4 px-8 text-xs tracking-widest transition-colors rounded-none uppercase cursor-pointer"
+                className="bg-transparent border border-zinc-800 hover:border-[#EFFF00] font-mono text-zinc-300 hover:text-[#EFFF00] py-4 px-8 text-xs tracking-widest transition-colors rounded-none uppercase cursor-pointer"
               >
-                CUSTOM DESIGN LAB
+                ENTER 3D CUSTOMIZER
               </button>
             </motion.div>
           </div>
 
           {/* Scroll anchor bridge */}
           <div className="absolute bottom-6 flex flex-col items-center justify-center font-mono text-[9px] text-zinc-650 tracking-widest">
-            <span className="uppercase block mb-1">SCROLL DOWN TO SHOP</span>
+            <span className="uppercase block mb-1">SCROLL DOWN TO EXPLORE</span>
             <ArrowDown size={10} className="animate-bounce text-[#EFFF00]" />
           </div>
         </section>
@@ -1501,66 +1510,49 @@ export default function App() {
           </div>
         </section>
 
-        {/* SECTION 06: APPLICATION PURPOSE & GOOGLE AUTHENTICATION DISCLOSURE */}
-        <section id="app-purpose" className="w-full bg-[#080809] border-t border-zinc-900 py-16 px-4 md:px-8 relative z-10">
+        {/* SECTION 06: BRAND MANIFESTO */}
+        <section id="atelier-manifesto" className="w-full bg-[#050506] border-t border-zinc-900 py-16 px-4 md:px-8 relative z-10">
           <div className="max-w-7xl mx-auto">
-            <div className="border border-zinc-800 bg-[#0d0d0f] p-6 md:p-10 relative overflow-hidden">
+            <div className="border border-zinc-850 bg-gradient-to-b from-[#0e0e11] to-[#08080a] p-6 md:p-10 relative overflow-hidden">
               
-              <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 pb-6 border-b border-zinc-800/80">
+              {/* Subtle background glow */}
+              <div className="absolute -right-20 -top-20 w-80 h-80 bg-[#EFFF00]/5 rounded-full blur-3xl pointer-events-none" />
+
+              <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 pb-6 border-b border-zinc-850 relative z-10">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="w-2 h-2 rounded-full bg-[#EFFF00] animate-pulse" />
-                    <span className="font-mono text-[10px] text-[#EFFF00] font-black uppercase tracking-widest">
-                      ABOUT THIS APPLICATION // CACTUS BEAR
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#EFFF00]" />
+                    <span className="font-mono text-[10px] text-[#EFFF00] font-bold uppercase tracking-[0.25em]">
+                      CACTUS BEAR // DIGITAL ATELIER & APPAREL LAB
                     </span>
                   </div>
-                  <h3 className="font-sans text-2xl md:text-3xl font-black uppercase text-white tracking-tight">
-                    APPLICATION PURPOSE & PLATFORM DISCLOSURE
+                  <h3 className="font-sans text-xl sm:text-2xl font-black uppercase text-white tracking-tight">
+                    ABOUT CACTUS BEAR
                   </h3>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className="font-mono text-[9px] text-zinc-500 uppercase px-3 py-1.5 bg-zinc-950 border border-zinc-800">
-                    APP NAME: CACTUS BEAR
+                  <span className="font-mono text-[9px] text-zinc-400 uppercase px-3.5 py-1.5 bg-black border border-zinc-800">
+                    APP ID: CACTUS BEAR
                   </span>
-                  <span className="font-mono text-[9px] text-[#EFFF00] uppercase px-3 py-1.5 bg-[#171708] border border-[#EFFF00]/30 font-bold">
-                    STATUS: ACTIVE
+                  <span className="font-mono text-[9px] text-[#EFFF00] uppercase px-3.5 py-1.5 bg-[#171708] border border-[#EFFF00]/40 font-bold">
+                    ATELIER: ACTIVE
                   </span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8 font-sans">
-                <div className="space-y-2.5">
-                  <div className="flex items-center gap-2 text-white font-mono text-xs font-bold uppercase tracking-wider">
-                    <span className="text-[#EFFF00]">01.</span> APPAREL E-COMMERCE & DROPS
-                  </div>
-                  <p className="text-zinc-400 text-xs leading-relaxed">
-                    <strong>CACTUS BEAR</strong> operates as an online storefront and atelier for limited-edition Nigerian heavyweight streetwear. Customers can browse curated outerwear, heavyweight graphic tees, and utility cargos crafted in Lagos, Nigeria.
-                  </p>
-                </div>
-
-                <div className="space-y-2.5">
-                  <div className="flex items-center gap-2 text-white font-mono text-xs font-bold uppercase tracking-wider">
-                    <span className="text-[#EFFF00]">02.</span> 3D STITCH LAB CUSTOMIZER
-                  </div>
-                  <p className="text-zinc-400 text-xs leading-relaxed">
-                    The platform features a 2D/3D custom design studio allowing users to stage custom textures, typography, emblems, and fabric color palettes before placing bespoke garment pre-orders.
-                  </p>
-                </div>
-
-                <div className="space-y-2.5">
-                  <div className="flex items-center gap-2 text-white font-mono text-xs font-bold uppercase tracking-wider">
-                    <span className="text-[#EFFF00]">03.</span> GOOGLE AUTHENTICATION PURPOSE
-                  </div>
-                  <p className="text-zinc-400 text-xs leading-relaxed">
-                    <strong>Google Sign-In</strong> is utilized strictly to verify customer identity, synchronize custom garment designs, manage shopping bag/wishlist persistence across sessions, authorize checkout, and provide real-time order tracking. We never share or sell personal user data.
-                  </p>
-                </div>
+              <div className="pt-6 font-sans text-xs text-zinc-400 leading-relaxed max-w-4xl space-y-3 relative z-10 font-light">
+                <p>
+                  <strong>CACTUS BEAR</strong> is an independent Nigerian streetwear fashion brand, e-commerce storefront, and interactive design atelier based in Lagos. We create limited seasonal drops of 460GSM heavyweight cotton hoodies, signature multi-pocket cargo pants, and structured streetwear garments tailored with industrial precision.
+                </p>
+                <p>
+                  Our digital platform features an interactive 3D Customizer Lab to design custom pieces, secure checkout with nationwide Nigerian delivery, and Google authentication for saving custom garment mockups and managing order tracking.
+                </p>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-zinc-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-mono text-[10px] text-zinc-500">
-                <span>HEADQUARTERS: LAGOS & YABA CREATIVE DISTRICT, NIGERIA • SUPPORT: CHIBUNDUSADIQ@GMAIL.COM</span>
-                <div className="flex items-center gap-4">
+              <div className="mt-8 pt-6 border-t border-zinc-850 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-mono text-[10px] text-zinc-500 relative z-10">
+                <span>LAGOS & YABA CREATIVE DISTRICT, NIGERIA • SUPPORT: CHIBUNDUSADIQ@GMAIL.COM</span>
+                <div className="flex items-center gap-5">
                   <button
                     onClick={() => {
                       setPrivacyTab("privacy");
@@ -1568,7 +1560,7 @@ export default function App() {
                     }}
                     className="text-[#EFFF00] hover:underline uppercase cursor-pointer"
                   >
-                    VIEW PRIVACY POLICY ➔
+                    PRIVACY POLICY ➔
                   </button>
                   <button
                     onClick={() => {
