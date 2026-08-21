@@ -1510,66 +1510,152 @@ export default function App() {
           </div>
         </section>
 
-        {/* SECTION 06: BRAND MANIFESTO */}
-        <section id="atelier-manifesto" className="w-full bg-[#050506] border-t border-zinc-900 py-16 px-4 md:px-8 relative z-10">
+        {/* SECTION 06: BRAND MANIFESTO & PLATFORM PURPOSE SPECIFICATIONS */}
+        <section id="atelier-manifesto" className="w-full bg-[#050506] border-t border-zinc-900 py-20 px-4 md:px-8 relative z-10">
           <div className="max-w-7xl mx-auto">
-            <div className="border border-zinc-850 bg-gradient-to-b from-[#0e0e11] to-[#08080a] p-6 md:p-10 relative overflow-hidden">
+            <div className="border border-zinc-800 bg-gradient-to-b from-[#0d0d10] via-[#09090b] to-[#050506] p-6 sm:p-10 md:p-14 relative overflow-hidden shadow-2xl">
               
-              {/* Subtle background glow */}
-              <div className="absolute -right-20 -top-20 w-80 h-80 bg-[#EFFF00]/5 rounded-full blur-3xl pointer-events-none" />
+              {/* Subtle ambient lighting */}
+              <div className="absolute -right-24 -top-24 w-96 h-96 bg-[#EFFF00]/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -left-24 -bottom-24 w-96 h-96 bg-zinc-800/10 rounded-full blur-3xl pointer-events-none" />
 
-              <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 pb-6 border-b border-zinc-850 relative z-10">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#EFFF00]" />
-                    <span className="font-mono text-[10px] text-[#EFFF00] font-bold uppercase tracking-[0.25em]">
-                      CACTUS BEAR // DIGITAL ATELIER & APPAREL LAB
-                    </span>
+              {/* Header metadata bar */}
+              <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b border-zinc-800/80 relative z-10">
+                <div className="space-y-2">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-black border border-zinc-800 font-mono text-[9px] text-[#EFFF00] font-bold uppercase tracking-[0.25em]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#EFFF00] animate-pulse" />
+                    ATELIER IDENTITY & PLATFORM SPECIFICATIONS
                   </div>
-                  <h3 className="font-sans text-xl sm:text-2xl font-black uppercase text-white tracking-tight">
-                    ABOUT CACTUS BEAR
+                  <h3 className="font-sans text-2xl sm:text-3xl md:text-4xl font-black uppercase text-white tracking-tight leading-none">
+                    PURPOSE, PROVENANCE & ARCHITECTURE
                   </h3>
+                  <p className="font-mono text-xs text-zinc-400 uppercase tracking-wider">
+                    CACTUS BEAR // INDEPENDENT NIGERIAN LUXURY STREETWEAR & 3D ATELIER
+                  </p>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <span className="font-mono text-[9px] text-zinc-400 uppercase px-3.5 py-1.5 bg-black border border-zinc-800">
-                    APP ID: CACTUS BEAR
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 font-mono text-[9px]">
+                  <span className="px-3 py-1.5 bg-black border border-zinc-800 text-zinc-300 uppercase">
+                    ORIGIN: LAGOS, NIGERIA
                   </span>
-                  <span className="font-mono text-[9px] text-[#EFFF00] uppercase px-3.5 py-1.5 bg-[#171708] border border-[#EFFF00]/40 font-bold">
-                    ATELIER: ACTIVE
+                  <span className="px-3 py-1.5 bg-black border border-zinc-800 text-zinc-300 uppercase">
+                    SECURITY: GOOGLE OAUTH
+                  </span>
+                  <span className="px-3 py-1.5 bg-[#171708] border border-[#EFFF00]/40 text-[#EFFF00] font-bold uppercase">
+                    DISPATCH: ALL 36 STATES
                   </span>
                 </div>
               </div>
 
-              <div className="pt-6 font-sans text-xs text-zinc-400 leading-relaxed max-w-4xl space-y-3 relative z-10 font-light">
-                <p>
-                  <strong>CACTUS BEAR</strong> is an independent Nigerian streetwear fashion brand, e-commerce storefront, and interactive design atelier based in Lagos. We create limited seasonal drops of 460GSM heavyweight cotton hoodies, signature multi-pocket cargo pants, and structured streetwear garments tailored with industrial precision.
-                </p>
-                <p>
-                  Our digital platform features an interactive 3D Customizer Lab to design custom pieces, secure checkout with nationwide Nigerian delivery, and Google authentication for saving custom garment mockups and managing order tracking.
-                </p>
+              {/* 4-Column Editorial Matrix */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-10 font-sans relative z-10">
+                
+                {/* Column 01: The Fashion House */}
+                <div className="p-6 bg-zinc-950/70 border border-zinc-850 hover:border-zinc-700 transition-all flex flex-col justify-between group">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between font-mono text-[10px]">
+                      <span className="text-[#EFFF00] font-bold tracking-widest">[ 01 // TEXTILE CRAFT ]</span>
+                      <span className="text-zinc-600 uppercase">460GSM COTTON</span>
+                    </div>
+                    <h4 className="text-white font-sans font-bold text-base uppercase tracking-tight group-hover:text-[#EFFF00] transition-colors">
+                      Heavyweight Streetwear
+                    </h4>
+                    <p className="text-zinc-400 text-xs leading-relaxed font-light">
+                      <strong>CACTUS BEAR</strong> is an independent fashion house founded in Lagos, Nigeria. We engineer heavyweight 460GSM cotton hoodies, structured utility cargo trousers, and distressed vintage graphic tees designed with architectural silhouettes and industrial topstitching.
+                    </p>
+                  </div>
+                  <div className="mt-6 pt-4 border-t border-zinc-900 font-mono text-[9px] text-zinc-500 uppercase">
+                    PROVENANCE: YABA CREATIVE LABS
+                  </div>
+                </div>
+
+                {/* Column 02: The Storefront */}
+                <div className="p-6 bg-zinc-950/70 border border-zinc-850 hover:border-zinc-700 transition-all flex flex-col justify-between group">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between font-mono text-[10px]">
+                      <span className="text-[#EFFF00] font-bold tracking-widest">[ 02 // COMMERCE ]</span>
+                      <span className="text-zinc-600 uppercase">LIMITED CAPSULES</span>
+                    </div>
+                    <h4 className="text-white font-sans font-bold text-base uppercase tracking-tight group-hover:text-[#EFFF00] transition-colors">
+                      E-Commerce Storefront
+                    </h4>
+                    <p className="text-zinc-400 text-xs leading-relaxed font-light">
+                      Our platform serves as the direct-to-consumer digital storefront for scheduled seasonal drops. Collectors can explore lookbooks, verify garment inventory in real time, and place authenticated pre-orders backed by licensed payment processors.
+                    </p>
+                  </div>
+                  <div className="mt-6 pt-4 border-t border-zinc-900 font-mono text-[9px] text-zinc-500 uppercase">
+                    LOGISTICS: NATIONWIDE TRACKING
+                  </div>
+                </div>
+
+                {/* Column 03: 3D Customizer */}
+                <div className="p-6 bg-zinc-950/70 border border-zinc-850 hover:border-zinc-700 transition-all flex flex-col justify-between group">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between font-mono text-[10px]">
+                      <span className="text-[#EFFF00] font-bold tracking-widest">[ 03 // 3D LAB ]</span>
+                      <span className="text-zinc-600 uppercase">DIGITAL ATELIER</span>
+                    </div>
+                    <h4 className="text-white font-sans font-bold text-base uppercase tracking-tight group-hover:text-[#EFFF00] transition-colors">
+                      Interactive 3D Customizer
+                    </h4>
+                    <p className="text-zinc-400 text-xs leading-relaxed font-light">
+                      The in-browser Customizer Lab empowers clients to craft one-of-a-kind streetwear pieces. Experiment with custom colorways, stage embroidered crown motifs, and generate high-resolution garment specifications before production.
+                    </p>
+                  </div>
+                  <div className="mt-6 pt-4 border-t border-zinc-900 font-mono text-[9px] text-zinc-500 uppercase">
+                    ENGINE: CLIENT-SIDE CANVAS LAB
+                  </div>
+                </div>
+
+                {/* Column 04: Google Account Security */}
+                <div className="p-6 bg-zinc-950/70 border border-zinc-850 hover:border-[#EFFF00]/40 transition-all flex flex-col justify-between group">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between font-mono text-[10px]">
+                      <span className="text-[#EFFF00] font-bold tracking-widest">[ 04 // CLIENT HUB ]</span>
+                      <span className="text-[#EFFF00] uppercase font-bold">GOOGLE AUTH</span>
+                    </div>
+                    <h4 className="text-white font-sans font-bold text-base uppercase tracking-tight group-hover:text-[#EFFF00] transition-colors">
+                      Account & Identity Sync
+                    </h4>
+                    <p className="text-zinc-400 text-xs leading-relaxed font-light">
+                      <strong>Google Sign-In</strong> is seamlessly integrated to securely verify customer identity, synchronize personalized 3D design mockups across devices, maintain persistent shopping bags, and grant instant access to real-time parcel dispatch telemetry.
+                    </p>
+                  </div>
+                  <div className="mt-6 pt-4 border-t border-zinc-900 font-mono text-[9px] text-zinc-500 uppercase">
+                    DATA PRIVACY: ZERO THIRD-PARTY SALES
+                  </div>
+                </div>
+
               </div>
 
-              <div className="mt-8 pt-6 border-t border-zinc-850 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-mono text-[10px] text-zinc-500 relative z-10">
-                <span>LAGOS & YABA CREATIVE DISTRICT, NIGERIA • SUPPORT: CHIBUNDUSADIQ@GMAIL.COM</span>
+              {/* Bottom compliance, location & direct legal bridges */}
+              <div className="mt-10 pt-6 border-t border-zinc-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 font-mono text-[10px] text-zinc-400 relative z-10">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                  <span className="text-white font-bold">CACTUS BEAR APPAREL GROUP</span>
+                  <span className="hidden sm:inline text-zinc-700">•</span>
+                  <span>LAGOS & YABA CREATIVE DISTRICT, NIGERIA</span>
+                  <span className="hidden sm:inline text-zinc-700">•</span>
+                  <span>SUPPORT: <a href="mailto:chibundusadiq@gmail.com" className="text-[#EFFF00] underline">CHIBUNDUSADIQ@GMAIL.COM</a></span>
+                </div>
+                
                 <div className="flex items-center gap-5">
                   <button
                     onClick={() => {
                       setPrivacyTab("privacy");
                       setPrivacyModalOpen(true);
                     }}
-                    className="text-[#EFFF00] hover:underline uppercase cursor-pointer"
+                    className="text-[#EFFF00] hover:text-white uppercase cursor-pointer transition-colors flex items-center gap-1 font-bold"
                   >
-                    PRIVACY POLICY ➔
+                    PRIVACY POLICY <ChevronRight size={10} />
                   </button>
                   <button
                     onClick={() => {
                       setPrivacyTab("terms");
                       setPrivacyModalOpen(true);
                     }}
-                    className="text-zinc-400 hover:text-white hover:underline uppercase cursor-pointer"
+                    className="text-zinc-400 hover:text-white uppercase cursor-pointer transition-colors flex items-center gap-1 font-bold"
                   >
-                    TERMS OF SERVICE ➔
+                    TERMS OF SERVICE <ChevronRight size={10} />
                   </button>
                 </div>
               </div>
