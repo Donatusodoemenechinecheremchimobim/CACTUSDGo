@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "motion/react";
 
 interface GlowCrownProps {
   className?: string;
@@ -21,40 +20,22 @@ export default function GlowCrown({
 
   return (
     <div
-      className={`relative flex items-center justify-center transition-all ${
+      className={`relative flex items-center justify-center transition-transform hover:scale-105 duration-300 ${
         isPercent ? "w-full aspect-[400/200]" : ""
       } ${className}`}
-      style={containerStyle}
+      style={{
+        ...containerStyle,
+        filter: glow ? `drop-shadow(0 0 6px ${color}66)` : undefined,
+      }}
       id="glow-crown-container"
     >
-      <motion.svg
+      <svg
         viewBox="100 175 400 200"
         preserveAspectRatio="xMidYMid meet"
         className="w-full h-full cursor-pointer overflow-visible"
         id="glow-crown-svg"
-        animate={{
-          rotate: [0, 0.6, -0.6, 0.4, -0.4, 0],
-          y: [0, -2, 2, -1, 1, 0],
-        }}
-        transition={{
-          duration: 9,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        whileHover={{ scale: 1.05 }}
       >
-        <defs>
-          <filter id="crown-glow-filter" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-
         <g
-          filter={glow ? "url(#crown-glow-filter)" : undefined}
           transform="translate(0,600) scale(0.1,-0.1)"
           fill={color}
           stroke="none"
@@ -91,7 +72,8 @@ export default function GlowCrown({
           <path d="M2230 2475 c-41 -7 -68 -15 -60 -18 21 -9 169 -24 175 -18 3 2 5 15 5 28 0 26 -4 27 -120 8z" />
           <path d="M3090 2475 c0 -10 39 -76 56 -94 2 -2 17 2 35 9 27 12 30 17 25 43 -3 16 -6 33 -6 38 0 5 -6 6 -13 3 -8 -3 -32 -1 -55 5 -32 7 -42 6 -42 -4z m76 -34 c-4 -5 0 -12 6 -14 7 -3 3 -6 -9 -6 -16 -1 -21 3 -17 14 4 8 10 15 16 15 5 0 7 -4 4 -9z" />
         </g>
-      </motion.svg>
+      </svg>
     </div>
   );
 }
+

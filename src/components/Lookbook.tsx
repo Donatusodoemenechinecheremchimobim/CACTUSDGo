@@ -3,10 +3,6 @@ import { Flame, Cpu } from "lucide-react";
 export default function Lookbook() {
   return (
     <section id="brand-lookbook" className="w-full bg-black text-white py-12 md:py-16 px-4 md:px-8 relative overflow-hidden">
-      {/* Background glow accents */}
-      <div className="absolute top-1/4 left-1/3 w-80 h-80 rounded-full bg-[#EFFF00]/5 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/3 right-1/4 w-96 h-96 rounded-full bg-[#EFFF00]/4 blur-[160px] pointer-events-none" />
-
       {/* Decorative Ticker Tape scroller */}
       <div className="w-full overflow-hidden border-y border-zinc-900 py-2.5 bg-[#050505] absolute top-0 left-0">
         <div className="flex whitespace-nowrap animate-[marquee_25s_linear_infinite] font-mono text-[9px] text-[#EFFF00]/60 tracking-[0.25em]">

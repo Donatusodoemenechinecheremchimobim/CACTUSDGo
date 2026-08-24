@@ -33,9 +33,9 @@ import { CartItem, ProductCat } from "./types";
 import { DROPS_TIMELINE } from "./data";
 import GlowCrown from "./components/GlowCrown";
 import ProductCard, { ProductCardSkeleton } from "./components/ProductCard";
-import SizeGuidePage from "./components/SizeGuidePage";
 import CartDrawer from "./components/CartDrawer";
 import Lookbook from "./components/Lookbook";
+import AboutPage from "./components/AboutPage";
 import ProductDetailPage from "./components/ProductDetailPage";
 import CollectionPage from "./components/CollectionPage";
 
@@ -55,7 +55,7 @@ export default function App() {
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [headerSearchQuery, setHeaderSearchQuery] = useState<string>("");
   
-  const [activePage, setActivePage] = useState<"home" | "collection" | "story" | "drop" | "sizeguide">("home");
+  const [activePage, setActivePage] = useState<"home" | "collection" | "about" | "story" | "drop" | "sizeguide">("home");
   const [toasts, setToasts] = useState<{ id: string; message: string; type: "success" | "info" | "alert"; timestamp: string }[]>([]);
 
   // Legal & Privacy modal states
@@ -471,16 +471,8 @@ export default function App() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
 
-      {/* GLOBAL BACKGROUND NOISE & SCANS GRID */}
-      <div className="fixed inset-0 bg-[#020202] pointer-events-none z-0 overflow-hidden">
-        {/* Dot pattern matrix */}
-        <div className="absolute inset-0 bg-[radial-gradient(#1c1c11_1px,transparent_1px)] [background-size:24px_24px] opacity-40" />
-        {/* Clean scanning lines overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(18,18,18,0.3)_1px,transparent_1px)] [background-size:100%_4px]" />
-      </div>
-
       {/* PERSISTENT HIGH-END STATIONS HEADER */}
-      <header className="fixed top-0 inset-x-0 md:sticky z-40 h-16 md:h-auto bg-black/90 backdrop-blur-md border-b border-zinc-950 px-4 md:px-8 py-4 md:py-5 flex justify-between items-center">
+      <header className="fixed top-0 inset-x-0 md:sticky z-40 h-16 md:h-auto bg-black/95 border-b border-zinc-900 px-4 md:px-8 py-4 md:py-5 flex justify-between items-center">
         <a
           href="#"
           onClick={(e) => {
@@ -527,26 +519,14 @@ export default function App() {
           <button
             onClick={() => {
               setSelectedProductId(null);
-              setActivePage("sizeguide");
+              setActivePage("about");
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
             className={`hover:text-[#EFFF00] transition-colors uppercase cursor-pointer ${
-              activePage === "sizeguide" ? "text-[#EFFF00] font-bold" : ""
+              activePage === "about" || activePage === "story" || activePage === "sizeguide" ? "text-[#EFFF00] font-bold" : ""
             }`}
           >
-            SIZE GUIDE
-          </button>
-          <button
-            onClick={() => {
-              setSelectedProductId(null);
-              setActivePage("story");
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-            className={`hover:text-[#EFFF00] transition-colors uppercase cursor-pointer ${
-              activePage === "story" ? "text-[#EFFF00] font-bold" : ""
-            }`}
-          >
-            OUR STORY
+            ABOUT US
           </button>
           <button
             onClick={() => {
@@ -764,27 +744,14 @@ export default function App() {
                 onClick={() => {
                   setMobileMenuOpen(false);
                   setSelectedProductId(null);
-                  setActivePage("sizeguide");
+                  setActivePage("about");
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className={`hover:text-[#EFFF00] text-left transition-all block cursor-pointer ${
-                  activePage === "sizeguide" ? "text-[#EFFF00]" : ""
+                  activePage === "about" || activePage === "story" || activePage === "sizeguide" ? "text-[#EFFF00]" : ""
                 }`}
               >
-                SIZE GUIDE
-              </button>
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setSelectedProductId(null);
-                  setActivePage("story");
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-                className={`hover:text-[#EFFF00] text-left transition-all block cursor-pointer ${
-                  activePage === "story" ? "text-[#EFFF00]" : ""
-                }`}
-              >
-                OUR STORY
+                ABOUT US
               </button>
               <button
                 onClick={() => {
@@ -926,62 +893,21 @@ export default function App() {
             onSearchQueryChange={setHeaderSearchQuery}
             productsLoading={productsLoading}
           />
-        ) : activePage === "sizeguide" ? (
-          <SizeGuidePage
+        ) : activePage === "about" || activePage === "story" || activePage === "sizeguide" ? (
+          <AboutPage
             onBack={() => {
               setActivePage("home");
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            onExploreShop={() => {
+            onExploreShop={(category) => {
               setSelectedProductId(null);
+              if (category && category !== "All") {
+                setSelectedCategory(category);
+              }
               setActivePage("collection");
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
           />
-        ) : activePage === "story" ? (
-          <div className="py-20 md:py-28 bg-black">
-            {/* Elegant Stand-alone Header */}
-            <div className="max-w-7xl mx-auto px-4 md:px-8 mb-12 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-              <div>
-                <span className="text-[#EFFF00] font-mono text-xs tracking-widest block uppercase font-black mb-1">
-                  ✦ LAGOS ATELIER
-                </span>
-                <h2 className="text-4xl md:text-5xl font-sans tracking-tighter font-extrabold uppercase text-white">
-                  OUR <span className="text-[#EFFF00]">STORY</span>
-                </h2>
-                <p className="text-zinc-500 text-xs mt-1.5 max-w-md font-sans">
-                  Deeply rooted in heavy craftsmanship and Lagosian subcultures, Cactus Bear represents the synthesis of streetwear durability and everyday luxury.
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  setActivePage("home");
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-                className="font-mono text-[10px] tracking-widest bg-zinc-950 border border-zinc-900 hover:border-[#EFFF00] px-5 py-3 uppercase hover:text-[#EFFF00] transition-colors cursor-pointer w-max"
-              >
-                [ RETURN HOME ]
-              </button>
-            </div>
-            
-            <div className="border-t border-zinc-950">
-              <Lookbook />
-            </div>
-
-            <div className="max-w-5xl mx-auto px-4 md:px-8 mt-12 text-center border-t border-zinc-950 pt-12 flex flex-col items-center gap-4">
-              <span className="font-mono text-[10px] text-zinc-600 tracking-[0.2em] uppercase">VIEW COMPLETED COLLECTION NOW</span>
-              <button
-                onClick={() => {
-                  setSelectedProductId(null);
-                  setActivePage("collection");
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-                className="bg-[#EFFF00] hover:bg-white text-black font-mono font-black py-4 px-8 text-xs tracking-widest transition-colors rounded-none uppercase flex items-center gap-2 cursor-pointer"
-              >
-                SHOP COUTURE PRODUCTS ⟶
-              </button>
-            </div>
-          </div>
         ) : activePage === "drop" ? (
           <div className="py-20 md:py-28 bg-[#050505]">
             {/* Elegant Stand-alone Header */}
@@ -1586,6 +1512,39 @@ export default function App() {
           <div className="flex flex-wrap gap-4 items-center">
             <button
               onClick={() => {
+                setSelectedProductId(null);
+                setActivePage("about");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="text-zinc-400 hover:text-[#EFFF00] uppercase cursor-pointer transition-colors"
+            >
+              ABOUT US
+            </button>
+            <span className="text-zinc-700">•</span>
+            <button
+              onClick={() => {
+                setSelectedProductId(null);
+                setActivePage("collection");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="text-zinc-400 hover:text-[#EFFF00] uppercase cursor-pointer transition-colors"
+            >
+              CATALOG
+            </button>
+            <span className="text-zinc-700">•</span>
+            <button
+              onClick={() => {
+                setSelectedProductId(null);
+                setActivePage("drop");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="text-zinc-400 hover:text-[#EFFF00] uppercase cursor-pointer transition-colors"
+            >
+              UPCOMING DROP
+            </button>
+            <span className="text-zinc-700">•</span>
+            <button
+              onClick={() => {
                 setPrivacyTab("privacy");
                 setPrivacyModalOpen(true);
               }}
@@ -1601,7 +1560,7 @@ export default function App() {
               }}
               className="text-zinc-400 hover:text-[#EFFF00] underline uppercase cursor-pointer transition-colors"
             >
-              TERMS OF SERVICE
+              TERMS
             </button>
           </div>
 
@@ -1755,20 +1714,20 @@ export default function App() {
               <span className="font-mono text-[8px] font-bold uppercase tracking-wider">CATALOG</span>
             </button>
 
-            {/* TAB 03: SIZE GUIDE */}
+            {/* TAB 03: ABOUT US */}
             <button
               onClick={() => {
                 setSelectedProductId(null);
-                setActivePage("sizeguide");
+                setActivePage("about");
                 setMobileMenuOpen(false);
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
               className={`flex flex-col items-center gap-1 flex-1 cursor-pointer transition-colors outline-none ${
-                activePage === "sizeguide" ? "text-[#EFFF00]" : "text-zinc-550 hover:text-white"
+                activePage === "about" || activePage === "story" || activePage === "sizeguide" ? "text-[#EFFF00]" : "text-zinc-550 hover:text-white"
               }`}
             >
-              <Ruler size={18} className={activePage === "sizeguide" ? "text-[#EFFF00]" : "text-zinc-550"} />
-              <span className="font-mono text-[8px] font-bold uppercase tracking-wider">SIZING</span>
+              <Sparkles size={18} className={activePage === "about" || activePage === "story" || activePage === "sizeguide" ? "text-[#EFFF00]" : "text-zinc-550"} />
+              <span className="font-mono text-[8px] font-bold uppercase tracking-wider">ABOUT</span>
             </button>
 
             {/* TAB 04: BAG (CART) */}
