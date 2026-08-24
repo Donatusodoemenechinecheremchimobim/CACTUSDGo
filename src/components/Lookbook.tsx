@@ -1,76 +1,37 @@
-import { useState, useEffect } from "react";
-import { motion } from "motion/react";
-import { Flame, Cpu, RefreshCw, Camera } from "lucide-react";
-import { ProductCardSkeleton } from "./ProductCard";
-
-const LOOKBOOK_SHOTS = [
-  {
-    id: "look-01",
-    tag: "CAMPAIGN // SERIE 01",
-    label: "OBSIDIAN SILHOUETTE",
-    desc: "Prestige organic fleece styled with double needle structural shoulder lines and thick rib retention.",
-    imageUrl: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=600&auto=format&fit=crop",
-    dimensions: "500GSM BOX FIT"
-  },
-  {
-    id: "look-02",
-    tag: "CAMPAIGN // SERIE 02",
-    label: "TOBACCO EARTH BLUEPRINT",
-    desc: "Structured linen-cotton yarn woven and buttoned under rigorous atelier guidelines.",
-    imageUrl: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=600&auto=format&fit=crop",
-    dimensions: "OVERSIZED SEED SHIRT"
-  }
-];
+import { Flame, Cpu } from "lucide-react";
 
 export default function Lookbook() {
-  const [isFetching, setIsFetching] = useState<boolean>(true);
-
-  // Auto load lookbook captures on mount
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsFetching(false);
-    }, 1200);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const triggerRefresh = () => {
-    setIsFetching(true);
-    setTimeout(() => {
-      setIsFetching(false);
-    }, 1200);
-  };
-
   return (
-    <section id="brand-lookbook" className="w-full bg-black text-white py-24 px-4 md:px-8 relative overflow-hidden">
+    <section id="brand-lookbook" className="w-full bg-black text-white py-12 md:py-16 px-4 md:px-8 relative overflow-hidden">
       {/* Background glow accents */}
       <div className="absolute top-1/4 left-1/3 w-80 h-80 rounded-full bg-[#EFFF00]/5 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/3 right-1/4 w-96 h-96 rounded-full bg-[#EFFF00]/4 blur-[160px] pointer-events-none" />
 
       {/* Decorative Ticker Tape scroller */}
-      <div className="w-full overflow-hidden border-y border-zinc-900 py-3 bg-[#050505] absolute top-0 left-0">
+      <div className="w-full overflow-hidden border-y border-zinc-900 py-2.5 bg-[#050505] absolute top-0 left-0">
         <div className="flex whitespace-nowrap animate-[marquee_25s_linear_infinite] font-mono text-[9px] text-[#EFFF00]/60 tracking-[0.25em]">
           <span>CACTUS BEAR // HEAVYWEIGHT PREMIUM STREETWEAR // 100% SUPIMA COTTON // LAGOS YABA EXP-STUDIO // </span>
           <span>CACTUS BEAR // HEAVYWEIGHT PREMIUM STREETWEAR // 100% SUPIMA COTTON // LAGOS YABA EXP-STUDIO // </span>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto mt-6">
+      <div className="max-w-7xl mx-auto mt-4">
         {/* Section Header */}
-        <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-zinc-900 pb-6">
+        <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-zinc-900 pb-5">
           <div>
-            <span className="font-mono text-[#EFFF00] text-[10px] tracking-[0.3em] uppercase block font-bold mb-2">
+            <span className="font-mono text-[#EFFF00] text-[10px] tracking-[0.3em] uppercase block font-bold mb-1.5">
               ATELIER ARCHIVE // 2026
             </span>
-            <h2 className="font-sans font-black text-3xl md:text-5xl uppercase tracking-tight text-white">
-              CRAFT & <span className="text-[#EFFF00]">EDITORIAL</span>
+            <h2 className="font-sans font-black text-2xl sm:text-3xl md:text-4xl uppercase tracking-tight text-white">
+              CRAFT & <span className="text-[#EFFF00]">QUALITY</span>
             </h2>
           </div>
-          <p className="text-zinc-500 text-xs font-sans max-w-md">
+          <p className="text-zinc-400 text-xs font-sans max-w-md">
             Engineered silhouettes, custom heavyweight cotton textiles, and hand-finished garment specifications crafted in Lagos.
           </p>
         </div>
 
-        {/* Editorial Bento Grid */}
+        {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
           
           {/* Bento Card 1: Brand Concept story */}
@@ -153,85 +114,6 @@ export default function Lookbook() {
               <div className="text-center bg-[#EFFF00]/10 text-[#EFFF00] py-1.5 border border-[#EFFF00]/20 font-bold tracking-wider">
                 CERTIFIED ATELIER
               </div>
-            </div>
-          </div>
-
-          {/* Bento Card 4: Editorial Campaign Captures */}
-          <div className="lg:col-span-12 bg-[#020202] border border-zinc-900 p-6 md:p-8 flex flex-col gap-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-900 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-none border border-zinc-900 flex items-center justify-center text-[#EFFF00] bg-black/40">
-                  <Camera size={14} />
-                </div>
-                <div>
-                  <span className="font-mono text-[#EFFF00] text-[9px] tracking-widest block font-bold uppercase">
-                    04 // EDITORIAL LOOKBOOK CAMPAIGN
-                  </span>
-                  <h3 className="font-sans font-black text-xl md:text-2xl uppercase tracking-tight text-white mt-0.5">
-                    EDITORIAL <span className="text-[#EFFF00]">CAPTURES</span>
-                  </h3>
-                </div>
-              </div>
-              
-              {/* Loader control indicator */}
-              <button
-                onClick={triggerRefresh}
-                disabled={isFetching}
-                className="font-mono text-[8px] tracking-[0.25em] bg-zinc-950 border border-zinc-900 hover:border-[#EFFF00] text-zinc-400 hover:text-[#EFFF00] transition-all px-4 py-2 uppercase flex items-center gap-2 cursor-pointer disabled:opacity-40"
-              >
-                <RefreshCw size={11} className={`${isFetching ? 'animate-spin text-[#EFFF00]' : 'text-zinc-500'}`} />
-                <span>REFRESH CAPTURES FEED</span>
-              </button>
-            </div>
-
-            {/* Lookbook captures grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[380px]">
-              {isFetching ? (
-                <>
-                  <ProductCardSkeleton />
-                  <ProductCardSkeleton />
-                </>
-              ) : (
-                LOOKBOOK_SHOTS.map((shot) => (
-                  <motion.div
-                    key={shot.id}
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                    className="bg-[#050505] border border-zinc-900 group/look overflow-hidden flex flex-col justify-between relative"
-                  >
-                    {/* Header block with brand tag and release metadata */}
-                    <div className="flex justify-between items-center px-4 py-2.5 bg-black/40 border-b border-zinc-900 font-mono text-[9px] text-zinc-500">
-                      <span>{shot.tag}</span>
-                      <span className="text-[#EFFF00] font-bold">{shot.dimensions}</span>
-                    </div>
-
-                    {/* Main campaign snapshot box */}
-                    <div className="relative h-[240px] sm:h-[320px] w-full overflow-hidden bg-zinc-950 flex items-center justify-center">
-                      <img
-                        src={shot.imageUrl}
-                        alt={shot.label}
-                        referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover grayscale opacity-75 group-hover/look:scale-105 group-hover/look:grayscale-0 group-hover/look:opacity-100 transition-all duration-700 ease-out"
-                      />
-                      {/* Interactive watermark overlay */}
-                      <div className="absolute bottom-3 left-3 bg-black/90 border border-zinc-900 px-3 py-1 text-[8px] font-mono text-zinc-400 tracking-wider">
-                        ✦ CAM_REFID: {shot.id.toUpperCase()}
-                      </div>
-                    </div>
-
-                    {/* Bottom Info Blocks */}
-                    <div className="p-4 border-t border-zinc-900 bg-black/60">
-                      <h4 className="font-sans font-black text-xs sm:text-sm text-white tracking-tight uppercase group-hover/look:text-[#EFFF00] transition-colors">
-                        {shot.label}
-                      </h4>
-                      <p className="text-zinc-500 text-[11px] font-sans mt-1 leading-relaxed">
-                        {shot.desc}
-                      </p>
-                    </div>
-                  </motion.div>
-                ))
-              )}
             </div>
           </div>
 

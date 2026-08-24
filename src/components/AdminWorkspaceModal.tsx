@@ -1395,7 +1395,7 @@ export default function AdminWorkspaceModal({
                         value={tHeading}
                         onChange={(e) => setTHeading(e.target.value)}
                         className="bg-zinc-950 border border-zinc-900 py-2 px-3 font-mono text-xs focus:border-[#EFFF00] text-white"
-                        placeholder="e.g. SÉRIE INCOMING // JULY SPECIALIST"
+                        placeholder="e.g. NEW LAGOS CAPSULE DROP"
                       />
                     </div>
 
@@ -1407,7 +1407,7 @@ export default function AdminWorkspaceModal({
                         value={tSubheading}
                         onChange={(e) => setTSubheading(e.target.value)}
                         className="bg-zinc-950 border border-zinc-900 py-2 px-3 font-mono text-xs focus:border-[#EFFF00] text-white"
-                        placeholder="e.g. THE SAGE THORN PARACHUTE CARGOS"
+                        placeholder="e.g. HEAVYWEIGHT COTTON CARGOS & TEES"
                       />
                     </div>
 

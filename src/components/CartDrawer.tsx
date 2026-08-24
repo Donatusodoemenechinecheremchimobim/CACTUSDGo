@@ -139,8 +139,8 @@ export default function CartDrawer({
 
     // Strict Gate: purchases cannot be made unless authenticated
     if (!currentUser) {
-      onAddToast?.("AUTHENTICATION REQUIRED // PLEASE SIGN IN WITH GOOGLE TO PURCHASE", "alert");
-      setCheckoutError("AUTHENTICATION REQUIRED: You must be signed in with your Google account to make a purchase. Please sign in below to authorize this transaction.");
+      onAddToast?.("Please sign in to complete your checkout.", "info");
+      setCheckoutError("Please sign in with your Google account to proceed with your order.");
       onOpenAuth?.();
       setSubmitting(false);
       return;
@@ -150,8 +150,8 @@ export default function CartDrawer({
       if (paymentMethod === "flutterwave") {
         const loaded = await loadFlutterwaveScript();
         if (!loaded) {
-          onAddToast?.("FAILED TO CONNECT TO FLUTTERWAVE GATEWAY. CHECK NETWORK.", "alert");
-          setCheckoutError("FAILED TO LOAD FLUTTERWAVE SECURE INTEGRATION SCRIPT. Browser extensions or network firewall may be blocking the gateway. Please retry or select DIRECT BANK TRANSFER.");
+          onAddToast?.("Unable to load payment gateway. Please try direct bank transfer.", "alert");
+          setCheckoutError("Unable to load payment gateway. Please retry or choose Direct Bank Transfer.");
           setSubmitting(false);
           return;
         }
@@ -230,22 +230,22 @@ export default function CartDrawer({
                 }
 
                 setCheckoutStep("confirm");
-                onAddToast?.(`PAYMENT VERIFIED // DISPATCH DIRECTIVE FILED: ${savedOrder.id}`, "success");
+                onAddToast?.(`Payment verified! Order #${savedOrder.id.slice(-6).toUpperCase()}`, "success");
                 triggerWhatsAppNotification(savedOrder.id, String(verifiedTxRef), "Flutterwave (Card / Bank Transfer / USSD)");
               }).catch((err: any) => {
                 console.error("Order callback failed:", err);
-                onAddToast?.(`DATABASE REFERENCE WRITE ERROR: ${err?.message}`, "alert");
+                onAddToast?.("Could not log order. Please contact support.", "alert");
                 setCheckoutError(`DATABASE VERIFICATION REJECTED: ${err?.message || "CHECKOUT LOGGING ERROR"}`);
               }).finally(() => {
                 setSubmitting(false);
               });
             } else {
-              onAddToast?.("TRANSACTION STATUS UNCONFIRMED. PLEASE CONTACT SUPPORT.", "alert");
+              onAddToast?.("Transaction was not confirmed. Please retry.", "alert");
               setSubmitting(false);
             }
           },
           onclose: () => {
-            onAddToast?.("PAYMENT WINDOW CLOSED // SESSION PRESERVED", "info");
+            onAddToast?.("Payment window closed.", "info");
             setSubmitting(false);
           }
         });
@@ -281,14 +281,14 @@ export default function CartDrawer({
         }
 
         setCheckoutStep("confirm");
-        onAddToast?.(`PRE-ORDER SAVED // SECURING DIRECT BANK VERIFICATION`, "success");
+        onAddToast?.(`Order placed! Reference #${manualRef}`, "success");
         triggerWhatsAppNotification(savedOrder.id, manualRef, "Manual Bank Transfer (Sterling Bank Escrow)");
         setSubmitting(false);
       }
     } catch (err: any) {
       console.error("Order creation failed:", err);
-      onAddToast?.(`ORDER REJECTED: ${err?.message || "SYSTEM BUSY"}`, "alert");
-      setCheckoutError(`ORDER SUBMISSION FAILED: ${err?.message || "A network handshake error occurred. Check browser connection status."}`);
+      onAddToast?.("Order submission failed. Please try again.", "alert");
+      setCheckoutError(`ORDER SUBMISSION FAILED: ${err?.message || "A network error occurred."}`);
       setSubmitting(false);
     }
   };

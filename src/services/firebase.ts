@@ -242,7 +242,17 @@ const getInitialTimer = (): DropTimerConfig => {
   const saved = localStorage.getItem(STORAGE_TIMER_KEY);
   if (saved) {
     try {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      if (
+        parsed.heading?.includes("SÉRIE INCOMING") || 
+        parsed.heading?.includes("JULY SPECIALIST") ||
+        parsed.subheading?.includes("PARACHUTE") || 
+        parsed.subheading?.includes("SAGE THORN")
+      ) {
+        // Upgrade legacy placeholder to simple Nigerian drop
+      } else {
+        return parsed;
+      }
     } catch {
       // JSON issues
     }
@@ -253,10 +263,10 @@ const getInitialTimer = (): DropTimerConfig => {
   
   const defaultTimer: DropTimerConfig = {
     id: "active-drop-config",
-    heading: "SÉRIE INCOMING // JULY SPECIALIST",
-    subheading: "THE SAGE THORN DOUBLE-PLEAT PARACHUTE CARGOS",
+    heading: "NEW LAGOS CAPSULE DROP",
+    subheading: "HEAVYWEIGHT COTTON CARGOS & TEES",
     targetDate: defaultTarget.toISOString(),
-    description: "Premium heavy-dyed dual structured ripstop pants featuring our signature crown detailing, pleated knee boxes, and tactical release waist buckles.",
+    description: "Simple, heavyweight streetwear crafted from 100% premium cotton for everyday comfort and durability in Lagos and beyond.",
     isActivated: true,
     notifyEmails: ["vip-patron@couture.com"],
     adminWhatsapp: "2348123456789", // Preset default WhatsApp (e.g. support line)
@@ -440,7 +450,23 @@ class DatabaseService {
       try {
         const docSnap = await getDoc(doc(db, "drops", "active-drop-config"));
         if (docSnap.exists()) {
-          return docSnap.data() as DropTimerConfig;
+          const data = docSnap.data() as DropTimerConfig;
+          if (
+            data.heading?.includes("SÉRIE INCOMING") || 
+            data.heading?.includes("JULY SPECIALIST") ||
+            data.subheading?.includes("PARACHUTE") || 
+            data.subheading?.includes("SAGE THORN")
+          ) {
+            const updatedTimer: DropTimerConfig = {
+              ...data,
+              heading: "NEW LAGOS CAPSULE DROP",
+              subheading: "HEAVYWEIGHT COTTON CARGOS & TEES",
+              description: "Simple, heavyweight streetwear crafted from 100% premium cotton for everyday comfort and durability in Lagos and beyond."
+            };
+            await setDoc(doc(db, "drops", "active-drop-config"), updatedTimer);
+            return updatedTimer;
+          }
+          return data;
         } else {
           const defaultTimer = getInitialTimer();
           await setDoc(doc(db, "drops", "active-drop-config"), defaultTimer);

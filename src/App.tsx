@@ -20,14 +20,20 @@ import {
   Package,
   Search,
   User,
-  Home
+  Home,
+  CheckCircle2,
+  AlertCircle,
+  Ruler,
+  Truck,
+  ShieldCheck,
+  CreditCard
 } from "lucide-react";
 
 import { CartItem, ProductCat } from "./types";
 import { DROPS_TIMELINE } from "./data";
 import GlowCrown from "./components/GlowCrown";
 import ProductCard, { ProductCardSkeleton } from "./components/ProductCard";
-import Customizer from "./components/Customizer";
+import SizeGuidePage from "./components/SizeGuidePage";
 import CartDrawer from "./components/CartDrawer";
 import Lookbook from "./components/Lookbook";
 import ProductDetailPage from "./components/ProductDetailPage";
@@ -49,7 +55,7 @@ export default function App() {
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [headerSearchQuery, setHeaderSearchQuery] = useState<string>("");
   
-  const [activePage, setActivePage] = useState<"home" | "collection" | "story" | "drop">("home");
+  const [activePage, setActivePage] = useState<"home" | "collection" | "story" | "drop" | "sizeguide">("home");
   const [toasts, setToasts] = useState<{ id: string; message: string; type: "success" | "info" | "alert"; timestamp: string }[]>([]);
 
   // Legal & Privacy modal states
@@ -69,10 +75,10 @@ export default function App() {
   // Upcoming Drop Countdown states
   const [timerConfig, setTimerConfig] = useState<DropTimerConfig>({
     id: "active-drop-config",
-    heading: "NEW JULY COLLECTION DROP",
-    subheading: "SAGE THORN COTTON CARGO PANTS",
+    heading: "NEW LAGOS CAPSULE DROP",
+    subheading: "HEAVYWEIGHT COTTON CARGOS & TEES",
     targetDate: new Date(Date.now() + 9 * 24 * 60 * 60 * 1000).toISOString(),
-    description: "Premium heavy cotton ripstop pants featuring vintage crown stitch detail.",
+    description: "Simple, heavyweight streetwear crafted from 100% premium cotton for everyday comfort and durability in Lagos and beyond.",
     isActivated: true,
     notifyEmails: []
   });
@@ -107,11 +113,11 @@ export default function App() {
       localStorage.setItem(getWishlistStorageKey(currentUser?.uid || null), JSON.stringify(updated));
       
       const prod = productsList.find((p) => p.id === productId);
-      const prodName = prod ? prod.name : "ITEM";
+      const prodName = prod ? prod.name : "Item";
       if (isAlready) {
-        addToast(`REMOVED: ${prodName.toUpperCase()}`, "info");
+        addToast(`Removed from wishlist`, "info");
       } else {
-        addToast(`SAVED TO WISHLIST: ${prodName.toUpperCase()}`, "success");
+        addToast(`Saved to wishlist • ${prodName}`, "success");
       }
 
       if (currentUser) {
@@ -310,8 +316,8 @@ export default function App() {
       syncCart([...cart, item]);
     }
     
-    const garName = (item.product.name || "GARMENT").toUpperCase();
-    addToast(`ADDED TO BAG: ${garName} (SIZE ${item.selectedSize})`, "success");
+    const garName = item.product.name || "Item";
+    addToast(`Added to cart • ${garName} (${item.selectedSize})`, "success");
 
     // Auto-open cart on additions
     setCartOpen(true);
@@ -351,15 +357,15 @@ export default function App() {
       if (isNew) {
         setAlertSubscribed(true);
         setAlertFormEmail("");
-        addToast(`SUBSCRIBED SUCCESSFULLY FOR UPDATES`, "success");
+        addToast("You're all set! We'll notify you about the next drop.", "success");
         await refreshDynamicProducts();
       } else {
         setAlertError("You are already subscribed to the upcoming release!");
-        addToast(`YOU ARE ALREADY SUBSCRIBED`, "info");
+        addToast("You're already subscribed to drop updates.", "info");
       }
     } catch (err) {
-      setAlertError("Connection check timed out. Please try again.");
-      addToast(`CONNECTION ERROR. PLEASE TRY AGAIN.`, "alert");
+      setAlertError("Connection timed out. Please try again.");
+      addToast("Could not subscribe. Please try again.", "alert");
     } finally {
       setAlertSubmitting(false);
     }
@@ -399,8 +405,7 @@ export default function App() {
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "ClothingStore",
-    "name": "CACTUS BEAR",
-    "alternateName": "Cactus Bear",
+    "name": "Cactus Bear Design Labs",
     "image": "https://ais-pre-idoac2ds4ux6jkzbphimca-337745108430.europe-west2.run.app/cb-og-image.jpg",
     "@id": `${window.location.origin}/#store`,
     "url": window.location.origin,
@@ -441,8 +446,7 @@ export default function App() {
   const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "CACTUS BEAR",
-    "alternateName": "Cactus Bear",
+    "name": "Cactus Bear",
     "url": window.location.origin,
     "potentialAction": {
       "@type": "SearchAction",
@@ -521,11 +525,16 @@ export default function App() {
             SHOP CATALOG
           </button>
           <button
-            onClick={() => handleNavToSection("customizer-lab")}
-            className="hover:text-[#EFFF00] transition-colors uppercase flex items-center gap-1.5 cursor-pointer"
+            onClick={() => {
+              setSelectedProductId(null);
+              setActivePage("sizeguide");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className={`hover:text-[#EFFF00] transition-colors uppercase cursor-pointer ${
+              activePage === "sizeguide" ? "text-[#EFFF00] font-bold" : ""
+            }`}
           >
-            <span className="w-1 rounded-full bg-[#EFFF00] aspect-square animate-pulse" />
-            STITCH LAB
+            SIZE GUIDE
           </button>
           <button
             onClick={() => {
@@ -754,11 +763,15 @@ export default function App() {
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  handleNavToSection("customizer-lab");
+                  setSelectedProductId(null);
+                  setActivePage("sizeguide");
+                  window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
-                className="hover:text-[#EFFF00] text-left transition-colors block cursor-pointer"
+                className={`hover:text-[#EFFF00] text-left transition-all block cursor-pointer ${
+                  activePage === "sizeguide" ? "text-[#EFFF00]" : ""
+                }`}
               >
-                CUSTOMIZER
+                SIZE GUIDE
               </button>
               <button
                 onClick={() => {
@@ -913,19 +926,31 @@ export default function App() {
             onSearchQueryChange={setHeaderSearchQuery}
             productsLoading={productsLoading}
           />
+        ) : activePage === "sizeguide" ? (
+          <SizeGuidePage
+            onBack={() => {
+              setActivePage("home");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            onExploreShop={() => {
+              setSelectedProductId(null);
+              setActivePage("collection");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          />
         ) : activePage === "story" ? (
           <div className="py-20 md:py-28 bg-black">
             {/* Elegant Stand-alone Header */}
             <div className="max-w-7xl mx-auto px-4 md:px-8 mb-12 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
               <div>
                 <span className="text-[#EFFF00] font-mono text-xs tracking-widest block uppercase font-black mb-1">
-                  ✦ EDITORIAL ATELIER
+                  ✦ LAGOS ATELIER
                 </span>
                 <h2 className="text-4xl md:text-5xl font-sans tracking-tighter font-extrabold uppercase text-white">
                   OUR <span className="text-[#EFFF00]">STORY</span>
                 </h2>
                 <p className="text-zinc-500 text-xs mt-1.5 max-w-md font-sans">
-                  Deeply rooted in heavy craftsmanship and Lagosian subcultures, Cactus Bear represents the synthesis of streetwear durability and luxury tailoring.
+                  Deeply rooted in heavy craftsmanship and Lagosian subcultures, Cactus Bear represents the synthesis of streetwear durability and everyday luxury.
                 </p>
               </div>
               <button
@@ -963,13 +988,13 @@ export default function App() {
             <div className="max-w-7xl mx-auto px-4 md:px-8 mb-12 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
               <div>
                 <span className="text-[#EFFF00] font-mono text-xs tracking-widest block uppercase font-black mb-1">
-                  ✦ DIGITAL SYSTEM RELEASE
+                  ✦ NEXT DROP
                 </span>
                 <h2 className="text-4xl md:text-5xl font-sans tracking-tighter font-extrabold uppercase text-white">
                   UPCOMING <span className="text-[#EFFF00]">DROP</span>
                 </h2>
                 <p className="text-zinc-500 text-xs mt-1.5 max-w-md font-sans">
-                  Synchronize with the Cactus Bear digital clock. Once the terminal countdown reaches absolute zero, ordering triggers instantly.
+                  Count down to the next Cactus Bear Lagos drop. Once the countdown reaches zero, pre-orders go live immediately.
                 </p>
               </div>
               <button
@@ -1163,63 +1188,44 @@ export default function App() {
           </div>
         ) : (
           <>
-            <section className="relative w-full py-28 md:py-40 px-4 flex flex-col items-center justify-center text-center overflow-hidden border-b border-zinc-950">
+            {/* SECTION 01: HERO LANDING ENVIRONMENT (TIGHTENED & PROPORTIONAL) */}
+            <section className="relative w-full py-12 sm:py-16 md:py-20 px-4 flex flex-col items-center justify-center text-center overflow-hidden border-b border-zinc-950">
           
           {/* Subtle slow spinning logo banner */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2 }}
-            className="w-64 md:w-96 select-none opacity-90 relative mb-8"
+            transition={{ duration: 1 }}
+            className="w-32 sm:w-44 md:w-52 select-none opacity-90 relative mb-4"
           >
             <GlowCrown size="100%" color="#EFFF00" glow={true} />
           </motion.div>
 
           {/* Staggered brand typography block */}
-          <div className="flex flex-col items-center max-w-5xl px-4 relative">
+          <div className="flex flex-col items-center max-w-4xl px-4 relative">
             <motion.h1 
-              initial={{ y: 20, opacity: 0 }}
+              initial={{ y: 15, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-sans tracking-tight font-black uppercase text-white leading-none whitespace-nowrap selection:bg-[#EFFF00] selection:text-black"
+              transition={{ delay: 0.15 }}
+              className="text-4xl sm:text-6xl md:text-7xl font-sans tracking-tighter font-black uppercase text-white leading-none selection:bg-white"
             >
-              CACTUS <span className="text-[#EFFF00] drop-shadow-[0_0_25px_rgba(239,255,0,0.35)]">BEAR</span>
+              CACTUS <span className="text-[#EFFF00] glow-text-yellow">BEAR</span>
             </motion.h1>
             
             <motion.p
-              initial={{ y: 15, opacity: 0 }}
+              initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.35 }}
-              className="font-mono text-[11px] sm:text-xs tracking-[0.28em] text-[#EFFF00] font-bold uppercase mt-3"
+              transition={{ delay: 0.3 }}
+              className="text-zinc-400 font-mono text-[11px] sm:text-xs tracking-[0.22em] mb-6 text-[#EFFF00] uppercase mt-3.5"
             >
-              HEAVYWEIGHT STREETWEAR • 3D BESPOKE ATELIER • LAGOS, NIGERIA
+              PREMIUM STREETWEAR DESIGNED IN NIGERIA
             </motion.p>
 
-            {/* STYLISH EDITORIAL LIFESTYLE & BRAND STATEMENT */}
             <motion.div
-              initial={{ y: 15, opacity: 0 }}
+              initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.45 }}
-              className="max-w-3xl text-center mt-6 mb-8 px-2"
-            >
-              <p className="text-zinc-200 font-sans text-sm sm:text-base md:text-lg leading-relaxed font-light">
-                <strong className="text-white font-bold">CACTUS BEAR</strong> is more than apparel — we sell an authentic streetwear lifestyle born from the raw pulse, music, and underground culture of Lagos. We engineer limited-run 460GSM heavyweight cotton drops, modular utility cargos, and bespoke digital pieces for those who define modern luxury on their own terms.
-              </p>
-              
-              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mt-5 font-mono text-[11px] text-zinc-400">
-                <span className="text-[#EFFF00] font-bold">LIMITED SEASONAL DROPS</span>
-                <span className="text-zinc-700 hidden sm:inline">•</span>
-                <span className="text-zinc-300 font-medium">3D BESPOKE LAB</span>
-                <span className="text-zinc-700 hidden sm:inline">•</span>
-                <span className="text-zinc-300 font-medium">ALL 36 NIGERIAN STATES EXPRESS</span>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ y: 15, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="flex flex-col sm:flex-row items-center gap-4"
+              className="flex flex-wrap items-center justify-center gap-3 mt-1"
             >
               <button
                 onClick={() => {
@@ -1227,62 +1233,109 @@ export default function App() {
                   setActivePage("collection");
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
-                className="bg-[#EFFF00] hover:bg-white text-black font-mono font-black py-4.5 px-9 text-xs sm:text-sm tracking-widest transition-all rounded-none uppercase flex items-center gap-3 cursor-pointer shadow-[0_0_30px_rgba(239,255,0,0.4)] hover:shadow-white/40"
+                className="bg-[#EFFF00] hover:bg-white text-black font-mono font-black py-3.5 px-6 sm:px-8 text-xs tracking-widest transition-colors rounded-none uppercase flex items-center gap-2 cursor-pointer shadow-lg shadow-[#EFFF00]/10"
               >
                 EXPLORE COLLECTION '01
-                <ChevronRight size={16} className="stroke-[3]" />
+                <ChevronRight size={13} />
               </button>
 
               <button
-                onClick={() => handleNavToSection("customizer-lab")}
-                className="bg-black/80 border-2 border-zinc-700 hover:border-[#EFFF00] font-mono font-black text-white hover:text-[#EFFF00] py-4.5 px-9 text-xs sm:text-sm tracking-widest transition-all rounded-none uppercase cursor-pointer hover:shadow-[0_0_20px_rgba(239,255,0,0.2)]"
+                onClick={() => {
+                  setSelectedProductId(null);
+                  setActivePage("sizeguide");
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+                className="bg-transparent border border-zinc-800 hover:border-[#EFFF00] font-mono hover:text-[#EFFF00] py-3.5 px-6 sm:px-8 text-xs tracking-widest transition-colors rounded-none uppercase cursor-pointer"
               >
-                ENTER 3D CUSTOMIZER
+                SIZE & FIT GUIDE
               </button>
             </motion.div>
           </div>
+        </section>
 
-          {/* Scroll anchor bridge */}
-          <div className="absolute bottom-6 flex flex-col items-center justify-center font-mono text-[9px] text-zinc-650 tracking-widest">
-            <span className="uppercase block mb-1">SCROLL DOWN TO EXPLORE</span>
-            <ArrowDown size={10} className="animate-bounce text-[#EFFF00]" />
+        {/* SECTION 01.5: BRAND VALUE & TRUST HIGHLIGHTS BAR (FILLS EMPTY SPACE WITH HIGH VALUE) */}
+        <section className="w-full bg-zinc-950/80 border-b border-zinc-900 py-6 px-4 md:px-8">
+          <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            <div className="flex items-center gap-3 p-3 bg-zinc-900/40 rounded-lg border border-zinc-850/50">
+              <div className="w-9 h-9 rounded-md bg-[#EFFF00]/10 border border-[#EFFF00]/20 flex items-center justify-center text-[#EFFF00] shrink-0">
+                <Truck size={17} />
+              </div>
+              <div>
+                <h4 className="text-white font-mono text-[11px] font-bold uppercase tracking-wider">NATIONWIDE SHIPPING</h4>
+                <p className="text-zinc-400 text-[10px]">1-3d Lagos, 2-5d Nigeria</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 bg-zinc-900/40 rounded-lg border border-zinc-850/50">
+              <div className="w-9 h-9 rounded-md bg-[#EFFF00]/10 border border-[#EFFF00]/20 flex items-center justify-center text-[#EFFF00] shrink-0">
+                <ShieldCheck size={17} />
+              </div>
+              <div>
+                <h4 className="text-white font-mono text-[11px] font-bold uppercase tracking-wider">450GSM HEAVY COTTON</h4>
+                <p className="text-zinc-400 text-[10px]">100% organic, zero blends</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 bg-zinc-900/40 rounded-lg border border-zinc-850/50">
+              <div className="w-9 h-9 rounded-md bg-[#EFFF00]/10 border border-[#EFFF00]/20 flex items-center justify-center text-[#EFFF00] shrink-0">
+                <Ruler size={17} />
+              </div>
+              <div>
+                <h4 className="text-white font-mono text-[11px] font-bold uppercase tracking-wider">BOXY STREET FIT</h4>
+                <p className="text-zinc-400 text-[10px]">Tailored drop-shoulder cut</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 bg-zinc-900/40 rounded-lg border border-zinc-850/50">
+              <div className="w-9 h-9 rounded-md bg-[#EFFF00]/10 border border-[#EFFF00]/20 flex items-center justify-center text-[#EFFF00] shrink-0">
+                <CreditCard size={17} />
+              </div>
+              <div>
+                <h4 className="text-white font-mono text-[11px] font-bold uppercase tracking-wider">INSTANT PAYMENTS</h4>
+                <p className="text-zinc-400 text-[10px]">Flutterwave & Bank Transfer</p>
+              </div>
+            </div>
           </div>
         </section>
 
         {/* SECTION 02: DYNAMIC PRODUCT ARCHIVE (THE CORE STOCK GRID) */}
-        <section id="preset-capsule" className="w-full py-20 px-4 md:px-8 border-b border-zinc-950">
+        <section id="preset-capsule" className="w-full py-12 md:py-16 px-4 md:px-8 border-b border-zinc-950">
           <div className="max-w-7xl mx-auto">
             
             {/* Archive Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
               <div>
                 <span className="text-[#EFFF00] font-mono text-xs tracking-widest block uppercase font-semibold mb-1">
                   [ NEW ARRIVALS ]
                 </span>
-                <h2 className="text-4xl md:text-5xl font-sans tracking-tighter font-extrabold uppercase text-white">
-                  SHOP THE <span className="text-zinc-800">COLLECTION</span>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-sans tracking-tighter font-extrabold uppercase text-white">
+                  SHOP THE <span className="text-zinc-700">COLLECTION</span>
                 </h2>
-                <p className="text-zinc-550 text-xs mt-1.5 max-w-md">
+                <p className="text-zinc-400 text-xs mt-1.5 max-w-md">
                   Explore high-quality streetwear crafted from premium organic cotton, designed for comfort and durability.
                 </p>
               </div>
 
               {/* Dynamic Categories Tab filters with horizontal swipe for mobile */}
-              <div className="w-full overflow-x-auto scrollbar-none pb-2 md:pb-0">
-                <div className="flex gap-2 p-1 bg-[#050505] border border-zinc-900 rounded-none w-max max-w-full">
+              <div className="w-full md:w-auto overflow-x-auto scrollbar-none pb-2 md:pb-0">
+                <div className="flex gap-1.5 p-1 bg-[#050505] border border-zinc-900 rounded-none w-max max-w-full">
                   {(["All", "Outerwear", "Tees", "Headwear"] as const).map((cat) => {
                     const isChose = selectedCategory === cat;
+                    const count = cat === "All" ? productsList.length : productsList.filter(p => p.category === cat).length;
                     return (
                       <button
                         key={cat}
                         onClick={() => setSelectedCategory(cat)}
-                        className={`px-4 py-2 font-mono text-[10px] tracking-widest transition-colors rounded-none whitespace-nowrap cursor-pointer ${
+                        className={`px-3.5 py-1.5 font-mono text-[10px] tracking-widest transition-colors rounded-none whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
                           isChose
                             ? "bg-white text-black font-bold"
                             : "text-zinc-500 hover:text-white"
                         }`}
                       >
-                        {cat.toUpperCase()}
+                        <span>{cat.toUpperCase()}</span>
+                        <span className={`text-[9px] px-1 py-0.2 rounded ${isChose ? "bg-black text-white" : "bg-zinc-900 text-zinc-400"}`}>
+                          {count}
+                        </span>
                       </button>
                     );
                   })}
@@ -1330,14 +1383,11 @@ export default function App() {
           </div>
         </section>
 
-        {/* SECTION 03: THE INTERACTIVE CUSTOM SEWING LAB */}
-        <Customizer onAddCustomItem={handleAddToCart} />
-
-        {/* SECTION 04: CRAFT ARCHIVE & EDITORIAL LOOKBOOK */}
+        {/* SECTION 03: CRAFT ARCHIVE & EDITORIAL LOOKBOOK */}
         <Lookbook />
 
-        {/* SECTION 05: INCOMING DROP & COUNTDOWN PORTAL */}
-        <section id="unlocked-terminal" className="w-full bg-[#050505] border-t border-zinc-950 py-24 px-4 md:px-8 relative overflow-hidden">
+        {/* SECTION 04: INCOMING DROP & COUNTDOWN PORTAL */}
+        <section id="unlocked-terminal" className="w-full bg-[#050505] border-t border-zinc-950 py-16 md:py-20 px-4 md:px-8 relative overflow-hidden">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               
@@ -1345,7 +1395,7 @@ export default function App() {
               <div className="lg:col-span-7 flex flex-col gap-6">
                 <div>
                   <span className="text-[#EFFF00] font-mono text-xs tracking-widest block font-black uppercase mb-1">
-                    ✦ UPCOMING COLLECTION DROP
+                    ✦ NEXT LAGOS DROP
                   </span>
                   <h2 className="text-4xl md:text-5xl font-sans tracking-tighter font-extrabold uppercase text-white">
                     {timerConfig.heading}
@@ -1513,89 +1563,6 @@ export default function App() {
             </div>
           </div>
         </section>
-
-        {/* SECTION 06: BRAND MANIFESTO & ATELIER IDENTITY */}
-        <section id="atelier-manifesto" className="w-full bg-black border-t-2 border-zinc-900 py-20 px-4 md:px-8 relative z-10">
-          <div className="max-w-7xl mx-auto">
-            <div className="border-2 border-zinc-800 bg-gradient-to-b from-[#121215] via-[#09090b] to-black p-8 sm:p-12 md:p-16 relative overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)]">
-              
-              {/* Ambient lighting */}
-              <div className="absolute -right-24 -top-24 w-96 h-96 bg-[#EFFF00]/10 rounded-full blur-3xl pointer-events-none" />
-              <div className="absolute -left-24 -bottom-24 w-96 h-96 bg-zinc-700/10 rounded-full blur-3xl pointer-events-none" />
-
-              {/* Header metadata bar */}
-              <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-8 border-b-2 border-zinc-800 relative z-10">
-                <div className="space-y-3">
-                  <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 bg-black border-2 border-[#EFFF00]/60 font-mono text-[10px] text-[#EFFF00] font-black uppercase tracking-[0.25em] shadow-[0_0_15px_rgba(239,255,0,0.2)]">
-                    <span className="w-2 h-2 rounded-full bg-[#EFFF00] animate-pulse" />
-                    ATELIER IDENTITY & CRAFTSMANSHIP
-                  </div>
-                  <h3 className="text-3xl sm:text-4xl md:text-5xl font-black uppercase text-white tracking-tighter leading-none">
-                    WE SELL A STREETWEAR LIFESTYLE
-                  </h3>
-                  <p className="font-mono text-xs sm:text-sm text-zinc-300 font-bold uppercase tracking-[0.2em]">
-                    CACTUS BEAR // INDEPENDENT NIGERIAN LUXURY ATELIER
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2 sm:gap-3 font-mono text-[10px] font-bold">
-                  <span className="px-3.5 py-2 bg-black border border-zinc-700 text-white uppercase tracking-wider">
-                    ORIGIN: LAGOS, NIGERIA
-                  </span>
-                  <span className="px-3.5 py-2 bg-black border border-zinc-700 text-white uppercase tracking-wider">
-                    SECURITY: GOOGLE OAUTH
-                  </span>
-                  <span className="px-3.5 py-2 bg-[#171708] border-2 border-[#EFFF00] text-[#EFFF00] font-black uppercase tracking-wider shadow-[0_0_15px_rgba(239,255,0,0.25)]">
-                    DISPATCH: ALL 36 STATES
-                  </span>
-                </div>
-              </div>
-
-              {/* Fluid Editorial Narrative */}
-              <div className="py-10 space-y-6 text-zinc-200 font-sans text-sm sm:text-base leading-relaxed max-w-4xl relative z-10 font-light">
-                <p>
-                  <strong className="text-white font-black text-base sm:text-lg">CACTUS BEAR</strong> is an independent fashion house and direct-to-consumer digital atelier based in Lagos, Nigeria. We craft ultra-heavyweight 460GSM cotton hoodies, structured utility cargo trousers, and distressed vintage tees designed with architectural silhouettes and industrial topstitching.
-                </p>
-                <p>
-                  Our digital platform features an interactive in-browser 3D Customizer Lab to personalize bespoke one-of-one streetwear garments, secure checkout with nationwide Nigerian courier tracking, and Google Sign-In integration for safeguarding your custom designs and shopping wardrobe across devices.
-                </p>
-              </div>
-
-              {/* Bottom compliance, location & direct legal bridges */}
-              <div className="pt-8 border-t-2 border-zinc-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 font-mono text-[11px] text-zinc-300 relative z-10">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 font-bold">
-                  <span className="text-white">CACTUS BEAR APPAREL GROUP</span>
-                  <span className="hidden sm:inline text-zinc-600">•</span>
-                  <span>LAGOS & YABA CREATIVE DISTRICT, NIGERIA</span>
-                  <span className="hidden sm:inline text-zinc-600">•</span>
-                  <span>SUPPORT: <a href="mailto:chibundusadiq@gmail.com" className="text-[#EFFF00] underline hover:text-white">CHIBUNDUSADIQ@GMAIL.COM</a></span>
-                </div>
-                
-                <div className="flex items-center gap-6">
-                  <button
-                    onClick={() => {
-                      setPrivacyTab("privacy");
-                      setPrivacyModalOpen(true);
-                    }}
-                    className="text-[#EFFF00] hover:text-white uppercase cursor-pointer transition-colors flex items-center gap-1.5 font-black text-xs"
-                  >
-                    PRIVACY POLICY <ChevronRight size={14} className="stroke-[3]" />
-                  </button>
-                  <button
-                    onClick={() => {
-                      setPrivacyTab("terms");
-                      setPrivacyModalOpen(true);
-                    }}
-                    className="text-zinc-300 hover:text-[#EFFF00] uppercase cursor-pointer transition-colors flex items-center gap-1.5 font-black text-xs"
-                  >
-                    TERMS OF SERVICE <ChevronRight size={14} className="stroke-[3]" />
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </section>
           </>
         )}
       </main>
@@ -1606,7 +1573,12 @@ export default function App() {
           
           {/* Trademark details */}
           <div className="flex flex-col gap-2">
-            <span className="font-sans font-black text-white text-sm tracking-wider uppercase">[ CACTUS BEAR ]</span>
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-3.5">
+                <GlowCrown size="100%" color="#EFFF00" glow={false} />
+              </div>
+              <span className="font-sans font-black text-white text-sm tracking-wider uppercase">[ CACTUS BEAR ]</span>
+            </div>
             <span>HEAVYWEIGHT COTTON STREETWEAR</span>
             <span>LAGOS & YABA DESIGNS, NIGERIA</span>
           </div>
@@ -1664,7 +1636,7 @@ export default function App() {
         onClose={() => setAuthOpen(false)}
         onLoginSuccess={(session) => {
           setCurrentUser(session);
-          addToast(`PATRON ACCESS AUTHORIZED // WELCOME RETURNING CREW: ${session.displayName.toUpperCase()}`, "success");
+          addToast(`Welcome back, ${session.displayName || "friend"}!`, "success");
         }}
       />
 
@@ -1698,54 +1670,48 @@ export default function App() {
         defaultTab={privacyTab}
       />
 
-      {/* TOASTS STACK INTERACTIVE CONTAINER */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-sm w-full pointer-events-none">
+      {/* FLOATING BUBBLE NOTIFICATIONS CONTAINER */}
+      <div className="fixed bottom-24 sm:bottom-8 right-4 sm:right-8 z-50 flex flex-col items-end gap-2.5 max-w-sm pointer-events-none select-none">
         <AnimatePresence>
           {toasts.map((toast) => (
             <motion.div
               key={toast.id}
-              initial={{ opacity: 0, y: 30, scale: 0.9, x: 20 }}
-              animate={{ opacity: 1, y: 0, scale: 1, x: 0 }}
-              exit={{ opacity: 0, scale: 0.95, x: 50, transition: { duration: 0.2 } }}
-              className="pointer-events-auto bg-[#080809] border border-zinc-800 p-4 shadow-[0_12px_24px_rgba(0,0,0,0.85)] backdrop-blur-md relative overflow-hidden"
+              initial={{ opacity: 0, y: 25, scale: 0.88, filter: "blur(4px)" }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -25, scale: 0.88, filter: "blur(4px)", transition: { duration: 0.35, ease: "easeOut" } }}
+              transition={{ type: "spring", stiffness: 420, damping: 30 }}
+              className="pointer-events-auto bg-zinc-900/95 text-white border border-zinc-700/60 rounded-full py-2.5 px-4 sm:px-5 flex items-center gap-3 shadow-[0_12px_32px_rgba(0,0,0,0.65)] backdrop-blur-xl max-w-[90vw] sm:max-w-md"
             >
-              {/* Left sidebar color bar indication */}
-              <div
-                className={`absolute top-0 left-0 bottom-0 w-1 ${
-                  toast.type === "success" ? "bg-[#EFFF00]" : toast.type === "alert" ? "bg-red-500" : "bg-cyan-400"
-                }`}
-              />
-
-              <div className="flex items-start justify-between gap-3 pl-2">
-                <div className="flex-1">
-                  <div className="flex justify-between items-center mb-1 gap-4">
-                    <span className="font-mono text-[8px] text-zinc-550 tracking-wider">
-                      SYSTEM MESSAGE // {toast.timestamp}
-                    </span>
-                    <span
-                      className={`font-mono text-[7px] px-1 py-0.5 uppercase tracking-widest font-black ${
-                        toast.type === "success"
-                          ? "bg-[#161607] text-[#EFFF00]"
-                          : toast.type === "alert"
-                          ? "bg-red-950/40 text-red-400"
-                          : "bg-cyan-950/40 text-cyan-400"
-                      }`}
-                    >
-                      {toast.type}
-                    </span>
-                  </div>
-                  <p className="font-sans text-[11px] text-zinc-100 uppercase tracking-tight leading-relaxed font-semibold">
-                    {toast.message}
-                  </p>
+              {/* Floating Bubble Icon */}
+              {toast.type === "success" && (
+                <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                  <CheckCircle2 size={13} />
                 </div>
+              )}
+              {toast.type === "info" && (
+                <div className="w-5 h-5 rounded-full bg-[#EFFF00]/20 text-[#EFFF00] flex items-center justify-center shrink-0">
+                  <Sparkles size={13} />
+                </div>
+              )}
+              {toast.type === "alert" && (
+                <div className="w-5 h-5 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
+                  <AlertCircle size={13} />
+                </div>
+              )}
 
-                <button
-                  onClick={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
-                  className="text-zinc-650 hover:text-white p-0.5 hover:bg-zinc-900 transition-colors cursor-pointer"
-                >
-                  <X size={10} />
-                </button>
-              </div>
+              {/* Message text */}
+              <span className="font-sans text-xs text-zinc-100 font-medium leading-tight">
+                {toast.message}
+              </span>
+
+              {/* Dismiss button */}
+              <button
+                onClick={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
+                className="text-zinc-400 hover:text-white p-1 rounded-full hover:bg-zinc-800 transition-colors ml-1 shrink-0 cursor-pointer"
+                aria-label="Dismiss notification"
+              >
+                <X size={12} />
+              </button>
             </motion.div>
           ))}
         </AnimatePresence>
@@ -1789,27 +1755,20 @@ export default function App() {
               <span className="font-mono text-[8px] font-bold uppercase tracking-wider">CATALOG</span>
             </button>
 
-            {/* TAB 03: STITCH DESIGN LAB */}
+            {/* TAB 03: SIZE GUIDE */}
             <button
               onClick={() => {
                 setSelectedProductId(null);
-                setActivePage("home");
+                setActivePage("sizeguide");
                 setMobileMenuOpen(false);
-                // Direct scroll to customizer-lab
-                setTimeout(() => {
-                  const el = document.getElementById("customizer-lab");
-                  if (el) {
-                    el.scrollIntoView({ behavior: "smooth" });
-                  }
-                }, 80);
+                window.scrollTo({ top: 0, behavior: "smooth" });
               }}
-              className="flex flex-col items-center gap-1 flex-1 cursor-pointer text-zinc-550 hover:text-white transition-colors outline-none"
+              className={`flex flex-col items-center gap-1 flex-1 cursor-pointer transition-colors outline-none ${
+                activePage === "sizeguide" ? "text-[#EFFF00]" : "text-zinc-550 hover:text-white"
+              }`}
             >
-              <div className="relative">
-                <Cpu size={18} />
-                <span className="absolute -top-1 -right-1 w-1.5 h-1.5 rounded-full bg-[#EFFF00] animate-pulse" />
-              </div>
-              <span className="font-mono text-[8px] font-bold uppercase tracking-wider">STITCH LAB</span>
+              <Ruler size={18} className={activePage === "sizeguide" ? "text-[#EFFF00]" : "text-zinc-550"} />
+              <span className="font-mono text-[8px] font-bold uppercase tracking-wider">SIZING</span>
             </button>
 
             {/* TAB 04: BAG (CART) */}
