@@ -17,9 +17,29 @@ export const CACTUS_BEAR_PRODUCTS: Product[] = [
     ],
     sizes: ["S", "M", "L", "XL", "XXL"],
     colors: [
-      { name: "Woodland Green Camo", hex: "#3f4 e27", bgHex: "linear-gradient(135deg, #444a30 0%, #1c2211 100%)" },
-      { name: "Olive Sagewood Camo", hex: "#4a5a41", bgHex: "linear-gradient(135deg, #586f52 0%, #2b3a1a 100%)" },
-      { name: "Shadow Obsidian Camo", hex: "#1c1c1e", bgHex: "linear-gradient(135deg, #2c2c2e 0%, #0c0c0d 100%)" }
+      { 
+        name: "Woodland Green Camo", 
+        hex: "#3f4e27", 
+        bgHex: "linear-gradient(135deg, #444a30 0%, #1c2211 100%)",
+        imageUrl: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=800&auto=format&fit=crop"
+      },
+      { 
+        name: "Olive Sagewood Camo", 
+        hex: "#4a5a41", 
+        bgHex: "linear-gradient(135deg, #586f52 0%, #2b3a1a 100%)",
+        imageUrl: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=800&auto=format&fit=crop"
+      },
+      { 
+        name: "Shadow Obsidian Camo", 
+        hex: "#1c1c1e", 
+        bgHex: "linear-gradient(135deg, #2c2c2e 0%, #0c0c0d 100%)",
+        imageUrl: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=800&auto=format&fit=crop"
+      }
+    ],
+    images: [
+      "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=800&auto=format&fit=crop"
     ],
     mockupType: "tee",
     stock: 3
@@ -40,8 +60,14 @@ export const CACTUS_BEAR_PRODUCTS: Product[] = [
     ],
     sizes: ["S", "M", "L", "XL", "XXL"],
     colors: [
-      { name: "Obsidian Black", hex: "#0c0c0d", bgHex: "#0c0c0d", imageUrl: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=600&auto=format&fit=crop" },
-      { name: "Tobacco Earth Brown", hex: "#8a5d3b", bgHex: "#8a5d3b", imageUrl: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=600&auto=format&fit=crop" }
+      { name: "Obsidian Black", hex: "#0c0c0d", bgHex: "#0c0c0d", imageUrl: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=800&auto=format&fit=crop" },
+      { name: "Tobacco Earth Brown", hex: "#8a5d3b", bgHex: "#8a5d3b", imageUrl: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=800&auto=format&fit=crop" },
+      { name: "Sage Olive Green", hex: "#3b4d37", bgHex: "#3b4d37", imageUrl: "https://images.unsplash.com/photo-1589310243389-96a5483213a8?q=80&w=800&auto=format&fit=crop" }
+    ],
+    images: [
+      "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1589310243389-96a5483213a8?q=80&w=800&auto=format&fit=crop"
     ],
     mockupType: "tee",
     stock: 12
@@ -62,8 +88,14 @@ export const CACTUS_BEAR_PRODUCTS: Product[] = [
     ],
     sizes: ["S", "M", "L"],
     colors: [
-      { name: "Obsidian Black", hex: "#0c0c0d", bgHex: "#0c0c0d", imageUrl: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=600&auto=format&fit=crop" },
-      { name: "Bleach White", hex: "#f8f9fa", bgHex: "#f8f9fa", imageUrl: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=600&auto=format&fit=crop" }
+      { name: "Obsidian Black", hex: "#0c0c0d", bgHex: "#0c0c0d", imageUrl: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=800&auto=format&fit=crop" },
+      { name: "Bleach White", hex: "#f8f9fa", bgHex: "#f8f9fa", imageUrl: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=800&auto=format&fit=crop" },
+      { name: "Moss Green", hex: "#2e4a32", bgHex: "#2e4a32", imageUrl: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=800&auto=format&fit=crop" }
+    ],
+    images: [
+      "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=800&auto=format&fit=crop"
     ],
     mockupType: "tee",
     stock: 4
@@ -84,9 +116,14 @@ export const CACTUS_BEAR_PRODUCTS: Product[] = [
     ],
     sizes: ["S", "M", "L", "XL", "XXL"],
     colors: [
-      { name: "Obsidian Black", hex: "#0a0a0b", bgHex: "#0a0a0b", imageUrl: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=600&auto=format&fit=crop" },
-      { name: "Tobacco Earth Brown", hex: "#8a5d3b", bgHex: "#8a5d3b", imageUrl: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=600&auto=format&fit=crop" },
-      { name: "Alpine Forest Green", hex: "#1b3524", bgHex: "#1b3524", imageUrl: "https://images.unsplash.com/photo-1609873814058-a8928924184a?q=80&w=600&auto=format&fit=crop" }
+      { name: "Alpine Forest Green", hex: "#1b3524", bgHex: "#1b3524", imageUrl: "https://images.unsplash.com/photo-1609873814058-a8928924184a?q=80&w=800&auto=format&fit=crop" },
+      { name: "Obsidian Black", hex: "#0a0a0b", bgHex: "#0a0a0b", imageUrl: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800&auto=format&fit=crop" },
+      { name: "Tobacco Earth Brown", hex: "#8a5d3b", bgHex: "#8a5d3b", imageUrl: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=800&auto=format&fit=crop" }
+    ],
+    images: [
+      "https://images.unsplash.com/photo-1609873814058-a8928924184a?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=800&auto=format&fit=crop"
     ],
     mockupType: "hoodie",
     stock: 15
@@ -107,12 +144,44 @@ export const CACTUS_BEAR_PRODUCTS: Product[] = [
     ],
     sizes: ["OS (Adjustable)"],
     colors: [
-      { name: "Forest Green Snapback", hex: "#1b3524", bgHex: "#1b3524" },
-      { name: "Charcoal Grey Snapback", hex: "#4d4d54", bgHex: "#4d4d54" },
-      { name: "Tobacco Brown Snapback", hex: "#8a5d3b", bgHex: "#8a5d3b" }
+      { name: "Forest Green Snapback", hex: "#1b3524", bgHex: "#1b3524", imageUrl: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?q=80&w=800&auto=format&fit=crop" },
+      { name: "Charcoal Grey Snapback", hex: "#4d4d54", bgHex: "#4d4d54", imageUrl: "https://images.unsplash.com/photo-1575428652377-a2d80e2277fc?q=80&w=800&auto=format&fit=crop" },
+      { name: "Tobacco Brown Snapback", hex: "#8a5d3b", bgHex: "#8a5d3b", imageUrl: "https://images.unsplash.com/photo-1534215754734-18e55d13e346?q=80&w=800&auto=format&fit=crop" }
+    ],
+    images: [
+      "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1575428652377-a2d80e2277fc?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1534215754734-18e55d13e346?q=80&w=800&auto=format&fit=crop"
     ],
     mockupType: "cap",
     stock: 2
+  },
+  {
+    id: "cb-tank-06",
+    name: "STUDIO RAW RIBBED TANK TOP",
+    category: "Tank Tops",
+    price: 85000,
+    sku: "CB-TK-06",
+    description: "Athletic cut sleeveless tank top crafted from heavy stretch rib-knit textile. Features deep curved armholes, reinforced collar binding, and a subtle monochrome crown of thorns screenprint on the chest.",
+    details: [
+      "Heavyweight stretch rib-knit fabric",
+      "Tailored athletic silhouette with raw double hemline",
+      "Reinforced neck and armhole binding",
+      "Archival screenprinted crown of thorns logo",
+      "Designed and hand-finished in Lagos"
+    ],
+    sizes: ["S", "M", "L", "XL"],
+    colors: [
+      { name: "Olive Green", hex: "#2b4028", bgHex: "#2b4028", imageUrl: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=800&auto=format&fit=crop" },
+      { name: "Obsidian Black", hex: "#0c0c0d", bgHex: "#0c0c0d", imageUrl: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=800&auto=format&fit=crop" },
+      { name: "Bleach White", hex: "#f8f9fa", bgHex: "#f8f9fa", imageUrl: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=800&auto=format&fit=crop" }
+    ],
+    images: [
+      "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=800&auto=format&fit=crop"
+    ],
+    mockupType: "tank",
+    stock: 8
   }
 ];
 

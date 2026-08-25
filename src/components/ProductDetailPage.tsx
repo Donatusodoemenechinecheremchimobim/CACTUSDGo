@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { 
   ArrowLeft, 
@@ -13,7 +13,11 @@ import {
   RotateCcw,
   Scissors,
   Heart,
-  Share2
+  Share2,
+  ChevronLeft,
+  ChevronRight,
+  Camera,
+  Layers
 } from "lucide-react";
 import { Product, CartItem, ApparelColor } from "../types";
 import GlowCrown from "./GlowCrown";
@@ -45,6 +49,7 @@ export default function ProductDetailPage({
 }: ProductDetailPageProps) {
   const [selectedSize, setSelectedSize] = useState<string>((product.sizes && product.sizes[0]) || "L");
   const [selectedColor, setSelectedColor] = useState<ApparelColor>((product.colors && product.colors[0]) || { name: "Bleach White", hex: "#FFFFFF", bgHex: "#1a1a1c" });
+  const [activeImage, setActiveImage] = useState<string | null>((product.colors?.[0]?.imageUrl) || product.imageUrl || null);
   const [added, setAdded] = useState<boolean>(false);
   const [adding, setAdding] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<"specifications" | "manufacturing" | "shipping">("specifications");
@@ -54,46 +59,101 @@ export default function ProductDetailPage({
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    if (!rect || rect.width === 0 || rect.height === 0) return;
-    
-    const clientX = (e.clientX !== undefined && e.clientX !== null && !isNaN(e.clientX)) ? e.clientX : (rect.left + rect.width / 2);
-    const clientY = (e.clientY !== undefined && e.clientY !== null && !isNaN(e.clientY)) ? e.clientY : (rect.top + rect.height / 2);
+  // Compile all unique images for this product (per color + product-level gallery)
+  const galleryItems = useMemo(() => {
+    const items: { url: string; label: string; color?: ApparelColor }[] = [];
+    const seen = new Set<string>();
 
-    const x = Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100));
-    const y = Math.min(100, Math.max(0, ((clientY - rect.top) / rect.height) * 100));
-    
-    if (!isNaN(x) && !isNaN(y)) {
-      setZoomPos({ x, y });
+    // 1. Color variant specific images
+    if (product.colors && product.colors.length > 0) {
+      product.colors.forEach((c) => {
+        if (c.imageUrl && !seen.has(c.imageUrl)) {
+          seen.add(c.imageUrl);
+          items.push({ url: c.imageUrl, label: c.name, color: c });
+        }
+        if (c.images && Array.isArray(c.images)) {
+          c.images.forEach((img, idx) => {
+            if (img && !seen.has(img)) {
+              seen.add(img);
+              items.push({ url: img, label: `${c.name} (${idx + 2})`, color: c });
+            }
+          });
+        }
+      });
+    }
+
+    // 2. Extra product gallery images
+    if (product.images && Array.isArray(product.images)) {
+      product.images.forEach((img, idx) => {
+        if (img && !seen.has(img)) {
+          seen.add(img);
+          items.push({ url: img, label: `Angle 0${idx + 1}` });
+        }
+      });
+    }
+
+    // 3. Main product image fallback
+    if (product.imageUrl && !seen.has(product.imageUrl)) {
+      seen.add(product.imageUrl);
+      items.push({ url: product.imageUrl, label: "Studio Archive" });
+    }
+
+    return items;
+  }, [product]);
+
+  // Current active index in gallery
+  const activeImageIndex = useMemo(() => {
+    if (!activeImage) return 0;
+    const idx = galleryItems.findIndex(item => item.url === activeImage);
+    return idx >= 0 ? idx : 0;
+  }, [activeImage, galleryItems]);
+
+  const handlePrevImage = () => {
+    if (galleryItems.length <= 1) return;
+    const newIdx = (activeImageIndex - 1 + galleryItems.length) % galleryItems.length;
+    const targetItem = galleryItems[newIdx];
+    setActiveImage(targetItem.url);
+    if (targetItem.color) {
+      setSelectedColor(targetItem.color);
     }
   };
 
-  const handleShareClick = async () => {
-    const shareData = {
-      title: product.name,
-      text: `${product.name} - ${product.description} (SKU: ${product.sku}) / PRESET VAULT SERIE`,
-      url: window.location.href,
-    };
+  const handleNextImage = () => {
+    if (galleryItems.length <= 1) return;
+    const newIdx = (activeImageIndex + 1) % galleryItems.length;
+    const targetItem = galleryItems[newIdx];
+    setActiveImage(targetItem.url);
+    if (targetItem.color) {
+      setSelectedColor(targetItem.color);
+    }
+  };
 
-    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+  const handleSelectColor = (color: ApparelColor) => {
+    setSelectedColor(color);
+    if (color.imageUrl) {
+      setActiveImage(color.imageUrl);
+    } else if (color.images && color.images.length > 0) {
+      setActiveImage(color.images[0]);
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((e.clientX - left) / width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - top) / height) * 100));
+    setZoomPos({ x, y });
+  };
+
+  const handleShareClick = async () => {
+    const shareUrl = window.location.href;
+    if (navigator.clipboard) {
       try {
-        await navigator.share(shareData);
-        setShareStatus("SHARED");
-        setTimeout(() => setShareStatus(""), 2000);
-      } catch (err) {
-        console.log("Web Share failed or cancelled:", err);
-      }
-    } else {
-      // Fallback: Copy link to clipboard
-      try {
-        await navigator.clipboard.writeText(
-          `${product.name}\n${product.description}\n\nLink: ${window.location.href}`
-        );
-        setShareStatus("LINK COPIED");
-        setTimeout(() => setShareStatus(""), 2000);
-      } catch (copyErr) {
-        console.error("Clipboard copy failed:", copyErr);
+        await navigator.clipboard.writeText(shareUrl);
+        setShareStatus("COPIED LINK");
+        setTimeout(() => setShareStatus(""), 2500);
+      } catch {
+        setShareStatus("LINK READY");
+        setTimeout(() => setShareStatus(""), 2500);
       }
     }
   };
@@ -102,7 +162,9 @@ export default function ProductDetailPage({
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
     setSelectedSize((product.sizes && product.sizes[0]) || "L");
-    setSelectedColor((product.colors && product.colors[0]) || { name: "Bleach White", hex: "#FFFFFF", bgHex: "#1a1a1c" });
+    const initialColor = (product.colors && product.colors[0]) || { name: "Bleach White", hex: "#FFFFFF", bgHex: "#1a1a1c" };
+    setSelectedColor(initialColor);
+    setActiveImage(initialColor.imageUrl || product.imageUrl || null);
   }, [product]);
 
   const handleAddToCartClick = () => {
@@ -234,11 +296,11 @@ export default function ProductDetailPage({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
         
         {/* LEFT COLUMN: Garment Interactive Schematic Core */}
-        <div className="lg:col-span-7 flex flex-col gap-6 w-full">
+        <div className="lg:col-span-7 flex flex-col gap-4 w-full">
           
           {/* Main Visual showcase board */}
-          <div className={`bg-[#050505] border border-zinc-900 flex flex-col items-center justify-center relative overflow-hidden group min-h-[350px] sm:min-h-[460px] md:min-h-[520px] ${
-            (selectedColor.imageUrl || product.imageUrl) ? "p-0" : "p-6 md:p-12"
+          <div className={`bg-[#050505] border border-zinc-900 flex flex-col items-center justify-center relative overflow-hidden group min-h-[360px] sm:min-h-[480px] md:min-h-[540px] ${
+            (activeImage || selectedColor.imageUrl || product.imageUrl) ? "p-0" : "p-6 md:p-12"
           }`}>
             
             {/* Soft Ambient Radial color aura behind garment representation */}
@@ -250,19 +312,21 @@ export default function ProductDetailPage({
             {/* Tactical overlay target grid */}
             <div className="absolute inset-0 bg-[radial-gradient(#EFFF00_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.06] pointer-events-none" />
 
-            {/* Corner Decorative Badges */}
-            <div className="absolute top-4 left-4 font-mono text-[8px] text-zinc-600 uppercase tracking-widest hidden xs:block">
-              SERIES 01 // IN STOCK
-            </div>
-            <div className="absolute top-4 right-4 font-mono text-[8px] text-zinc-600 uppercase tracking-widest flex items-center gap-1.5 hidden xs:inline-flex">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#EFFF00] animate-pulse" />
-              AUTHENTIC DESIGN
+            {/* Corner Decorative Badges & Image Counter */}
+            <div className="absolute top-4 left-4 font-mono text-[8px] text-zinc-400 uppercase tracking-widest z-20 flex items-center gap-2 bg-black/60 px-2 py-1 border border-zinc-800">
+              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: selectedColor.hex }} />
+              <span>COLOR // {selectedColor.name}</span>
             </div>
 
-            {/* Visual presentation stage */}
+            <div className="absolute top-4 right-4 font-mono text-[8px] text-zinc-300 uppercase tracking-widest z-20 flex items-center gap-2 bg-black/70 px-2.5 py-1 border border-zinc-800">
+              <Camera size={10} className="text-[#EFFF00]" />
+              <span>{String(activeImageIndex + 1).padStart(2, '0')} / {String(galleryItems.length || 1).padStart(2, '0')}</span>
+            </div>
+
+            {/* Visual presentation stage with zoom */}
             <div 
               className={`relative z-10 overflow-hidden cursor-crosshair flex items-center justify-center ${
-                (selectedColor.imageUrl || product.imageUrl)
+                (activeImage || selectedColor.imageUrl || product.imageUrl)
                   ? "absolute inset-0 w-full h-full"
                   : "w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80"
               }`}
@@ -282,19 +346,20 @@ export default function ProductDetailPage({
                 }}
                 layoutId={`product-image-${product.id}`}
               >
-                {(selectedColor.imageUrl || product.imageUrl) ? (
+                {(activeImage || selectedColor.imageUrl || product.imageUrl) ? (
                   <img
-                    src={selectedColor.imageUrl || product.imageUrl}
-                    alt={product.name}
+                    key={activeImage || selectedColor.imageUrl || product.imageUrl}
+                    src={activeImage || selectedColor.imageUrl || product.imageUrl || ""}
+                    alt={`${product.name} - ${selectedColor.name}`}
                     referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-opacity duration-300 animate-fadeIn"
                   />
                 ) : (
                   <RenderGarmentSVG id={product.id} colorHex={selectedColor.hex} mockupType={product.mockupType} isHovered={true} />
                 )}
 
-                {/* Embroidered Micro Logo badge overlay */}
-                {!(selectedColor.imageUrl || product.imageUrl) && (
+                {/* Embroidered Micro Logo badge overlay when using SVG mode */}
+                {!(activeImage || selectedColor.imageUrl || product.imageUrl) && (
                   <div
                     className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none w-[42px] h-[24px]"
                     style={{
@@ -321,18 +386,105 @@ export default function ProductDetailPage({
               </motion.div>
             </div>
 
+            {/* Left & Right Arrow Navigation Controls */}
+            {galleryItems.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePrevImage();
+                  }}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 bg-black/75 hover:bg-[#EFFF00] text-zinc-300 hover:text-black border border-zinc-800 hover:border-[#EFFF00] flex items-center justify-center transition-all cursor-pointer opacity-80 hover:opacity-100 shadow-lg"
+                  title="Previous image"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNextImage();
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 bg-black/75 hover:bg-[#EFFF00] text-zinc-300 hover:text-black border border-zinc-800 hover:border-[#EFFF00] flex items-center justify-center transition-all cursor-pointer opacity-80 hover:opacity-100 shadow-lg"
+                  title="Next image"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </>
+            )}
+
             {/* Interaction Instruction Banner */}
-            <div className="absolute bottom-4 inset-x-0 text-center font-mono text-[8px] tracking-wider z-20">
+            <div className="absolute bottom-3 inset-x-0 text-center font-mono text-[8px] tracking-wider z-20">
               {isHovered ? (
-                <span className="text-[#EFFF00] font-black animate-pulse">
+                <span className="text-[#EFFF00] font-black animate-pulse bg-black/80 px-2 py-0.5 border border-zinc-800">
                   ✦ MAGNIFIER ACTIVE: X:{(zoomPos.x).toFixed(0)}% Y:{(zoomPos.y).toFixed(0)}% • 250% WEAVE DETAIL ✦
                 </span>
               ) : (
-                <span className="text-zinc-550">✦ HOVER OVER IMAGE TO ACTIVATE 250% MACRO TEXTURE INSPECTION ✦</span>
+                <span className="text-zinc-400 bg-black/70 px-2 py-0.5 border border-zinc-900">
+                  ✦ HOVER TO ACTIVATE 250% MACRO TEXTURE INSPECTION ✦
+                </span>
               )}
             </div>
 
           </div>
+
+          {/* Interactive Multi-Image Thumbnail Gallery */}
+          {galleryItems.length > 0 && (
+            <div className="bg-[#050505] border border-zinc-900 p-3">
+              <div className="flex items-center justify-between mb-2 px-1">
+                <div className="flex items-center gap-1.5 text-[9px] font-mono text-zinc-500 uppercase">
+                  <Layers size={11} className="text-[#EFFF00]" />
+                  <span>PRODUCT VIEWS & COLORWAY PHOTOS ({galleryItems.length})</span>
+                </div>
+                <span className="text-[8.5px] font-mono text-zinc-600">Click photo to switch view/color</span>
+              </div>
+
+              <div className="flex gap-2.5 overflow-x-auto pb-1 scrollbar-thin">
+                {galleryItems.map((item, idx) => {
+                  const isActive = activeImage === item.url || (idx === 0 && !activeImage);
+                  return (
+                    <button
+                      key={`${item.url}-${idx}`}
+                      type="button"
+                      onClick={() => {
+                        setActiveImage(item.url);
+                        if (item.color) {
+                          setSelectedColor(item.color);
+                        }
+                      }}
+                      className={`relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-black border overflow-hidden transition-all group cursor-pointer ${
+                        isActive
+                          ? "border-[#EFFF00] ring-1 ring-[#EFFF00] shadow-[0_0_12px_rgba(239,255,0,0.3)] scale-[1.03]"
+                          : "border-zinc-800 opacity-65 hover:opacity-100 hover:border-zinc-600"
+                      }`}
+                    >
+                      <img
+                        src={item.url}
+                        alt={item.label}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover"
+                      />
+
+                      {/* Attached Color Swatch Dot */}
+                      {item.color && (
+                        <div 
+                          className="absolute bottom-1 right-1 w-2.5 h-2.5 border border-black/80 rounded-full shadow"
+                          style={{ backgroundColor: item.color.hex }}
+                          title={item.color.name}
+                        />
+                      )}
+
+                      {/* Active indicator bar */}
+                      {isActive && (
+                        <div className="absolute top-0 inset-x-0 h-0.5 bg-[#EFFF00]" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Quick Informational Grid in left column */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -412,9 +564,9 @@ export default function ProductDetailPage({
                   return (
                     <button
                       key={color.name}
-                      onClick={() => setSelectedColor(color)}
+                      onClick={() => handleSelectColor(color)}
                       className={`w-8 h-8 border transition-all cursor-pointer relative group ${
-                        isCSelected ? "border-[#EFFF00] scale-110" : "border-zinc-800 hover:border-zinc-500"
+                        isCSelected ? "border-[#EFFF00] scale-110 shadow-[0_0_10px_rgba(239,255,0,0.35)]" : "border-zinc-800 hover:border-zinc-500"
                       }`}
                       style={{ backgroundColor: color.hex }}
                       title={color.name}
@@ -865,6 +1017,15 @@ function RenderGarmentSVG({
             <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]">
               <path d="M 32,90 L 32,30 L 12,34 L 5,47 L 1,44 L 8,26 L 27,18 L 36,19 C 36,19 40,14 50,14 C 60,14 64,19 64,19 L 73,18 L 92,26 L 99,44 L 95,47 L 88,34 L 88,30 L 68,90 Z" fill={colorHex} className="transition-colors duration-300" />
               <path d="M 36,19 C 36,24 64,24 64,19" fill="none" stroke="rgba(0,0,0,0.3)" strokeWidth="1.5" />
+            </svg>
+          )}
+
+          {mockupType === "tank" && (
+            <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]">
+              <path d="M 30,90 L 30,34 L 26,18 L 36,18 L 40,28 C 40,28 44,22 50,22 C 56,22 60,28 60,28 L 64,18 L 74,18 L 70,34 L 70,90 Z" fill={colorHex} className="transition-colors duration-300" />
+              <path d="M 40,28 C 43,36 57,36 60,28" fill="none" stroke="rgba(0,0,0,0.3)" strokeWidth="1.5" />
+              <path d="M 36,18 C 30,26 30,32 30,34" fill="none" stroke="rgba(0,0,0,0.25)" strokeWidth="1" />
+              <path d="M 64,18 C 70,26 70,32 70,34" fill="none" stroke="rgba(0,0,0,0.25)" strokeWidth="1" />
             </svg>
           )}
 

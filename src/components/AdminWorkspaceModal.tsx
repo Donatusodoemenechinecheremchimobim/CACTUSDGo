@@ -398,6 +398,10 @@ export default function AdminWorkspaceModal({
   const [pDescription, setPDescription] = useState<string>("");
   const [pMockupType, setPMockupType] = useState<Product["mockupType"]>("tee");
   const [pImage, setPImage] = useState<string>("");
+  const [pGalleryImages, setPGalleryImages] = useState<string[]>([]);
+  const [galleryInput, setGalleryInput] = useState<string>("");
+  const [isUploadingGallery, setIsUploadingGallery] = useState<boolean>(false);
+  const galleryFileInputRef = useRef<HTMLInputElement>(null);
   
   // Custom details list
   const [detailInput, setDetailInput] = useState<string>("");
@@ -498,6 +502,39 @@ export default function AdminWorkspaceModal({
     }
   };
 
+  // Add gallery image manually or from upload
+  const handleAddGalleryImage = () => {
+    if (galleryInput.trim() && !pGalleryImages.includes(galleryInput.trim())) {
+      setPGalleryImages([...pGalleryImages, galleryInput.trim()]);
+      setGalleryInput("");
+    }
+  };
+
+  const handleRemoveGalleryImage = (index: number) => {
+    setPGalleryImages(pGalleryImages.filter((_, idx) => idx !== index));
+  };
+
+  const handleGalleryFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setIsUploadingGallery(true);
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.type.startsWith("image/")) {
+          const uploadedUrl = await uploadProductImage(file);
+          if (uploadedUrl && !pGalleryImages.includes(uploadedUrl)) {
+            setPGalleryImages(prev => [...prev, uploadedUrl]);
+          }
+        }
+      }
+    } catch (err: any) {
+      console.error(err);
+    } finally {
+      setIsUploadingGallery(false);
+    }
+  };
+
   // Remove color swatch
   const handleRemoveColor = (index: number) => {
     setPColors(pColors.filter((_, idx) => idx !== index));
@@ -531,7 +568,8 @@ export default function AdminWorkspaceModal({
         sizes: pSizes,
         colors: pColors,
         mockupType: pMockupType,
-        imageUrl: pImage.trim() || undefined
+        imageUrl: pImage.trim() || undefined,
+        images: pGalleryImages.length > 0 ? pGalleryImages : undefined
       };
 
       await dbService.addProduct(newProduct);
@@ -545,6 +583,8 @@ export default function AdminWorkspaceModal({
       setPDescription("");
       setPMockupType("tee");
       setPImage("");
+      setPGalleryImages([]);
+      setGalleryInput("");
       setPDetails(["Heavy organic fabric run", "Pre-washed vintage style"]);
       setPColors([
         { name: "Obsidian Black", hex: "#0c0c0d", bgHex: "#0c0c0d" },
@@ -808,8 +848,10 @@ export default function AdminWorkspaceModal({
                           className="bg-zinc-950 border border-zinc-900 py-1.5 px-3 font-mono text-xs focus:border-[#EFFF00] text-white"
                         >
                           <option value="Tees">TEES</option>
+                          <option value="Tank Tops">TANK TOPS</option>
                           <option value="Outerwear">OUTERWEAR</option>
                           <option value="Headwear">HEADWEAR</option>
+                          <option value="Accessories">ACCESSORIES</option>
                         </select>
                       </div>
                     </div>
@@ -823,6 +865,7 @@ export default function AdminWorkspaceModal({
                           className="bg-zinc-950 border border-zinc-900 py-1.5 px-3 font-mono text-xs focus:border-[#EFFF00] text-white animate-pulse"
                         >
                           <option value="tee">BOXY TEE SHAPE</option>
+                          <option value="tank">SLEEVELESS TANK TOP</option>
                           <option value="hoodie">OVERSIZED HOODIE</option>
                           <option value="puffer">QUILTED PUFFER</option>
                           <option value="cap">TRUCKER / BEANIE</option>
@@ -938,8 +981,74 @@ export default function AdminWorkspaceModal({
                         value={pImage}
                         onChange={(e) => setPImage(e.target.value)}
                         className="bg-zinc-950 border border-zinc-900 py-1 px-3.5 font-mono text-[10px] focus:border-[#EFFF00] text-[#EFFF00] tracking-tight placeholder:text-zinc-700"
-                        placeholder="Or customize manually (e.g. Unsplash URL)"
+                        placeholder="Or customize primary photo manually (e.g. Unsplash URL)"
                       />
+                    </div>
+
+                    {/* ADDITIONAL GALLERY IMAGES SECTION */}
+                    <div className="flex flex-col gap-2 p-3 bg-zinc-950/60 border border-zinc-900">
+                      <div className="flex justify-between items-center">
+                        <label className="font-mono text-[9px] text-[#EFFF00] uppercase font-bold tracking-wider flex items-center gap-1.5">
+                          <span>✦ EXTRA GALLERY PHOTOS ({pGalleryImages.length})</span>
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => galleryFileInputRef.current?.click()}
+                          className="font-mono text-[8.5px] text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-2 py-0.5 cursor-pointer uppercase flex items-center gap-1"
+                        >
+                          <Upload size={10} />
+                          <span>{isUploadingGallery ? "Uploading..." : "+ Upload Files"}</span>
+                        </button>
+                        <input
+                          type="file"
+                          ref={galleryFileInputRef}
+                          onChange={handleGalleryFileChange}
+                          accept="image/*"
+                          multiple
+                          className="hidden"
+                        />
+                      </div>
+
+                      <div className="flex gap-1.5">
+                        <input
+                          type="text"
+                          value={galleryInput}
+                          onChange={(e) => setGalleryInput(e.target.value)}
+                          className="bg-zinc-950 border border-zinc-900 py-1 px-2.5 font-mono text-[10px] focus:border-[#EFFF00] flex-1 placeholder:text-zinc-700"
+                          placeholder="Paste additional image URL (e.g. back angle, detail shot)..."
+                          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddGalleryImage())}
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAddGalleryImage}
+                          className="bg-zinc-900 hover:bg-zinc-800 text-white font-mono text-[9px] px-3 border border-zinc-800 cursor-pointer"
+                        >
+                          ADD
+                        </button>
+                      </div>
+
+                      {pGalleryImages.length > 0 && (
+                        <div className="grid grid-cols-4 gap-2 mt-1 max-h-28 overflow-y-auto p-1 bg-black border border-zinc-900">
+                          {pGalleryImages.map((imgUrl, idx) => (
+                            <div key={idx} className="relative group w-full h-14 bg-zinc-900 border border-zinc-800 overflow-hidden">
+                              <img
+                                src={imgUrl}
+                                alt={`Gallery item ${idx + 1}`}
+                                className="w-full h-full object-cover"
+                                referrerPolicy="no-referrer"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveGalleryImage(idx)}
+                                className="absolute top-1 right-1 bg-black/80 hover:bg-red-600 text-white p-0.5 rounded-none text-[8px] opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                                title="Remove photo"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex flex-col gap-1">
@@ -989,35 +1098,48 @@ export default function AdminWorkspaceModal({
                     </div>
 
                     {/* Colors Options Swatch builder */}
-                    <div className="flex flex-col gap-2">
-                      <label className="font-mono text-[9px] text-zinc-500 uppercase block">GARMENT COLORWAYS ({pColors.length})</label>
-                      <div className="grid grid-cols-12 gap-2">
+                    <div className="flex flex-col gap-2 p-3 bg-zinc-950/60 border border-zinc-900">
+                      <div className="flex justify-between items-center">
+                        <label className="font-mono text-[9px] text-zinc-300 uppercase block font-bold">
+                          GARMENT COLORWAYS & VARIANT PHOTOS ({pColors.length})
+                        </label>
+                        <span className="font-mono text-[8px] text-[#EFFF00] uppercase">
+                          Auto-switches photo when color is chosen
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-12 gap-1.5 items-center">
                         <input
                           type="text"
                           value={colorName}
                           onChange={(e) => setColorName(e.target.value)}
                           className="col-span-4 bg-zinc-950 border border-zinc-900 py-1 px-2 font-mono text-xs focus:border-[#EFFF00]"
-                          placeholder="e.g. Army Camo"
+                          placeholder="e.g. Alpine Forest Green"
                         />
                         <input
                           type="color"
                           value={colorHex}
                           onChange={(e) => setColorHex(e.target.value)}
                           className="col-span-2 bg-transparent h-7 w-full border border-zinc-900 cursor-pointer p-0"
+                          title="Choose Color Swatch Hex"
                         />
                         <button
                           type="button"
                           onClick={() => colorFileInputRef.current?.click()}
-                          className="col-span-3 bg-zinc-950 border border-zinc-900 hover:border-zinc-700 text-zinc-400 hover:text-white font-mono text-[9px] truncate"
+                          className={`col-span-3 border py-1 font-mono text-[9px] truncate cursor-pointer transition-colors ${
+                            colorImage 
+                              ? "bg-green-950/40 border-green-700 text-green-300" 
+                              : "bg-zinc-900 border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-white"
+                          }`}
                         >
-                          {isUploadingColorImage ? "UP..." : colorImage ? "✓ IMG" : "+ IMG"}
+                          {isUploadingColorImage ? "Uploading..." : colorImage ? "✓ Photo Added" : "+ Color Photo"}
                         </button>
                         <button
                           type="button"
                           onClick={handleAddColor}
-                          className="col-span-3 bg-[#EFFF00] hover:bg-yellow-450 text-black font-mono font-bold text-[9px]"
+                          className="col-span-3 bg-[#EFFF00] hover:bg-yellow-450 text-black font-mono font-bold text-[9px] py-1 cursor-pointer"
                         >
-                          ADD CLR
+                          + ADD COLOR
                         </button>
                         <input
                           type="file"
@@ -1027,26 +1149,46 @@ export default function AdminWorkspaceModal({
                           className="hidden"
                         />
                       </div>
-                      <div className="flex flex-wrap gap-2 mt-1 max-h-20 overflow-y-auto bg-zinc-950 p-2 border border-zinc-900">
+
+                      {/* Optional direct color image URL field */}
+                      <input
+                        type="text"
+                        value={colorImage}
+                        onChange={(e) => setColorImage(e.target.value)}
+                        className="bg-zinc-950 border border-zinc-900 py-1 px-2 font-mono text-[9px] focus:border-[#EFFF00] text-zinc-400 placeholder:text-zinc-700"
+                        placeholder="Or paste color photo URL directly..."
+                      />
+
+                      <div className="flex flex-col gap-1.5 mt-1 max-h-32 overflow-y-auto bg-black p-2 border border-zinc-900">
                         {pColors.map((color, i) => (
                           <div
-                              key={i}
-                              className="bg-black border border-zinc-900 px-2 py-1 flex items-center gap-1.5 font-mono text-[9px]"
-                            >
+                            key={i}
+                            className="bg-zinc-950 border border-zinc-900 px-2 py-1.5 flex items-center justify-between font-mono text-[9px]"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span 
+                                className="w-3.5 h-3.5 inline-block border border-zinc-700 flex-shrink-0" 
+                                style={{ backgroundColor: color.hex }} 
+                              />
+                              <span className="font-bold text-white truncate max-w-[110px]">{color.name}</span>
                               {color.imageUrl ? (
-                                <img src={color.imageUrl} className="w-3.5 h-3.5 object-cover border border-zinc-800" referrerPolicy="no-referrer" />
+                                <div className="flex items-center gap-1.5 text-[8px] text-green-400 bg-green-950/40 px-1.5 py-0.5 border border-green-800/60">
+                                  <img src={color.imageUrl} className="w-3.5 h-3.5 object-cover border border-green-700" referrerPolicy="no-referrer" />
+                                  <span>Has Variant Photo</span>
+                                </div>
                               ) : (
-                                <span className="w-2.5 h-2.5 inline-block border border-zinc-850" style={{ backgroundColor: color.hex }} />
+                                <span className="text-[8px] text-zinc-600">Vector color</span>
                               )}
-                              <span className="truncate max-w-[80px]">{color.name}</span>
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveColor(i)}
-                                className="text-red-400 hover:text-red-200 ml-1 font-black"
-                              >
-                                ✕
-                              </button>
                             </div>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveColor(i)}
+                              className="text-red-400 hover:text-red-200 ml-2 font-bold px-1"
+                              title="Delete colorway"
+                            >
+                              ✕
+                            </button>
+                          </div>
                         ))}
                       </div>
                     </div>

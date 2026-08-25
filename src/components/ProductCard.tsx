@@ -144,10 +144,11 @@ export default function ProductCard({ product, onAddToCart, onSelect, isWishlist
         }`}>
           {(selectedColor.imageUrl || product.imageUrl) ? (
             <img
+              key={selectedColor.imageUrl || product.imageUrl}
               src={selectedColor.imageUrl || product.imageUrl}
-              alt={product.name}
+              alt={`${product.name} - ${selectedColor.name}`}
               referrerPolicy="no-referrer"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-all duration-300 animate-fadeIn"
             />
           ) : (
             <>
@@ -354,6 +355,19 @@ export default function ProductCard({ product, onAddToCart, onSelect, isWishlist
                     </svg>
                   )}
 
+                  {product.mockupType === "tank" && (
+                    <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]">
+                      <path
+                        d="M 30,90 L 30,34 L 26,18 L 36,18 L 40,28 C 40,28 44,22 50,22 C 56,22 60,28 60,28 L 64,18 L 74,18 L 70,34 L 70,90 Z"
+                        fill={selectedColor.hex}
+                        className="transition-colors duration-300"
+                      />
+                      <path d="M 40,28 C 43,36 57,36 60,28" fill="none" stroke="rgba(0,0,0,0.3)" strokeWidth="1.5" />
+                      <path d="M 36,18 C 30,26 30,32 30,34" fill="none" stroke="rgba(0,0,0,0.25)" strokeWidth="1" />
+                      <path d="M 64,18 C 70,26 70,32 70,34" fill="none" stroke="rgba(0,0,0,0.25)" strokeWidth="1" />
+                    </svg>
+                  )}
+
                   {product.mockupType === "cap" && (
                     <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]">
                       <path
@@ -458,16 +472,24 @@ export default function ProductCard({ product, onAddToCart, onSelect, isWishlist
           
           {/* Colors row */}
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
-            <span className="text-[9px] font-mono text-zinc-500 uppercase">COLOR</span>
+            <div className="flex items-center justify-between sm:justify-start gap-1.5">
+              <span className="text-[9px] font-mono text-zinc-500 uppercase">COLOR</span>
+              <span className="text-[8.5px] font-mono text-zinc-400 truncate max-w-[120px]">{selectedColor.name}</span>
+            </div>
             <div className="flex gap-1.5 flex-wrap">
               {product.colors.map((color) => {
                 const isCSelected = selectedColor.name === color.name;
                 return (
                   <button
                     key={color.name}
-                    onClick={() => setSelectedColor(color)}
-                    className={`w-3.5 h-3.5 border transition-all ${
-                      isCSelected ? "border-[#EFFF00] scale-125" : "border-zinc-800 hover:border-zinc-500"
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedColor(color);
+                    }}
+                    onMouseEnter={() => setSelectedColor(color)}
+                    className={`w-3.5 h-3.5 border transition-all cursor-pointer ${
+                      isCSelected ? "border-[#EFFF00] scale-125 shadow-[0_0_8px_rgba(239,255,0,0.4)]" : "border-zinc-800 hover:border-zinc-400"
                     }`}
                     style={{ backgroundColor: color.hex }}
                     title={color.name}

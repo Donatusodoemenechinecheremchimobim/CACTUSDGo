@@ -42,7 +42,7 @@ export default function CollectionPage({
   const [showLowStockOnly, setShowLowStockOnly] = useState(false);
 
   // Filter Categories
-  const categoriesList = ["All", "Outerwear", "Tees", "Headwear"];
+  const categoriesList = ["All", "Outerwear", "Tees", "Tank Tops", "Headwear", "Accessories"];
 
   // Processed products (Search -> Filter -> Sort)
   const processedProducts = useMemo(() => {

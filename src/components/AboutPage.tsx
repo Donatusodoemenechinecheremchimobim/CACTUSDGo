@@ -36,6 +36,19 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
       ]
     },
     {
+      category: "Tank Tops" as ProductCat,
+      title: "Studio Ribbed Tank Tops",
+      edition: "Capsule Drop",
+      material: "Heavy Stretch Rib Knit",
+      desc: "Athletic cut sleeveless tanks tailored with high armholes, clean bound collar edges, and subtle chest crown embroidery.",
+      points: [
+        "Breathable heavy stretch rib knit",
+        "Deep armhole and neckline binding",
+        "Reinforced flatlock stitched double hem",
+        "Subtle high-density chest crown mark"
+      ]
+    },
+    {
       category: "Outerwear" as ProductCat,
       title: "Structured Fleece Hoodies",
       edition: "Studio Archive",

@@ -4,9 +4,10 @@ export interface ApparelColor {
   bgHex: string;
   isYellowTint?: boolean;
   imageUrl?: string;
+  images?: string[];
 }
 
-export type ProductCat = "Outerwear" | "Tees" | "Headwear" | "Accessories";
+export type ProductCat = "Outerwear" | "Tees" | "Tank Tops" | "Headwear" | "Accessories";
 
 export interface Product {
   id: string;
@@ -19,8 +20,9 @@ export interface Product {
   colors: ApparelColor[];
   sku: string;
   hasBackPrint?: boolean;
-  mockupType: "hoodie" | "puffer" | "tee" | "cap";
+  mockupType: "hoodie" | "puffer" | "tee" | "cap" | "tank";
   imageUrl?: string;
+  images?: string[];
   stock?: number;
 }
 
