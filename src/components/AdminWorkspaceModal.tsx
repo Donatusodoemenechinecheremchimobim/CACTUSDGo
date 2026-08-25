@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { X, Plus, Trash2, Edit3, ShieldAlert, BadgeCheck, ClipboardList, Package, Truck, Calendar, Cpu, Terminal, Activity, Link2, RefreshCw, Upload, Globe, Smartphone, Copy, CreditCard, Sparkles, Check } from "lucide-react";
 import { Product, ProductCat, ApparelColor } from "../types";
 import { dbService, DbOrder, uploadProductImage } from "../services/firebase";
+import { safeLocalStorageSet, safeLocalStorageGet } from "../services/storage";
 import { generateSitemapXml, downloadSitemapFile } from "../utils/sitemapGenerator";
 
 interface AdminWorkspaceModalProps {
@@ -144,26 +145,26 @@ export default function AdminWorkspaceModal({
     e.preventDefault();
     setIsSavingAutomation(true);
     try {
-      localStorage.setItem("cactus_bear_autom_webhook_enabled", String(webEnabled));
-      localStorage.setItem("cactus_bear_autom_webhook_url", webUrl.trim());
-      localStorage.setItem("cactus_bear_autom_slack_enabled", String(slEnabled));
-      localStorage.setItem("cactus_bear_autom_slack_url", slUrl.trim());
-      localStorage.setItem("cactus_bear_autom_discord_enabled", String(dcEnabled));
-      localStorage.setItem("cactus_bear_autom_discord_url", dcUrl.trim());
+      safeLocalStorageSet("cactus_bear_autom_webhook_enabled", String(webEnabled));
+      safeLocalStorageSet("cactus_bear_autom_webhook_url", webUrl.trim());
+      safeLocalStorageSet("cactus_bear_autom_slack_enabled", String(slEnabled));
+      safeLocalStorageSet("cactus_bear_autom_slack_url", slUrl.trim());
+      safeLocalStorageSet("cactus_bear_autom_discord_enabled", String(dcEnabled));
+      safeLocalStorageSet("cactus_bear_autom_discord_url", dcUrl.trim());
 
       // Save Email configurations
-      localStorage.setItem("cactus_bear_autom_email_enabled", String(emailEnabled));
-      localStorage.setItem("cactus_bear_autom_email_target", emailTarget.trim());
-      localStorage.setItem("cactus_bear_autom_email_key", emailKey.trim());
+      safeLocalStorageSet("cactus_bear_autom_email_enabled", String(emailEnabled));
+      safeLocalStorageSet("cactus_bear_autom_email_target", emailTarget.trim());
+      safeLocalStorageSet("cactus_bear_autom_email_key", emailKey.trim());
 
       // Save WhatsApp configurations
-      localStorage.setItem("cactus_bear_autom_whatsapp_enabled", String(whatsappEnabled));
-      localStorage.setItem("cactus_bear_autom_whatsapp_phone", whatsappPhone.trim());
-      localStorage.setItem("cactus_bear_autom_whatsapp_apikey", whatsappApiKey.trim());
-      localStorage.setItem("cactus_bear_autom_whatsapp_webhook", whatsappWebhook.trim());
+      safeLocalStorageSet("cactus_bear_autom_whatsapp_enabled", String(whatsappEnabled));
+      safeLocalStorageSet("cactus_bear_autom_whatsapp_phone", whatsappPhone.trim());
+      safeLocalStorageSet("cactus_bear_autom_whatsapp_apikey", whatsappApiKey.trim());
+      safeLocalStorageSet("cactus_bear_autom_whatsapp_webhook", whatsappWebhook.trim());
 
       // Save Flutterwave configurations
-      localStorage.setItem("cactus_bear_flutterwave_public_key", flwPublicKey.trim());
+      safeLocalStorageSet("cactus_bear_flutterwave_public_key", flwPublicKey.trim());
 
       // Simulate network save latency
       await new Promise(resolve => setTimeout(resolve, 600));
@@ -176,7 +177,7 @@ export default function AdminWorkspaceModal({
   };
 
   const handleClearAutomationLogs = () => {
-    localStorage.removeItem("cactus_bear_autom_logs");
+    try { localStorage.removeItem("cactus_bear_autom_logs"); } catch {}
     setAutomLogs([]);
   };
 
@@ -206,19 +207,19 @@ export default function AdminWorkspaceModal({
 
     try {
       // Save current states first to verify
-      localStorage.setItem("cactus_bear_autom_webhook_enabled", String(webEnabled));
-      localStorage.setItem("cactus_bear_autom_webhook_url", webUrl.trim());
-      localStorage.setItem("cactus_bear_autom_slack_enabled", String(slEnabled));
-      localStorage.setItem("cactus_bear_autom_slack_url", slUrl.trim());
-      localStorage.setItem("cactus_bear_autom_discord_enabled", String(dcEnabled));
-      localStorage.setItem("cactus_bear_autom_discord_url", dcUrl.trim());
-      localStorage.setItem("cactus_bear_autom_email_enabled", String(emailEnabled));
-      localStorage.setItem("cactus_bear_autom_email_target", emailTarget.trim());
-      localStorage.setItem("cactus_bear_autom_email_key", emailKey.trim());
-      localStorage.setItem("cactus_bear_autom_whatsapp_enabled", String(whatsappEnabled));
-      localStorage.setItem("cactus_bear_autom_whatsapp_phone", whatsappPhone.trim());
-      localStorage.setItem("cactus_bear_autom_whatsapp_apikey", whatsappApiKey.trim());
-      localStorage.setItem("cactus_bear_autom_whatsapp_webhook", whatsappWebhook.trim());
+      safeLocalStorageSet("cactus_bear_autom_webhook_enabled", String(webEnabled));
+      safeLocalStorageSet("cactus_bear_autom_webhook_url", webUrl.trim());
+      safeLocalStorageSet("cactus_bear_autom_slack_enabled", String(slEnabled));
+      safeLocalStorageSet("cactus_bear_autom_slack_url", slUrl.trim());
+      safeLocalStorageSet("cactus_bear_autom_discord_enabled", String(dcEnabled));
+      safeLocalStorageSet("cactus_bear_autom_discord_url", dcUrl.trim());
+      safeLocalStorageSet("cactus_bear_autom_email_enabled", String(emailEnabled));
+      safeLocalStorageSet("cactus_bear_autom_email_target", emailTarget.trim());
+      safeLocalStorageSet("cactus_bear_autom_email_key", emailKey.trim());
+      safeLocalStorageSet("cactus_bear_autom_whatsapp_enabled", String(whatsappEnabled));
+      safeLocalStorageSet("cactus_bear_autom_whatsapp_phone", whatsappPhone.trim());
+      safeLocalStorageSet("cactus_bear_autom_whatsapp_apikey", whatsappApiKey.trim());
+      safeLocalStorageSet("cactus_bear_autom_whatsapp_webhook", whatsappWebhook.trim());
 
       const detailedItemsList = testOrder.items.map((it, i) => {
         const pName = it.product.name;
@@ -253,7 +254,7 @@ export default function AdminWorkspaceModal({
         `• Items Breakdown:\n\n${detailedItemsList}\n\n` +
         `✦ END OF TEST DISPATCH ✦`;
 
-      const currentLogs = JSON.parse(localStorage.getItem("cactus_bear_autom_logs") || "[]");
+      const currentLogs = JSON.parse(safeLocalStorageGet("cactus_bear_autom_logs") || "[]");
       const localTestLog = {
         id: "log-" + Math.floor(Math.random() * 100000),
         timestamp: new Date().toISOString(),
@@ -264,7 +265,7 @@ export default function AdminWorkspaceModal({
       };
 
       const updated = [localTestLog, ...currentLogs].slice(0, 50);
-      localStorage.setItem("cactus_bear_autom_logs", JSON.stringify(updated));
+      safeLocalStorageSet("cactus_bear_autom_logs", JSON.stringify(updated));
       setAutomLogs(updated);
 
       // Now dispatch Email if enabled
@@ -316,17 +317,17 @@ export default function AdminWorkspaceModal({
           .then(res => {
             logEntry.status = res.status;
             logEntry.statusText = res.ok ? "Custom Hook Posted Successfully" : "Webhook Connection Failed";
-            const currentLogs = JSON.parse(localStorage.getItem("cactus_bear_autom_logs") || "[]");
+            const currentLogs = JSON.parse(safeLocalStorageGet("cactus_bear_autom_logs") || "[]");
             const updatedLogs = [logEntry, ...currentLogs.filter((l: any) => l.id !== logEntry.id)].slice(0, 50);
-            localStorage.setItem("cactus_bear_autom_logs", JSON.stringify(updatedLogs));
+            safeLocalStorageSet("cactus_bear_autom_logs", JSON.stringify(updatedLogs));
             setAutomLogs(updatedLogs);
           })
           .catch(err => {
             logEntry.status = 503;
             logEntry.statusText = err?.message || "WhatsApp Webhook Error";
-            const currentLogs = JSON.parse(localStorage.getItem("cactus_bear_autom_logs") || "[]");
+            const currentLogs = JSON.parse(safeLocalStorageGet("cactus_bear_autom_logs") || "[]");
             const updatedLogs = [logEntry, ...currentLogs.filter((l: any) => l.id !== logEntry.id)].slice(0, 50);
-            localStorage.setItem("cactus_bear_autom_logs", JSON.stringify(updatedLogs));
+            safeLocalStorageSet("cactus_bear_autom_logs", JSON.stringify(updatedLogs));
             setAutomLogs(updatedLogs);
           });
           promises.push(waProm);
@@ -337,17 +338,17 @@ export default function AdminWorkspaceModal({
           .then(() => {
             logEntry.status = 200;
             logEntry.statusText = "Dispatched via CallMeBot Bot Channel";
-            const currentLogs = JSON.parse(localStorage.getItem("cactus_bear_autom_logs") || "[]");
+            const currentLogs = JSON.parse(safeLocalStorageGet("cactus_bear_autom_logs") || "[]");
             const updatedLogs = [logEntry, ...currentLogs.filter((l: any) => l.id !== logEntry.id)].slice(0, 50);
-            localStorage.setItem("cactus_bear_autom_logs", JSON.stringify(updatedLogs));
+            safeLocalStorageSet("cactus_bear_autom_logs", JSON.stringify(updatedLogs));
             setAutomLogs(updatedLogs);
           })
           .catch(err => {
             logEntry.status = 502;
             logEntry.statusText = err?.message || "WhatsApp API Request Timeout";
-            const currentLogs = JSON.parse(localStorage.getItem("cactus_bear_autom_logs") || "[]");
+            const currentLogs = JSON.parse(safeLocalStorageGet("cactus_bear_autom_logs") || "[]");
             const updatedLogs = [logEntry, ...currentLogs.filter((l: any) => l.id !== logEntry.id)].slice(0, 50);
-            localStorage.setItem("cactus_bear_autom_logs", JSON.stringify(updatedLogs));
+            safeLocalStorageSet("cactus_bear_autom_logs", JSON.stringify(updatedLogs));
             setAutomLogs(updatedLogs);
           });
           promises.push(cbProm);

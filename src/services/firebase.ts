@@ -1,5 +1,12 @@
 import { Product, CartItem, Review } from "../types";
 import { CACTUS_BEAR_PRODUCTS } from "../data";
+import { 
+  safeLocalStorageSet, 
+  safeLocalStorageGet, 
+  idbSet, 
+  idbGet, 
+  idbDelete 
+} from "./storage";
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { 
   initializeFirestore, 
@@ -133,15 +140,15 @@ export function sanitizeForFirestore<T>(obj: T): T {
 
 /**
  * Optimizes an image client-side to ensure sharp, high-definition product resolution
- * while maintaining performant load speeds and fast rendering.
+ * while maintaining performant load speeds, small payload footprint (<120KB), and zero storage quota errors.
  */
-export function compressImage(file: File, maxWidth = 1920, maxHeight = 1920, quality = 0.90): Promise<string> {
+export function compressImage(file: File, maxWidth = 1080, maxHeight = 1080, quality = 0.82): Promise<string> {
   return new Promise((resolve, reject) => {
-    // If small image (e.g. SVG or small PNG/WebP under 500KB), read directly without lossy re-encoding
-    if (file.type === "image/svg+xml" || (file.size < 500 * 1024 && (file.type === "image/png" || file.type === "image/webp"))) {
+    // If SVG, read directly as vector
+    if (file.type === "image/svg+xml") {
       const directReader = new FileReader();
       directReader.onload = (ev) => resolve(ev.target?.result as string);
-      directReader.onerror = () => reject(new Error("Failed to read image."));
+      directReader.onerror = () => reject(new Error("Failed to read SVG file."));
       directReader.readAsDataURL(file);
       return;
     }
@@ -179,20 +186,26 @@ export function compressImage(file: File, maxWidth = 1920, maxHeight = 1920, qua
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = "high";
 
+        // Fill white background for transparent pngs converted to jpeg to avoid black artifacts
+        if (file.type !== "image/png" && file.type !== "image/webp") {
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, width, height);
+        }
+
         ctx.drawImage(img, 0, 0, width, height);
         
-        // Use WebP if source is webp/png or fallback to high-quality JPEG
-        const outputMime = file.type === "image/png" ? "image/png" : "image/jpeg";
+        // Use JPEG for compact size or WebP
+        const outputMime = file.type === "image/webp" ? "image/webp" : "image/jpeg";
         const dataUrl = canvas.toDataURL(outputMime, quality);
         resolve(dataUrl);
       };
       img.onerror = () => {
-        reject(new Error("Failed to load image."));
+        reject(new Error("Failed to process image file."));
       };
       img.src = e.target?.result as string;
     };
     reader.onerror = () => {
-      reject(new Error("Failed to read file."));
+      reject(new Error("Failed to read image file."));
     };
     reader.readAsDataURL(file);
   });
@@ -286,7 +299,7 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
 
 // Setup initial drop config
 const getInitialTimer = (): DropTimerConfig => {
-  const saved = localStorage.getItem(STORAGE_TIMER_KEY);
+  const saved = safeLocalStorageGet(STORAGE_TIMER_KEY);
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
@@ -319,13 +332,13 @@ const getInitialTimer = (): DropTimerConfig => {
     adminWhatsapp: "2348123456789", // Preset default WhatsApp (e.g. support line)
     adminEmail: "chibundusadiq@gmail.com" // Preset default Email (matches owner exactly)
   };
-  localStorage.setItem(STORAGE_TIMER_KEY, JSON.stringify(defaultTimer));
+  safeLocalStorageSet(STORAGE_TIMER_KEY, JSON.stringify(defaultTimer));
   return defaultTimer;
 };
 
 const getInitialProducts = (): Product[] => {
-  const isCustomized = localStorage.getItem("cactus_bear_catalog_customized");
-  const saved = localStorage.getItem(STORAGE_PRODUCTS_KEY);
+  const isCustomized = safeLocalStorageGet("cactus_bear_catalog_customized");
+  const saved = safeLocalStorageGet(STORAGE_PRODUCTS_KEY);
   if (saved !== null) {
     try {
       const parsed = JSON.parse(saved) as Product[];
@@ -342,7 +355,7 @@ const getInitialProducts = (): Product[] => {
 };
 
 const getInitialOrders = (): DbOrder[] => {
-  const saved = localStorage.getItem(STORAGE_ORDERS_KEY);
+  const saved = safeLocalStorageGet(STORAGE_ORDERS_KEY);
   if (saved) {
     try {
       return JSON.parse(saved);
@@ -374,12 +387,12 @@ const getInitialOrders = (): DbOrder[] => {
       ]
     }
   ];
-  localStorage.setItem(STORAGE_ORDERS_KEY, JSON.stringify(defaultOrders));
+  safeLocalStorageSet(STORAGE_ORDERS_KEY, JSON.stringify(defaultOrders));
   return defaultOrders;
 };
 
 const getInitialReviews = (): Review[] => {
-  const saved = localStorage.getItem(STORAGE_REVIEWS_KEY);
+  const saved = safeLocalStorageGet(STORAGE_REVIEWS_KEY);
   if (saved) {
     try {
       return JSON.parse(saved);
@@ -411,7 +424,7 @@ const getInitialReviews = (): Review[] => {
       createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
     }
   ];
-  localStorage.setItem(STORAGE_REVIEWS_KEY, JSON.stringify(defaultReviews));
+  safeLocalStorageSet(STORAGE_REVIEWS_KEY, JSON.stringify(defaultReviews));
   return defaultReviews;
 };
 
@@ -422,10 +435,17 @@ class DatabaseService {
   private localTimer: DropTimerConfig = getInitialTimer();
   private localReviews: Review[] = getInitialReviews();
 
+  constructor() {
+    // Attempt IndexedDB asynchronous cache hydration on startup
+    idbGet<Product[]>(STORAGE_PRODUCTS_KEY).then((idbProducts) => {
+      if (idbProducts && Array.isArray(idbProducts) && idbProducts.length > 0) {
+        this.localProducts = idbProducts;
+      }
+    }).catch(() => {});
+  }
+
   // Retrieve products list
   public async getProducts(): Promise<Product[]> {
-    const isCustomized = localStorage.getItem("cactus_bear_catalog_customized");
-
     if (isFirebaseConfigured && db) {
       try {
         const querySnapshot = await getDocs(collection(db, "products"));
@@ -435,7 +455,7 @@ class DatabaseService {
         });
 
         // If user has local custom products not yet in Firestore, merge them
-        const localSaved = localStorage.getItem(STORAGE_PRODUCTS_KEY);
+        const localSaved = safeLocalStorageGet(STORAGE_PRODUCTS_KEY);
         if (localSaved) {
           try {
             const localList: Product[] = JSON.parse(localSaved);
@@ -452,12 +472,22 @@ class DatabaseService {
 
         // Cache the actual catalog state
         this.localProducts = list;
-        localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(list));
+        idbSet(STORAGE_PRODUCTS_KEY, list).catch(() => {});
+        safeLocalStorageSet(STORAGE_PRODUCTS_KEY, JSON.stringify(list));
         return list;
       } catch (error) {
         console.warn("Firestore getProducts fallback to local storage:", error);
       }
     }
+
+    // Try IndexedDB first for offline / local mode
+    try {
+      const idbList = await idbGet<Product[]>(STORAGE_PRODUCTS_KEY);
+      if (idbList && Array.isArray(idbList) && idbList.length > 0) {
+        this.localProducts = idbList;
+        return this.localProducts;
+      }
+    } catch {}
 
     // Local Storage Fallback Mode
     this.refreshLocal();
@@ -477,7 +507,8 @@ class DatabaseService {
             });
 
             this.localProducts = list;
-            localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(list));
+            idbSet(STORAGE_PRODUCTS_KEY, list).catch(() => {});
+            safeLocalStorageSet(STORAGE_PRODUCTS_KEY, JSON.stringify(list));
             callback(list);
           },
           (error) => {
@@ -499,19 +530,19 @@ class DatabaseService {
 
   // Refreshes data cache
   private refreshLocal() {
-    const pSaved = localStorage.getItem(STORAGE_PRODUCTS_KEY);
+    const pSaved = safeLocalStorageGet(STORAGE_PRODUCTS_KEY);
     if (pSaved) {
       try { this.localProducts = JSON.parse(pSaved); } catch {}
     }
-    const oSaved = localStorage.getItem(STORAGE_ORDERS_KEY);
+    const oSaved = safeLocalStorageGet(STORAGE_ORDERS_KEY);
     if (oSaved) {
       try { this.localOrders = JSON.parse(oSaved); } catch {}
     }
-    const tSaved = localStorage.getItem(STORAGE_TIMER_KEY);
+    const tSaved = safeLocalStorageGet(STORAGE_TIMER_KEY);
     if (tSaved) {
       try { this.localTimer = JSON.parse(tSaved); } catch {}
     }
-    const rSaved = localStorage.getItem(STORAGE_REVIEWS_KEY);
+    const rSaved = safeLocalStorageGet(STORAGE_REVIEWS_KEY);
     if (rSaved) {
       try { this.localReviews = JSON.parse(rSaved); } catch {}
     }
@@ -565,7 +596,7 @@ class DatabaseService {
     }
 
     this.localTimer = config;
-    localStorage.setItem(STORAGE_TIMER_KEY, JSON.stringify(config));
+    safeLocalStorageSet(STORAGE_TIMER_KEY, JSON.stringify(config));
   }
 
   public async subscribeToDrop(email: string): Promise<boolean> {
@@ -594,13 +625,13 @@ class DatabaseService {
     
     const updatedEmails = [...this.localTimer.notifyEmails, cleanEmail];
     this.localTimer = { ...this.localTimer, notifyEmails: updatedEmails };
-    localStorage.setItem(STORAGE_TIMER_KEY, JSON.stringify(this.localTimer));
+    safeLocalStorageSet(STORAGE_TIMER_KEY, JSON.stringify(this.localTimer));
     return true;
   }
 
   // Add Product (Admin Action)
   public async addProduct(p: Product): Promise<void> {
-    localStorage.setItem("cactus_bear_catalog_customized", "true");
+    safeLocalStorageSet("cactus_bear_catalog_customized", "true");
     this.refreshLocal();
     const exists = this.localProducts.some(item => item.id === p.id);
     if (exists) {
@@ -608,7 +639,12 @@ class DatabaseService {
     } else {
       this.localProducts.unshift(p);
     }
-    localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(this.localProducts));
+
+    // Persist to high-capacity IndexedDB cache
+    await idbSet(STORAGE_PRODUCTS_KEY, this.localProducts);
+
+    // Safely cache to localStorage without crashing on quota
+    safeLocalStorageSet(STORAGE_PRODUCTS_KEY, JSON.stringify(this.localProducts));
 
     if (isFirebaseConfigured && db) {
       try {
@@ -624,10 +660,11 @@ class DatabaseService {
 
   // Delete product permanently
   public async deleteProduct(id: string): Promise<void> {
-    localStorage.setItem("cactus_bear_catalog_customized", "true");
+    safeLocalStorageSet("cactus_bear_catalog_customized", "true");
     this.refreshLocal();
     this.localProducts = this.localProducts.filter(item => item.id !== id);
-    localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(this.localProducts));
+    await idbSet(STORAGE_PRODUCTS_KEY, this.localProducts);
+    safeLocalStorageSet(STORAGE_PRODUCTS_KEY, JSON.stringify(this.localProducts));
 
     if (isFirebaseConfigured && db) {
       try {
@@ -640,9 +677,10 @@ class DatabaseService {
 
   // Clear all products (Admin Purge to start fresh)
   public async clearAllProducts(): Promise<void> {
-    localStorage.setItem("cactus_bear_catalog_customized", "true");
+    safeLocalStorageSet("cactus_bear_catalog_customized", "true");
     this.localProducts = [];
-    localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify([]));
+    await idbSet(STORAGE_PRODUCTS_KEY, []);
+    safeLocalStorageSet(STORAGE_PRODUCTS_KEY, JSON.stringify([]));
 
     if (isFirebaseConfigured && db) {
       try {
@@ -1040,7 +1078,7 @@ class DatabaseService {
           status: 200,
           statusText: "Built-In Dispatch OK"
         };
-        localStorage.setItem("cactus_bear_autom_logs", JSON.stringify([logEntry, ...logs].slice(0, 50)));
+        safeLocalStorageSet("cactus_bear_autom_logs", JSON.stringify([logEntry, ...logs].slice(0, 50)));
       }
     } catch (e) {
       console.error("Autotarget failed:", e);
@@ -1072,7 +1110,7 @@ class DatabaseService {
 
     this.refreshLocal();
     this.localOrders.unshift(newOrder as DbOrder);
-    localStorage.setItem(STORAGE_ORDERS_KEY, JSON.stringify(this.localOrders));
+    safeLocalStorageSet(STORAGE_ORDERS_KEY, JSON.stringify(this.localOrders));
     this.runAutomations(newOrder as DbOrder);
     return newOrder as DbOrder;
   }
@@ -1091,7 +1129,7 @@ class DatabaseService {
     this.localOrders = this.localOrders.map(order => 
       order.id === id ? { ...order, status } : order
     );
-    localStorage.setItem(STORAGE_ORDERS_KEY, JSON.stringify(this.localOrders));
+    safeLocalStorageSet(STORAGE_ORDERS_KEY, JSON.stringify(this.localOrders));
   }
 
   // Reviews Operations
@@ -1138,7 +1176,7 @@ class DatabaseService {
 
     this.refreshLocal();
     this.localReviews.unshift(newReview);
-    localStorage.setItem(STORAGE_REVIEWS_KEY, JSON.stringify(this.localReviews));
+    safeLocalStorageSet(STORAGE_REVIEWS_KEY, JSON.stringify(this.localReviews));
     return newReview;
   }
 

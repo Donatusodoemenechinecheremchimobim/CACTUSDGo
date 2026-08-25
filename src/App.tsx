@@ -40,27 +40,74 @@ import ProductDetailPage from "./components/ProductDetailPage";
 import CollectionPage from "./components/CollectionPage";
 
 import { dbService, authService, UserSession, DropTimerConfig } from "./services/firebase";
+import { safeLocalStorageSet, safeLocalStorageGet } from "./services/storage";
 import GoogleAuthModal from "./components/GoogleAuthModal";
 import AdminWorkspaceModal from "./components/AdminWorkspaceModal";
 import OrdersLookupModal from "./components/OrdersLookupModal";
 import OrderHistoryModal from "./components/OrderHistoryModal";
 import PrivacyPolicyModal from "./components/PrivacyPolicyModal";
 
+// Helper to synchronously parse URL route on component initialization
+const getInitialRoute = () => {
+  if (typeof window === "undefined") {
+    return {
+      page: "home" as const,
+      productId: null as string | null,
+      modal: null as "privacy" | "terms" | null,
+    };
+  }
+  const hash = window.location.hash || "";
+  const searchParams = new URLSearchParams(window.location.search);
+  const queryProductId = searchParams.get("product") || searchParams.get("p") || searchParams.get("id");
+
+  if (queryProductId) {
+    return { page: "collection" as const, productId: queryProductId, modal: null };
+  }
+
+  if (hash.startsWith("#/product/") || hash.startsWith("#product/")) {
+    const prodId = hash.replace(/^#\/?product\//, "").split("?")[0].trim();
+    if (prodId) {
+      return { page: "collection" as const, productId: decodeURIComponent(prodId), modal: null };
+    }
+  }
+
+  const cleanHash = hash.toLowerCase();
+  if (cleanHash === "#privacy" || cleanHash === "#privacypolicy") {
+    return { page: "home" as const, productId: null, modal: "privacy" as const };
+  }
+  if (cleanHash === "#terms" || cleanHash === "#termsofservice") {
+    return { page: "home" as const, productId: null, modal: "terms" as const };
+  }
+
+  if (cleanHash.startsWith("#/collection") || cleanHash.startsWith("#/shop") || cleanHash.startsWith("#collection") || cleanHash.startsWith("#shop")) {
+    return { page: "collection" as const, productId: null, modal: null };
+  }
+  if (cleanHash.startsWith("#/about") || cleanHash.startsWith("#/story") || cleanHash.startsWith("#about")) {
+    return { page: "about" as const, productId: null, modal: null };
+  }
+  if (cleanHash.startsWith("#/drop") || cleanHash.startsWith("#/release") || cleanHash.startsWith("#drop")) {
+    return { page: "drop" as const, productId: null, modal: null };
+  }
+
+  return { page: "home" as const, productId: null, modal: null };
+};
+
 export default function App() {
+  const initialRoute = getInitialRoute();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState<boolean>(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<ProductCat | "All">("All");
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(initialRoute.productId);
   const [headerSearchQuery, setHeaderSearchQuery] = useState<string>("");
   
-  const [activePage, setActivePage] = useState<"home" | "collection" | "about" | "drop">("home");
+  const [activePage, setActivePage] = useState<"home" | "collection" | "about" | "drop">(initialRoute.page);
   const [toasts, setToasts] = useState<{ id: string; message: string; type: "success" | "info" | "alert"; timestamp: string }[]>([]);
 
   // Legal & Privacy modal states
-  const [privacyModalOpen, setPrivacyModalOpen] = useState<boolean>(false);
-  const [privacyTab, setPrivacyTab] = useState<"privacy" | "terms">("privacy");
+  const [privacyModalOpen, setPrivacyModalOpen] = useState<boolean>(Boolean(initialRoute.modal));
+  const [privacyTab, setPrivacyTab] = useState<"privacy" | "terms">(initialRoute.modal || "privacy");
 
   const addToast = (message: string, type: "success" | "info" | "alert" = "success") => {
     const id = Math.random().toString(36).substring(2, 9);
@@ -110,7 +157,7 @@ export default function App() {
     setWishlist((prev) => {
       const isAlready = prev.includes(productId);
       const updated = isAlready ? prev.filter((id) => id !== productId) : [...prev, productId];
-      localStorage.setItem(getWishlistStorageKey(currentUser?.uid || null), JSON.stringify(updated));
+      safeLocalStorageSet(getWishlistStorageKey(currentUser?.uid || null), JSON.stringify(updated));
       
       const prod = productsList.find((p) => p.id === productId);
       const prodName = prod ? prod.name : "Item";
@@ -205,15 +252,15 @@ export default function App() {
           
           if (dbCart && dbCart.length > 0) {
             setCart(dbCart);
-            localStorage.setItem(userCartKey, JSON.stringify(dbCart));
+            safeLocalStorageSet(userCartKey, JSON.stringify(dbCart));
           } else {
-            const savedCart = localStorage.getItem(userCartKey);
+            const savedCart = safeLocalStorageGet(userCartKey);
             if (savedCart) {
               try {
                 const parsed = JSON.parse(savedCart);
                 if (parsed.length > 0) {
                   setCart(parsed);
-                  localStorage.setItem(userCartKey, JSON.stringify(parsed));
+                  safeLocalStorageSet(userCartKey, JSON.stringify(parsed));
                   await dbService.saveUserCart(session.uid, parsed).catch(e => console.warn("Failed to sync cart", e));
                 }
               } catch {}
@@ -234,15 +281,15 @@ export default function App() {
 
           if (dbWishlist && dbWishlist.length > 0) {
             setWishlist(dbWishlist);
-            localStorage.setItem(userWishlistKey, JSON.stringify(dbWishlist));
+            safeLocalStorageSet(userWishlistKey, JSON.stringify(dbWishlist));
           } else {
-            const savedWishlist = localStorage.getItem(userWishlistKey);
+            const savedWishlist = safeLocalStorageGet(userWishlistKey);
             if (savedWishlist) {
               try {
                 const parsed = JSON.parse(savedWishlist);
                 if (parsed.length > 0) {
                   setWishlist(parsed);
-                  localStorage.setItem(userWishlistKey, JSON.stringify(parsed));
+                  safeLocalStorageSet(userWishlistKey, JSON.stringify(parsed));
                   await dbService.saveUserWishlist(session.uid, parsed).catch(e => console.warn("Failed to sync wishlist", e));
                 }
               } catch {}
@@ -253,11 +300,11 @@ export default function App() {
         }
       } else {
         // Guest mode fallback load values - completely isolated
-        const savedCart = localStorage.getItem("cactus_bear_cart_guest");
+        const savedCart = safeLocalStorageGet("cactus_bear_cart_guest");
         if (savedCart) {
           try { setCart(JSON.parse(savedCart)); } catch { setCart([]); }
         }
-        const savedWishlist = localStorage.getItem("cactus_bear_wishlist_guest");
+        const savedWishlist = safeLocalStorageGet("cactus_bear_wishlist_guest");
         if (savedWishlist) {
           try { setWishlist(JSON.parse(savedWishlist)); } catch { setWishlist([]); }
         }
@@ -368,7 +415,7 @@ export default function App() {
   // Sync state helpers
   const syncCart = (updated: CartItem[]) => {
     setCart(updated);
-    localStorage.setItem(getCartStorageKey(currentUser?.uid || null), JSON.stringify(updated));
+    safeLocalStorageSet(getCartStorageKey(currentUser?.uid || null), JSON.stringify(updated));
     if (currentUser) {
       dbService.saveUserCart(currentUser.uid, updated).catch((err) =>
         console.error("Cart sync failed", err)
@@ -938,18 +985,58 @@ export default function App() {
 
       {/* SECTION 01: HERO LANDING ENVIRONMENT (WORLD-CLASS STREETWEAR PRESENTATION) */}
       <main className="relative z-10 flex-1 flex flex-col">
-        {selectedProductId && productsList.some(p => p.id === selectedProductId) ? (
-          <ProductDetailPage
-            product={productsList.find(p => p.id === selectedProductId)!}
-            allProducts={productsList}
-            onBack={() => navigateToPage(activePage || "home")}
-            onAddToCart={handleAddToCart}
-            onSelectProduct={(productId) => navigateToProduct(productId)}
-            isWishlisted={wishlist.includes(selectedProductId)}
-            onToggleWishlist={() => handleToggleWishlist(selectedProductId)}
-            currentUser={currentUser}
-            onLoginTrigger={() => setAuthOpen(true)}
-          />
+        {selectedProductId ? (
+          productsLoading ? (
+            <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-28 min-h-[65vh] flex flex-col items-center justify-center text-center">
+              <div className="flex flex-col items-center gap-4 bg-black/60 border border-zinc-900 p-8 shadow-2xl">
+                <div className="w-8 h-8 border-2 border-zinc-800 border-t-[#EFFF00] animate-spin" />
+                <span className="font-mono text-xs text-zinc-300 tracking-[0.2em] uppercase font-bold">
+                  LOADING PIECE SPECIFICATIONS // RETRIEVING ARCHIVE
+                </span>
+                <span className="font-mono text-[10px] text-zinc-550 uppercase">
+                  ITEM ID: {selectedProductId}
+                </span>
+              </div>
+            </div>
+          ) : productsList.some(p => p.id === selectedProductId) ? (
+            <ProductDetailPage
+              product={productsList.find(p => p.id === selectedProductId)!}
+              allProducts={productsList}
+              onBack={() => navigateToPage(activePage === "home" ? "collection" : activePage)}
+              onAddToCart={handleAddToCart}
+              onSelectProduct={(productId) => navigateToProduct(productId)}
+              isWishlisted={wishlist.includes(selectedProductId)}
+              onToggleWishlist={() => handleToggleWishlist(selectedProductId)}
+              currentUser={currentUser}
+              onLoginTrigger={() => setAuthOpen(true)}
+            />
+          ) : (
+            <div className="w-full max-w-3xl mx-auto px-4 py-24 text-center flex flex-col items-center gap-5">
+              <span className="font-mono text-xs text-[#EFFF00] tracking-widest uppercase font-bold">
+                [ ARCHIVE PIECE NOT FOUND ]
+              </span>
+              <h2 className="font-sans font-black text-2xl md:text-3xl text-white tracking-tight uppercase">
+                THE REQUESTED DESIGN IS UNAVAILABLE
+              </h2>
+              <p className="font-sans text-xs text-zinc-400 max-w-md leading-relaxed">
+                The product reference <code className="text-[#EFFF00] bg-zinc-900 px-1.5 py-0.5 font-mono">{selectedProductId}</code> may have been archived, sold out, or updated.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
+                <button
+                  onClick={() => navigateToPage("collection")}
+                  className="font-mono text-xs font-black bg-[#EFFF00] text-black px-6 py-3 tracking-widest uppercase hover:bg-white transition-colors cursor-pointer"
+                >
+                  BROWSE ALL PRODUCTS
+                </button>
+                <button
+                  onClick={() => navigateToPage("home")}
+                  className="font-mono text-xs bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white px-6 py-3 tracking-widest uppercase transition-colors cursor-pointer"
+                >
+                  RETURN HOME
+                </button>
+              </div>
+            </div>
+          )
         ) : activePage === "collection" ? (
           <CollectionPage
             productsList={productsList}
