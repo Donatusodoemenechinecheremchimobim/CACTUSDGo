@@ -1289,6 +1289,32 @@ export default function App() {
                   />
                 ))}
               </div>
+            ) : productsList.length === 0 ? (
+              <div className="w-full bg-[#050505] border border-zinc-900 py-16 px-4 text-center flex flex-col items-center justify-center gap-4">
+                <span className="text-[#EFFF00] font-mono text-[10px] tracking-widest uppercase font-black">
+                  [ CATALOG CURRENTLY BEING CURATED ]
+                </span>
+                <p className="text-zinc-400 font-mono text-xs max-w-md leading-relaxed">
+                  The studio is preparing custom pieces for this collection. Check our upcoming drop countdown below or open the admin workspace to publish new designs.
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
+                  <button
+                    onClick={() => {
+                      setActivePage("drop");
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                    className="font-mono text-[10px] tracking-widest bg-[#EFFF00] text-black font-black px-5 py-2.5 uppercase hover:bg-white transition-colors cursor-pointer"
+                  >
+                    [ VIEW UPCOMING DROP ]
+                  </button>
+                  <button
+                    onClick={() => setAdminOpen(true)}
+                    className="font-mono text-[10px] tracking-widest bg-zinc-950 border border-zinc-800 hover:border-[#EFFF00] text-[#EFFF00] px-5 py-2.5 uppercase transition-colors cursor-pointer"
+                  >
+                    [ OPEN STUDIO ADMIN TO ADD PIECES ]
+                  </button>
+                </div>
+              </div>
             ) : (
               <div className="w-full bg-[#050505] border border-zinc-900 py-16 px-4 text-center flex flex-col items-center justify-center gap-4">
                 <span className="text-[#EFFF00] font-mono text-[10px] tracking-widest uppercase font-black animate-pulse">
@@ -1298,7 +1324,10 @@ export default function App() {
                   No items match "{headerSearchQuery}". Try adjusting your keywords.
                 </p>
                 <button
-                  onClick={() => setHeaderSearchQuery("")}
+                  onClick={() => {
+                    setHeaderSearchQuery("");
+                    setSelectedCategory("All");
+                  }}
                   className="font-mono text-[10px] tracking-widest bg-zinc-950 border border-zinc-800 hover:border-[#EFFF00] px-4 py-2 uppercase hover:text-[#EFFF00] transition-colors cursor-pointer"
                 >
                   [ RESET SEARCH ]

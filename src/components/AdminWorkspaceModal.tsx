@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X, Plus, Trash2, ShieldAlert, BadgeCheck, ClipboardList, Package, Truck, Calendar, Cpu, Terminal, Activity, Link2, RefreshCw, Upload, Globe, Smartphone, Copy, CreditCard } from "lucide-react";
+import { X, Plus, Trash2, ShieldAlert, BadgeCheck, ClipboardList, Package, Truck, Calendar, Cpu, Terminal, Activity, Link2, RefreshCw, Upload, Globe, Smartphone, Copy, CreditCard, Sparkles } from "lucide-react";
 import { Product, ProductCat, ApparelColor } from "../types";
 import { dbService, DbOrder, uploadProductImage } from "../services/firebase";
 import { generateSitemapXml, downloadSitemapFile } from "../utils/sitemapGenerator";
@@ -41,6 +41,10 @@ export default function AdminWorkspaceModal({
   const [isUploadingImage, setIsUploadingImage] = useState<boolean>(false);
   const [imageUploadError, setImageUploadError] = useState<string>("");
   const [productPublishError, setProductPublishError] = useState<string>("");
+  const [deletingProductId, setDeletingProductId] = useState<string | null>(null);
+  const [isClearingAll, setIsClearingAll] = useState<boolean>(false);
+  const [confirmClearModal, setConfirmClearModal] = useState<boolean>(false);
+  const [adminToast, setAdminToast] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -562,8 +566,39 @@ export default function AdminWorkspaceModal({
 
   // Delete product action
   const handleDeleteProduct = async (id: string) => {
-    await dbService.deleteProduct(id);
-    await refreshLocalState();
+    setDeletingProductId(id);
+    try {
+      await dbService.deleteProduct(id);
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+      await refreshLocalState();
+      setAdminToast("Product deleted from catalog.");
+      setTimeout(() => setAdminToast(null), 3000);
+    } catch (err: any) {
+      console.error("Error deleting product:", err);
+      setAdminToast("Failed to delete product: " + (err?.message || String(err)));
+      setTimeout(() => setAdminToast(null), 4000);
+    } finally {
+      setDeletingProductId(null);
+    }
+  };
+
+  // Clear all products action (Purge demo samples)
+  const handleClearAllProducts = async () => {
+    setIsClearingAll(true);
+    try {
+      await dbService.clearAllProducts();
+      setProducts([]);
+      await refreshLocalState();
+      setConfirmClearModal(false);
+      setAdminToast("All sample products cleared! Catalog is now ready for your pieces.");
+      setTimeout(() => setAdminToast(null), 4000);
+    } catch (err: any) {
+      console.error("Error clearing all products:", err);
+      setAdminToast("Failed to clear products: " + (err?.message || String(err)));
+      setTimeout(() => setAdminToast(null), 4000);
+    } finally {
+      setIsClearingAll(false);
+    }
   };
 
   // Change delivery status dropdown
@@ -1046,55 +1081,116 @@ export default function AdminWorkspaceModal({
 
                   {/* Right panel: current catalog inspector view */}
                   <div className="lg:col-span-7 flex flex-col gap-4">
-                    <span className="text-xs font-mono text-zinc-500 tracking-widest uppercase">
-                      📦 ACTIVE DESIGNS CATALOG ARCHIVE ({products.length})
-                    </span>
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-900 pb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-mono text-zinc-300 tracking-widest uppercase font-bold">
+                          📦 ACTIVE DESIGNS CATALOG ({products.length})
+                        </span>
+                        {products.length === 0 && (
+                          <span className="bg-[#EFFF00]/10 text-[#EFFF00] border border-[#EFFF00]/30 font-mono text-[9px] px-2 py-0.5 uppercase tracking-wider">
+                            EMPTY CATALOG
+                          </span>
+                        )}
+                      </div>
 
-                    <div className="flex flex-col gap-3 max-h-[750px] overflow-y-auto pr-2">
-                      {products.map((prod) => (
-                        <div
-                          key={prod.id}
-                          className="bg-black border border-zinc-900 p-4 flex justify-between gap-4 items-center"
+                      {products.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setConfirmClearModal(true)}
+                          className="border border-red-900/60 bg-red-950/20 hover:bg-red-950/40 hover:border-red-500 text-red-400 font-mono text-[9px] px-3 py-1.5 uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
                         >
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-zinc-950 border border-zinc-900 flex items-center justify-center font-mono font-black text-[#EFFF00] text-xs">
-                              {prod.mockupType.toUpperCase()}
-                            </div>
-                            <div>
-                              <code className="text-zinc-600 font-mono text-[9px] tracking-wider block">{prod.sku} // ID: {prod.id}</code>
-                              <h4 className="font-sans font-extrabold text-sm uppercase tracking-tight text-white mt-0.5">{prod.name}</h4>
-                              <div className="flex flex-wrap gap-3 mt-1.5 text-[9px] font-mono text-zinc-500">
-                                <span>PRICE: <strong className="text-[#EFFF00]">${prod.price}</strong></span>
-                                <span>CATEGORY: <strong className="text-white">{prod.category}</strong></span>
-                                <span>SIZES: <strong className="text-white">{prod.sizes.join(", ")}</strong></span>
+                          <Trash2 size={11} />
+                          <span>PURGE ALL SAMPLE PRODUCTS</span>
+                        </button>
+                      )}
+                    </div>
+
+                    {products.length === 0 ? (
+                      <div className="bg-black border border-dashed border-zinc-800 p-8 sm:p-12 text-center flex flex-col items-center justify-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-[#EFFF00]/10 border border-[#EFFF00]/20 flex items-center justify-center text-[#EFFF00]">
+                          <Sparkles size={20} />
+                        </div>
+                        <div className="max-w-md">
+                          <h4 className="font-mono text-xs font-black uppercase text-[#EFFF00] tracking-widest">
+                            CATALOG READY FOR YOUR BRAND PIECES
+                          </h4>
+                          <p className="text-zinc-400 font-mono text-[11px] mt-2 leading-relaxed">
+                            All previous sample products have been cleared. Fill out the design form on the left to add and publish your own collection pieces!
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-3 max-h-[750px] overflow-y-auto pr-2">
+                        {products.map((prod) => {
+                          const displayPrice = prod.price < 1000 ? prod.price * 1500 : prod.price;
+                          const isDeleting = deletingProductId === prod.id;
+
+                          return (
+                            <div
+                              key={prod.id}
+                              className="bg-black border border-zinc-900 hover:border-zinc-800 p-4 flex justify-between gap-4 items-center transition-colors"
+                            >
+                              <div className="flex items-center gap-4 min-w-0">
+                                <div className="w-12 h-12 bg-zinc-950 border border-zinc-900 flex items-center justify-center font-mono font-black text-[#EFFF00] text-xs shrink-0 overflow-hidden">
+                                  {prod.imageUrl ? (
+                                    <img src={prod.imageUrl} alt={prod.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                  ) : (
+                                    prod.mockupType.toUpperCase()
+                                  )}
+                                </div>
+                                <div className="min-w-0">
+                                  <code className="text-zinc-600 font-mono text-[9px] tracking-wider block truncate">
+                                    {prod.sku} // ID: {prod.id}
+                                  </code>
+                                  <h4 className="font-sans font-extrabold text-sm uppercase tracking-tight text-white mt-0.5 truncate">
+                                    {prod.name}
+                                  </h4>
+                                  <div className="flex flex-wrap gap-3 mt-1.5 text-[9px] font-mono text-zinc-500">
+                                    <span>
+                                      PRICE: <strong className="text-[#EFFF00]">₦{displayPrice.toLocaleString()}</strong>
+                                    </span>
+                                    <span>
+                                      CATEGORY: <strong className="text-white">{prod.category}</strong>
+                                    </span>
+                                    <span>
+                                      SIZES: <strong className="text-white">{prod.sizes.join(", ")}</strong>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-2 shrink-0">
+                                {/* Color preview rings */}
+                                <div className="hidden sm:flex gap-1">
+                                  {prod.colors.map((color, idx) => (
+                                    <span
+                                      key={idx}
+                                      className="w-2.5 h-2.5 rounded-full inline-block border border-zinc-800"
+                                      style={{ backgroundColor: color.hex }}
+                                      title={color.name}
+                                    />
+                                  ))}
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteProduct(prod.id)}
+                                  disabled={isDeleting}
+                                  className="w-8 h-8 rounded-none border border-zinc-900 hover:border-red-500 text-zinc-500 hover:text-red-400 disabled:opacity-50 flex items-center justify-center transition-all bg-zinc-950 cursor-pointer ml-2"
+                                  title="Delete Product from Store"
+                                >
+                                  {isDeleting ? (
+                                    <RefreshCw size={12} className="animate-spin text-red-400" />
+                                  ) : (
+                                    <Trash2 size={13} />
+                                  )}
+                                </button>
                               </div>
                             </div>
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            {/* Color preview rings */}
-                            <div className="flex gap-1">
-                              {prod.colors.map((color, idx) => (
-                                <span
-                                  key={idx}
-                                  className="w-2.5 h-2.5 rounded-full inline-block border border-zinc-800"
-                                  style={{ backgroundColor: color.hex }}
-                                  title={color.name}
-                                />
-                              ))}
-                            </div>
-                            
-                            <button
-                              onClick={() => handleDeleteProduct(prod.id)}
-                              className="w-8 h-8 rounded-none border border-zinc-900 hover:border-red-500 text-zinc-500 hover:text-red-400 flex items-center justify-center transition-all bg-zinc-950 cursor-pointer ml-3"
-                              title="Delete Product"
-                            >
-                              <Trash2 size={13} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
 
                 </div>
@@ -2140,6 +2236,80 @@ export default function AdminWorkspaceModal({
               )}
 
             </div>
+
+            {/* FLOATING ACTION TOAST */}
+            <AnimatePresence>
+              {adminToast && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  className="fixed bottom-6 right-6 z-[70] bg-[#121207] border border-[#EFFF00] text-white px-5 py-3 shadow-2xl flex items-center gap-3 font-mono text-xs max-w-md"
+                >
+                  <span className="w-2 h-2 rounded-full bg-[#EFFF00] animate-ping shrink-0" />
+                  <span className="tracking-wide text-zinc-100">{adminToast}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* CONFIRMATION MODAL FOR CLEARING ALL SAMPLE PRODUCTS */}
+            <AnimatePresence>
+              {confirmClearModal && (
+                <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
+                  <motion.div
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.95, opacity: 0 }}
+                    className="bg-[#0c0c0d] border border-red-500/50 p-6 sm:p-8 max-w-md w-full flex flex-col gap-5 text-white shadow-2xl"
+                  >
+                    <div className="flex items-center gap-3 text-red-400">
+                      <div className="w-10 h-10 rounded-full bg-red-950/40 border border-red-500/30 flex items-center justify-center shrink-0">
+                        <Trash2 size={20} />
+                      </div>
+                      <div>
+                        <span className="font-mono text-[10px] uppercase tracking-widest text-red-400 block font-bold">
+                          DANGER ZONE ACTION
+                        </span>
+                        <h3 className="font-sans font-black text-lg uppercase tracking-tight text-white">
+                          PURGE ALL SAMPLE PRODUCTS?
+                        </h3>
+                      </div>
+                    </div>
+
+                    <p className="font-mono text-xs text-zinc-300 leading-relaxed">
+                      This will remove all {products.length} sample/starter items from the store catalog permanently, leaving a clean slate for you to add your brand's official pieces.
+                    </p>
+
+                    <div className="flex items-center justify-end gap-3 mt-2">
+                      <button
+                        type="button"
+                        onClick={() => setConfirmClearModal(false)}
+                        disabled={isClearingAll}
+                        className="px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-mono text-xs uppercase tracking-wider cursor-pointer"
+                      >
+                        CANCEL
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleClearAllProducts}
+                        disabled={isClearingAll}
+                        className="px-5 py-2.5 bg-red-600 hover:bg-red-500 disabled:bg-zinc-800 text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer"
+                      >
+                        {isClearingAll ? (
+                          <>
+                            <RefreshCw size={14} className="animate-spin" />
+                            <span>PURGING CATALOG...</span>
+                          </>
+                        ) : (
+                          <span>YES, PURGE ALL ({products.length})</span>
+                        )}
+                      </button>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
+            </AnimatePresence>
+
           </motion.div>
         </>
       )}

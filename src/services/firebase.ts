@@ -277,18 +277,18 @@ const getInitialTimer = (): DropTimerConfig => {
 };
 
 const getInitialProducts = (): Product[] => {
+  const isCustomized = localStorage.getItem("cactus_bear_catalog_customized");
   const saved = localStorage.getItem(STORAGE_PRODUCTS_KEY);
-  if (saved) {
+  if (saved !== null) {
     try {
       const parsed = JSON.parse(saved) as Product[];
-      if (parsed.some((p) => p.price < 1000)) {
-        localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(CACTUS_BEAR_PRODUCTS));
-        return CACTUS_BEAR_PRODUCTS;
-      }
       return parsed;
     } catch {
-      return CACTUS_BEAR_PRODUCTS;
+      return [];
     }
+  }
+  if (isCustomized === "true") {
+    return [];
   }
   localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(CACTUS_BEAR_PRODUCTS));
   return CACTUS_BEAR_PRODUCTS;
@@ -381,41 +381,30 @@ class DatabaseService {
       try {
         const querySnapshot = await getDocs(collection(db, "products"));
         const list: Product[] = [];
-        querySnapshot.forEach((doc) => {
-          list.push(doc.data() as Product);
+        querySnapshot.forEach((docSnap) => {
+          list.push(docSnap.data() as Product);
         });
 
-        // Seed initial products to Firestore if collection is empty
-        if (list.length === 0) {
-          console.log("Seeding initial products to Firestore...");
+        // Only seed initial products on brand-new installation if user has never customized/deleted
+        const isCustomized = localStorage.getItem("cactus_bear_catalog_customized");
+        if (list.length === 0 && isCustomized !== "true") {
+          console.log("Virgin boot: seeding initial starter catalog...");
           for (const item of CACTUS_BEAR_PRODUCTS) {
-            await setDoc(doc(db, "products", item.id), item);
-            list.push(item);
-          }
-        } else {
-          // Proactively sync and update defaults if Firestore records are missing colorway images or have obsolete default USD prices
-          for (const item of CACTUS_BEAR_PRODUCTS) {
-            const existing = list.find((p) => p.id === item.id);
-            if (existing) {
-              const needsUpdate = item.colors.some(
-                (c) => c.imageUrl && !existing.colors.some((ec) => ec.name === c.name && ec.imageUrl)
-              );
-              const needsPriceMigrate = existing.price < 1000 && item.price >= 1000;
-              
-              if (needsUpdate || needsPriceMigrate) {
-                console.log(`Updating Firestore product ${item.id} (needsUpdate: ${needsUpdate}, needsPriceMigrate: ${needsPriceMigrate})...`);
-                await setDoc(doc(db, "products", item.id), item);
-                const idx = list.findIndex((p) => p.id === item.id);
-                if (idx !== -1) {
-                  list[idx] = item;
-                }
-              }
+            try {
+              await setDoc(doc(db, "products", item.id), item);
+              list.push(item);
+            } catch (e) {
+              console.warn("Seeding item to Firestore failed:", e);
             }
           }
         }
+
+        // Cache the actual catalog state
+        this.localProducts = list;
+        localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(list));
         return list;
       } catch (error) {
-        handleFirestoreError(error, OperationType.LIST, "products");
+        console.warn("Firestore getProducts fallback to local storage:", error);
       }
     }
 
@@ -527,15 +516,7 @@ class DatabaseService {
 
   // Add Product (Admin Action)
   public async addProduct(p: Product): Promise<void> {
-    if (isFirebaseConfigured && db) {
-      try {
-        await setDoc(doc(db, "products", p.id), p);
-        return;
-      } catch (error) {
-        handleFirestoreError(error, OperationType.WRITE, `products/${p.id}`);
-      }
-    }
-
+    localStorage.setItem("cactus_bear_catalog_customized", "true");
     this.refreshLocal();
     const exists = this.localProducts.some(item => item.id === p.id);
     if (exists) {
@@ -544,22 +525,50 @@ class DatabaseService {
       this.localProducts.push(p);
     }
     localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(this.localProducts));
-  }
 
-  // Delete product
-  public async deleteProduct(id: string): Promise<void> {
     if (isFirebaseConfigured && db) {
       try {
-        await deleteDoc(doc(db, "products", id));
-        return;
+        await setDoc(doc(db, "products", p.id), p);
       } catch (error) {
-        handleFirestoreError(error, OperationType.DELETE, `products/${id}`);
+        console.warn("Firestore addProduct note (saved locally):", error);
       }
     }
+  }
 
+  // Delete product permanently
+  public async deleteProduct(id: string): Promise<void> {
+    localStorage.setItem("cactus_bear_catalog_customized", "true");
     this.refreshLocal();
     this.localProducts = this.localProducts.filter(item => item.id !== id);
     localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(this.localProducts));
+
+    if (isFirebaseConfigured && db) {
+      try {
+        await deleteDoc(doc(db, "products", id));
+      } catch (error) {
+        console.warn("Firestore deleteDoc note (removed locally):", error);
+      }
+    }
+  }
+
+  // Clear all products (Admin Purge to start fresh)
+  public async clearAllProducts(): Promise<void> {
+    localStorage.setItem("cactus_bear_catalog_customized", "true");
+    this.localProducts = [];
+    localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify([]));
+
+    if (isFirebaseConfigured && db) {
+      try {
+        const querySnapshot = await getDocs(collection(db, "products"));
+        const deletions: Promise<void>[] = [];
+        querySnapshot.forEach((docSnap) => {
+          deletions.push(deleteDoc(doc(db, "products", docSnap.id)));
+        });
+        await Promise.all(deletions);
+      } catch (error) {
+        console.warn("Firestore bulk delete note:", error);
+      }
+    }
   }
 
   // Order Operations

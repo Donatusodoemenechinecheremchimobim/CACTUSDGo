@@ -272,6 +272,31 @@ export default function CollectionPage({
                 </motion.div>
               ))}
             </motion.div>
+          ) : productsList.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="w-full bg-[#050505] border border-zinc-900 py-20 px-4 text-center flex flex-col items-center justify-center gap-4"
+            >
+              <div className="w-12 h-12 rounded-full bg-[#EFFF00]/10 border border-[#EFFF00]/20 flex items-center justify-center text-[#EFFF00]">
+                <AlertCircle size={24} />
+              </div>
+              <div className="flex flex-col gap-1 max-w-md">
+                <h3 className="font-mono text-xs font-black uppercase text-[#EFFF00] tracking-widest">
+                  COLLECTION CURRENTLY BEING CURATED
+                </h3>
+                <p className="text-zinc-400 text-[11px] font-mono leading-relaxed">
+                  The studio has cleared out the previous collection. New pieces are being tailored and will be published shortly.
+                </p>
+              </div>
+              <button
+                onClick={onBack}
+                className="mt-2 font-mono text-[9px] tracking-widest bg-zinc-950 border border-zinc-800 hover:border-[#EFFF00] px-5 py-2.5 uppercase hover:text-[#EFFF00] transition-colors cursor-pointer"
+              >
+                [ RETURN TO HOME ]
+              </button>
+            </motion.div>
           ) : (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -282,10 +307,10 @@ export default function CollectionPage({
               <AlertCircle size={32} className="text-[#EFFF00] animate-pulse" />
               <div className="flex flex-col gap-1 max-w-md">
                 <h3 className="font-mono text-xs font-black uppercase text-[#EFFF00] tracking-widest">
-                  NO PRODUCTS FOUND
+                  NO MATCHING PRODUCTS
                 </h3>
-                <p className="text-zinc-550 text-[11px] font-mono leading-relaxed">
-                  No streetwear items match your search. Try checking your spelling or reset the filters.
+                <p className="text-zinc-400 text-[11px] font-mono leading-relaxed">
+                  No streetwear items match your current search filters. Try checking your spelling or resetting filters.
                 </p>
               </div>
               <button
