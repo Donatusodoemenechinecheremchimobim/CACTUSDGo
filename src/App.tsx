@@ -270,7 +270,7 @@ export default function App() {
     };
   }, []);
 
-  // Monitor scroll height and URL hash (#privacy, #terms) for direct deep linking
+  // Monitor scroll height and URL hash/search params for seamless page persistence, back/forward history, and direct product links
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 450) {
@@ -281,25 +281,89 @@ export default function App() {
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
 
-    // Check direct hash deep link
-    const checkHash = () => {
-      const hash = window.location.hash.toLowerCase();
-      if (hash === "#privacy" || hash === "#privacypolicy") {
+    // Synchronize page and product states with URL hash (#/product/..., #/shop, #/about, #/drop, #privacy, #terms)
+    const syncRouteFromUrl = () => {
+      const hash = window.location.hash || "";
+      const searchParams = new URLSearchParams(window.location.search);
+      const queryProductId = searchParams.get("product") || searchParams.get("p") || searchParams.get("id");
+
+      // 1. Check direct product deep-link via search parameter or hash path
+      if (queryProductId) {
+        setSelectedProductId(queryProductId);
+        return;
+      }
+
+      if (hash.startsWith("#/product/") || hash.startsWith("#product/")) {
+        const prodId = hash.replace(/^#\/?product\//, "").split("?")[0].trim();
+        if (prodId) {
+          setSelectedProductId(prodId);
+          return;
+        }
+      }
+
+      // 2. Modals (#privacy, #terms)
+      const cleanHash = hash.toLowerCase();
+      if (cleanHash === "#privacy" || cleanHash === "#privacypolicy") {
         setPrivacyTab("privacy");
         setPrivacyModalOpen(true);
-      } else if (hash === "#terms" || hash === "#termsofservice") {
+        return;
+      } else if (cleanHash === "#terms" || cleanHash === "#termsofservice") {
         setPrivacyTab("terms");
         setPrivacyModalOpen(true);
+        return;
+      }
+
+      // 3. Top-level page routes (#/collection, #/shop, #/about, #/drop, #/home)
+      if (cleanHash.startsWith("#/collection") || cleanHash.startsWith("#/shop") || cleanHash.startsWith("#collection") || cleanHash.startsWith("#shop")) {
+        setSelectedProductId(null);
+        setActivePage("collection");
+      } else if (cleanHash.startsWith("#/about") || cleanHash.startsWith("#/story") || cleanHash.startsWith("#about")) {
+        setSelectedProductId(null);
+        setActivePage("about");
+      } else if (cleanHash.startsWith("#/drop") || cleanHash.startsWith("#/release") || cleanHash.startsWith("#drop")) {
+        setSelectedProductId(null);
+        setActivePage("drop");
+      } else if (cleanHash === "" || cleanHash === "#" || cleanHash.startsWith("#/home") || cleanHash.startsWith("#home")) {
+        setSelectedProductId(null);
+        setActivePage("home");
       }
     };
-    checkHash();
-    window.addEventListener("hashchange", checkHash);
+
+    // Initial check on load/refresh
+    syncRouteFromUrl();
+
+    // Listen for hash and popstate changes (browser Back/Forward buttons and direct URL navigation)
+    window.addEventListener("hashchange", syncRouteFromUrl);
+    window.addEventListener("popstate", syncRouteFromUrl);
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("hashchange", checkHash);
+      window.removeEventListener("hashchange", syncRouteFromUrl);
+      window.removeEventListener("popstate", syncRouteFromUrl);
     };
   }, []);
+
+  // Update browser URL hash when internal view state changes to persist state upon browser refresh
+  const navigateToPage = (page: "home" | "collection" | "about" | "drop", scrollToTop: boolean = true) => {
+    setSelectedProductId(null);
+    setActivePage(page);
+    const targetHash = page === "home" ? "" : `#/${page}`;
+    if (window.location.hash !== targetHash) {
+      window.history.pushState(null, "", targetHash || window.location.pathname);
+    }
+    if (scrollToTop) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const navigateToProduct = (productId: string) => {
+    setSelectedProductId(productId);
+    const targetHash = `#/product/${productId}`;
+    if (window.location.hash !== targetHash) {
+      window.history.pushState(null, "", targetHash);
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // Sync state helpers
   const syncCart = (updated: CartItem[]) => {
@@ -480,11 +544,10 @@ export default function App() {
       {/* PERSISTENT HIGH-END STATIONS HEADER */}
       <header className="fixed top-0 inset-x-0 md:sticky z-40 h-16 md:h-auto bg-black/95 border-b border-zinc-900 px-4 md:px-8 py-4 md:py-5 flex justify-between items-center">
         <a
-          href="#"
+          href="#/home"
           onClick={(e) => {
             e.preventDefault();
-            setSelectedProductId(null);
-            setActivePage("home");
+            navigateToPage("home");
           }}
           className="flex items-center gap-3 group"
         >
@@ -498,54 +561,54 @@ export default function App() {
 
         {/* Anchor Quick Jump Bridges */}
         <nav className="hidden md:flex items-center gap-8 font-mono text-[11px] font-semibold tracking-[0.12em] text-zinc-350">
-          <button
-            onClick={() => {
-              setSelectedProductId(null);
-              setActivePage("home");
-              window.scrollTo({ top: 0, behavior: "smooth" });
+          <a
+            href="#/home"
+            onClick={(e) => {
+              e.preventDefault();
+              navigateToPage("home");
             }}
             className={`hover:text-[#EFFF00] transition-colors uppercase cursor-pointer ${
-              activePage === "home" ? "text-zinc-100 font-bold" : ""
+              activePage === "home" && !selectedProductId ? "text-zinc-100 font-bold" : ""
             }`}
           >
             HOME
-          </button>
-          <button
-            onClick={() => {
-              setSelectedProductId(null);
-              setActivePage("collection");
-              window.scrollTo({ top: 0, behavior: "smooth" });
+          </a>
+          <a
+            href="#/collection"
+            onClick={(e) => {
+              e.preventDefault();
+              navigateToPage("collection");
             }}
             className={`hover:text-[#EFFF00] transition-colors uppercase cursor-pointer ${
-              activePage === "collection" ? "text-[#EFFF00] font-bold" : ""
+              activePage === "collection" && !selectedProductId ? "text-[#EFFF00] font-bold" : ""
             }`}
           >
             SHOP CATALOG
-          </button>
-          <button
-            onClick={() => {
-              setSelectedProductId(null);
-              setActivePage("about");
-              window.scrollTo({ top: 0, behavior: "smooth" });
+          </a>
+          <a
+            href="#/about"
+            onClick={(e) => {
+              e.preventDefault();
+              navigateToPage("about");
             }}
             className={`hover:text-[#EFFF00] transition-colors uppercase cursor-pointer ${
-              activePage === "about" || activePage === "story" || activePage === "sizeguide" ? "text-[#EFFF00] font-bold" : ""
+              (activePage === "about") && !selectedProductId ? "text-[#EFFF00] font-bold" : ""
             }`}
           >
             ABOUT US
-          </button>
-          <button
-            onClick={() => {
-              setSelectedProductId(null);
-              setActivePage("drop");
-              window.scrollTo({ top: 0, behavior: "smooth" });
+          </a>
+          <a
+            href="#/drop"
+            onClick={(e) => {
+              e.preventDefault();
+              navigateToPage("drop");
             }}
             className={`hover:text-[#EFFF00] transition-colors uppercase cursor-pointer ${
-              activePage === "drop" ? "text-[#EFFF00] font-bold" : ""
+              activePage === "drop" && !selectedProductId ? "text-[#EFFF00] font-bold" : ""
             }`}
           >
             UPCOMING DROP
-          </button>
+          </a>
           <button 
             onClick={() => setOrdersLookupOpen(true)}
             className="hover:text-[#EFFF00] transition-colors uppercase font-mono text-[11px] font-semibold tracking-[0.12em] text-zinc-350 cursor-pointer text-left"
@@ -724,54 +787,54 @@ export default function App() {
               ✦ NAVIGATE SHOP
             </span>
             <div className="flex flex-col gap-5 font-sans text-base font-black tracking-tight text-zinc-100 uppercase">
-              <button
-                onClick={() => {
+              <a
+                href="#/home"
+                onClick={(e) => {
+                  e.preventDefault();
                   setMobileMenuOpen(false);
-                  setSelectedProductId(null);
-                  setActivePage("home");
-                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  navigateToPage("home");
                 }}
-                className={`hover:text-[#EFFF00] text-left transition-all block ${activePage === "home" ? "text-[#EFFF00]" : ""}`}
+                className={`hover:text-[#EFFF00] text-left transition-all block ${activePage === "home" && !selectedProductId ? "text-[#EFFF00]" : ""}`}
               >
                 HOME
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="#/collection"
+                onClick={(e) => {
+                  e.preventDefault();
                   setMobileMenuOpen(false);
-                  setSelectedProductId(null);
-                  setActivePage("collection");
-                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  navigateToPage("collection");
                 }}
-                className={`hover:text-[#EFFF00] text-left transition-all block ${activePage === "collection" ? "text-[#EFFF00]" : ""}`}
+                className={`hover:text-[#EFFF00] text-left transition-all block ${activePage === "collection" && !selectedProductId ? "text-[#EFFF00]" : ""}`}
               >
                 SHOP CATALOG
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="#/about"
+                onClick={(e) => {
+                  e.preventDefault();
                   setMobileMenuOpen(false);
-                  setSelectedProductId(null);
-                  setActivePage("about");
-                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  navigateToPage("about");
                 }}
                 className={`hover:text-[#EFFF00] text-left transition-all block cursor-pointer ${
-                  activePage === "about" ? "text-[#EFFF00]" : ""
+                  activePage === "about" && !selectedProductId ? "text-[#EFFF00]" : ""
                 }`}
               >
                 ABOUT US
-              </button>
-              <button
-                onClick={() => {
+              </a>
+              <a
+                href="#/drop"
+                onClick={(e) => {
+                  e.preventDefault();
                   setMobileMenuOpen(false);
-                  setSelectedProductId(null);
-                  setActivePage("drop");
-                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  navigateToPage("drop");
                 }}
                 className={`hover:text-[#EFFF00] text-left transition-all block cursor-pointer ${
-                  activePage === "drop" ? "text-[#EFFF00]" : ""
+                  activePage === "drop" && !selectedProductId ? "text-[#EFFF00]" : ""
                 }`}
               >
                 UPCOMING DROP
-              </button>
+              </a>
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
@@ -879,9 +942,9 @@ export default function App() {
           <ProductDetailPage
             product={productsList.find(p => p.id === selectedProductId)!}
             allProducts={productsList}
-            onBack={() => setSelectedProductId(null)}
+            onBack={() => navigateToPage(activePage || "home")}
             onAddToCart={handleAddToCart}
-            onSelectProduct={(productId) => setSelectedProductId(productId)}
+            onSelectProduct={(productId) => navigateToProduct(productId)}
             isWishlisted={wishlist.includes(selectedProductId)}
             onToggleWishlist={() => handleToggleWishlist(selectedProductId)}
             currentUser={currentUser}
@@ -891,27 +954,22 @@ export default function App() {
           <CollectionPage
             productsList={productsList}
             onAddToCart={handleAddToCart}
-            onSelectProduct={(productId) => setSelectedProductId(productId)}
+            onSelectProduct={(productId) => navigateToProduct(productId)}
             wishlist={wishlist}
             onToggleWishlist={handleToggleWishlist}
-            onBack={() => setActivePage("home")}
+            onBack={() => navigateToPage("home")}
             searchQuery={headerSearchQuery}
             onSearchQueryChange={setHeaderSearchQuery}
             productsLoading={productsLoading}
           />
         ) : activePage === "about" ? (
           <AboutPage
-            onBack={() => {
-              setActivePage("home");
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
+            onBack={() => navigateToPage("home")}
             onExploreShop={(category) => {
-              setSelectedProductId(null);
               if (category && category !== "All") {
                 setSelectedCategory(category);
               }
-              setActivePage("collection");
-              window.scrollTo({ top: 0, behavior: "smooth" });
+              navigateToPage("collection");
             }}
           />
         ) : activePage === "drop" ? (
@@ -930,10 +988,7 @@ export default function App() {
                 </p>
               </div>
               <button
-                onClick={() => {
-                  setActivePage("home");
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
+                onClick={() => navigateToPage("home")}
                 className="font-mono text-[10px] tracking-widest bg-zinc-950 border border-zinc-900 hover:border-[#EFFF00] px-5 py-3 uppercase hover:text-[#EFFF00] transition-colors cursor-pointer w-max"
               >
                 [ RETURN HOME ]
@@ -1289,7 +1344,7 @@ export default function App() {
                     key={prod.id}
                     product={prod}
                     onAddToCart={handleAddToCart}
-                    onSelect={setSelectedProductId}
+                    onSelect={navigateToProduct}
                     isWishlisted={wishlist.includes(prod.id)}
                     onToggleWishlist={() => handleToggleWishlist(prod.id)}
                   />
@@ -1305,10 +1360,7 @@ export default function App() {
                 </p>
                 <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
                   <button
-                    onClick={() => {
-                      setActivePage("drop");
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
+                    onClick={() => navigateToPage("drop")}
                     className="font-mono text-[10px] tracking-widest bg-[#EFFF00] text-black font-black px-5 py-2.5 uppercase hover:bg-white transition-colors cursor-pointer"
                   >
                     [ VIEW UPCOMING DROP ]
@@ -1714,10 +1766,8 @@ export default function App() {
             {/* TAB 01: HOME */}
             <button
               onClick={() => {
-                setSelectedProductId(null);
-                setActivePage("home");
                 setMobileMenuOpen(false);
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                navigateToPage("home");
               }}
               className={`flex flex-col items-center gap-1 flex-1 cursor-pointer transition-colors outline-none ${
                 activePage === "home" && !selectedProductId ? "text-[#EFFF00]" : "text-zinc-550 hover:text-white"
@@ -1730,10 +1780,8 @@ export default function App() {
             {/* TAB 02: CATALOG / SHOP */}
             <button
               onClick={() => {
-                setSelectedProductId(null);
-                setActivePage("collection");
                 setMobileMenuOpen(false);
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                navigateToPage("collection");
               }}
               className={`flex flex-col items-center gap-1 flex-1 cursor-pointer transition-colors outline-none ${
                 activePage === "collection" || selectedProductId ? "text-[#EFFF00]" : "text-zinc-550 hover:text-white"
@@ -1746,13 +1794,11 @@ export default function App() {
             {/* TAB 03: ABOUT US */}
             <button
               onClick={() => {
-                setSelectedProductId(null);
-                setActivePage("about");
                 setMobileMenuOpen(false);
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                navigateToPage("about");
               }}
               className={`flex flex-col items-center gap-1 flex-1 cursor-pointer transition-colors outline-none ${
-                activePage === "about" ? "text-[#EFFF00]" : "text-zinc-550 hover:text-white"
+                activePage === "about" && !selectedProductId ? "text-[#EFFF00]" : "text-zinc-550 hover:text-white"
               }`}
             >
               <Sparkles size={18} className={activePage === "about" ? "text-[#EFFF00]" : "text-zinc-550"} />

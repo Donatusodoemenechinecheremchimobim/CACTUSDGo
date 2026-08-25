@@ -454,12 +454,16 @@ export default function ProductCard({ product, onAddToCart, onSelect, isWishlist
       {/* Info Blocks and purchase commands */}
       <div className="p-4 border-t border-zinc-900 bg-black/60">
         <div className="flex flex-col gap-1.5 sm:flex-row sm:justify-between sm:items-start sm:gap-2">
-          <h3 
-            onClick={handleShowDetails}
-            className="font-sans font-extrabold text-xs sm:text-sm text-white tracking-tight uppercase group-hover:text-[#EFFF00] transition-colors cursor-pointer line-clamp-2 min-h-[2rem] sm:min-h-0"
+          <a
+            href={`#/product/${product.id}`}
+            onClick={(e) => {
+              e.preventDefault();
+              handleShowDetails(e);
+            }}
+            className="font-sans font-extrabold text-xs sm:text-sm text-white tracking-tight uppercase group-hover:text-[#EFFF00] transition-colors cursor-pointer line-clamp-2 min-h-[2rem] sm:min-h-0 block"
           >
             {product.name}
-          </h3>
+          </a>
           <span className="font-mono text-[10px] sm:text-xs font-black text-[#EFFF00] sm:text-white bg-[#1a1a08] border border-[#EFFF00]/15 px-1.5 py-0.5 whitespace-nowrap self-start">
             ₦{product.price.toLocaleString()}
           </span>

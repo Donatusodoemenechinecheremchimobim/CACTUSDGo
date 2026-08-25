@@ -288,9 +288,18 @@ export default function ProductDetailPage({
           <span>⟵ BACK TO PRODUCTS</span>
         </button>
 
-        <span className="font-mono text-[9px] text-zinc-650 tracking-[0.2em] uppercase hidden sm:inline">
-          PRODUCT DETAILS // {product.sku}
-        </span>
+        <div className="flex items-center gap-4">
+          <span className="font-mono text-[9px] text-zinc-650 tracking-[0.2em] uppercase hidden sm:inline">
+            PRODUCT DETAILS // {product.sku}
+          </span>
+          <button
+            onClick={handleShareClick}
+            className="flex items-center gap-1.5 font-mono text-[9px] text-zinc-400 hover:text-[#EFFF00] border border-zinc-800 hover:border-[#EFFF00]/50 bg-zinc-950 px-2.5 py-1 uppercase tracking-wider transition-all cursor-pointer relative"
+          >
+            <Share2 size={11} className="text-[#EFFF00]" />
+            <span>{shareStatus ? shareStatus : "COPY PRODUCT LINK"}</span>
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
