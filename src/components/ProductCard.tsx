@@ -13,6 +13,16 @@ interface ProductCardProps {
   onToggleWishlist: () => void;
 }
 
+const formatCardDescription = (desc?: string, maxChars: number = 52): string => {
+  if (!desc) return "";
+  const clean = desc.trim();
+  if (clean.length <= maxChars) return clean;
+  const truncated = clean.slice(0, maxChars);
+  const lastSpace = truncated.lastIndexOf(" ");
+  const slicePoint = lastSpace > 25 ? lastSpace : maxChars;
+  return clean.slice(0, slicePoint) + "...";
+};
+
 export default function ProductCard({ product, onAddToCart, onSelect, isWishlisted, onToggleWishlist }: ProductCardProps) {
   const [selectedSize, setSelectedSize] = useState<string>((product.sizes && product.sizes[0]) || "L");
   const [selectedColor, setSelectedColor] = useState<ApparelColor>((product.colors && product.colors[0]) || { name: "Bleach White", hex: "#FFFFFF", bgHex: "#1a1a1c" });
@@ -92,7 +102,7 @@ export default function ProductCard({ product, onAddToCart, onSelect, isWishlist
       {/* Main product showcase box with responsive heights */}
       <div 
         onClick={handleShowDetails}
-        className="relative h-[200px] sm:h-[280px] w-full flex items-center justify-center cursor-pointer bg-gradient-to-b from-black/20 to-zinc-950/40 p-4 sm:p-6 overflow-hidden"
+        className="relative h-[175px] sm:h-[240px] w-full flex items-center justify-center cursor-pointer bg-gradient-to-b from-black/20 to-zinc-950/40 p-3 sm:p-5 overflow-hidden"
       >
         {/* Floating Low Stock Badge */}
         {product.stock !== undefined && product.stock <= 5 && (
@@ -452,74 +462,81 @@ export default function ProductCard({ product, onAddToCart, onSelect, isWishlist
       </div>
 
       {/* Info Blocks and purchase commands */}
-      <div className="p-4 border-t border-zinc-900 bg-black/60">
-        <div className="flex flex-col gap-1.5 sm:flex-row sm:justify-between sm:items-start sm:gap-2">
-          <a
-            href={`#/product/${product.id}`}
-            onClick={(e) => {
-              e.preventDefault();
-              handleShowDetails(e);
-            }}
-            className="font-sans font-extrabold text-xs sm:text-sm text-white tracking-tight uppercase group-hover:text-[#EFFF00] transition-colors cursor-pointer line-clamp-2 min-h-[2rem] sm:min-h-0 block"
-          >
-            {product.name}
-          </a>
-          <span className="font-mono text-[10px] sm:text-xs font-black text-[#EFFF00] sm:text-white bg-[#1a1a08] border border-[#EFFF00]/15 px-1.5 py-0.5 whitespace-nowrap self-start">
-            ₦{product.price.toLocaleString()}
-          </span>
-        </div>
-
-        <p className="text-zinc-550 text-[11px] font-sans mt-1.5 line-clamp-2 h-8 leading-tight">
-          {product.description}
-        </p>
-
-        {/* Interfacing panel toggling colors and sizes */}
-        <div className="mt-4 flex flex-col gap-3 pt-3 border-t border-zinc-950">
-          
-          {/* Colors row */}
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
-            <div className="flex items-center justify-between sm:justify-start gap-1.5">
-              <span className="text-[9px] font-mono text-zinc-500 uppercase">COLOR</span>
-              <span className="text-[8.5px] font-mono text-zinc-400 truncate max-w-[120px]">{selectedColor.name}</span>
-            </div>
-            <div className="flex gap-1.5 flex-wrap">
-              {product.colors.map((color) => {
-                const isCSelected = selectedColor.name === color.name;
-                return (
-                  <button
-                    key={color.name}
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedColor(color);
-                    }}
-                    onMouseEnter={() => setSelectedColor(color)}
-                    className={`w-3.5 h-3.5 border transition-all cursor-pointer ${
-                      isCSelected ? "border-[#EFFF00] scale-125 shadow-[0_0_8px_rgba(239,255,0,0.4)]" : "border-zinc-800 hover:border-zinc-400"
-                    }`}
-                    style={{ backgroundColor: color.hex }}
-                    title={color.name}
-                  />
-                );
-              })}
-            </div>
+      <div className="p-3 sm:p-3.5 border-t border-zinc-900 bg-black/60 flex flex-col justify-between flex-1">
+        <div>
+          <div className="flex items-start justify-between gap-2">
+            <a
+              href={`#/product/${product.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                handleShowDetails(e);
+              }}
+              className="font-sans font-extrabold text-xs sm:text-sm text-white tracking-tight uppercase group-hover:text-[#EFFF00] transition-colors cursor-pointer truncate block flex-1"
+              title={product.name}
+            >
+              {product.name}
+            </a>
+            <span className="font-mono text-[10px] sm:text-xs font-black text-[#EFFF00] bg-[#1a1a08] border border-[#EFFF00]/20 px-1.5 py-0.5 whitespace-nowrap shrink-0">
+              ₦{product.price.toLocaleString()}
+            </span>
           </div>
 
-          {/* Sizing choosing row */}
-          <div className="flex flex-col gap-2.5 sm:flex-row sm:justify-between sm:items-center">
-            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-1.5">
-              <span className="text-[9px] font-mono text-zinc-500 uppercase">SIZE</span>
-              <div className="flex gap-1 flex-wrap">
+          <p 
+            className="text-zinc-400 text-[10.5px] sm:text-[11px] font-sans leading-snug mt-1 truncate block" 
+            title={product.description}
+          >
+            {formatCardDescription(product.description, 48)}
+          </p>
+        </div>
+
+        {/* Interfacing panel toggling colors and sizes */}
+        <div className="mt-3 pt-2.5 border-t border-zinc-900 flex flex-col gap-2.5">
+          {/* Colors and Sizes compact row */}
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            {/* Colors */}
+            <div className="flex items-center gap-1.5 overflow-hidden">
+              <span className="text-[8.5px] font-mono text-zinc-500 uppercase">COLOR</span>
+              <div className="flex gap-1 items-center">
+                {product.colors.map((color) => {
+                  const isCSelected = selectedColor.name === color.name;
+                  return (
+                    <button
+                      key={color.name}
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedColor(color);
+                      }}
+                      onMouseEnter={() => setSelectedColor(color)}
+                      className={`w-3 h-3 border transition-all cursor-pointer ${
+                        isCSelected ? "border-[#EFFF00] scale-125 shadow-[0_0_6px_rgba(239,255,0,0.5)]" : "border-zinc-800 hover:border-zinc-500"
+                      }`}
+                      style={{ backgroundColor: color.hex }}
+                      title={color.name}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Sizing choosing row */}
+            <div className="flex items-center gap-1">
+              <span className="text-[8.5px] font-mono text-zinc-500 uppercase">SIZE</span>
+              <div className="flex gap-1">
                 {product.sizes.map((sz) => {
                   const isSSelected = selectedSize === sz;
                   return (
                     <button
                       key={sz}
-                      onClick={() => setSelectedSize(sz)}
-                      className={`px-1.5 py-0.5 font-mono text-[9px] border transition-all ${
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedSize(sz);
+                      }}
+                      className={`px-1.5 py-0.5 font-mono text-[8.5px] border transition-all cursor-pointer ${
                         isSSelected
                           ? "bg-white text-black border-white font-bold"
-                          : "border-zinc-900 text-zinc-500 hover:border-zinc-500"
+                          : "border-zinc-800 text-zinc-400 hover:border-zinc-500"
                       }`}
                     >
                       {sz}
@@ -528,59 +545,35 @@ export default function ProductCard({ product, onAddToCart, onSelect, isWishlist
                 })}
               </div>
             </div>
-
-            {/* Quick-add button */}
-            <button
-              onClick={handleQuickAdd}
-              disabled={adding || added}
-              className={`flex items-center justify-center gap-1.5 h-8 rounded-none transition-all font-mono text-[9px] tracking-widest ${
-                added
-                  ? "bg-[#EFFF00] text-black w-full sm:w-8"
-                  : "bg-zinc-900 border border-zinc-800 text-white hover:border-[#EFFF00] hover:text-[#EFFF00] w-full sm:w-8"
-              }`}
-              title="Add to Bag"
-            >
-              <span className="inline sm:hidden font-bold uppercase transition-all">
-                {adding ? "ADDING..." : added ? "ADDED" : "ADD TO BAG"}
-              </span>
-              {adding ? (
-                <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
-              ) : added ? (
-                <Check size={12} className="animate-bounce" />
-              ) : (
-                <Plus size={12} />
-              )}
-            </button>
           </div>
 
-          {/* Quick Buy Button Strip */}
+          {/* Clean Unified Action Button */}
           <button
-            onClick={handleQuickBuyDefault}
+            onClick={handleQuickAdd}
             disabled={adding || added}
-            className={`w-full font-mono text-[9px] font-bold tracking-[0.15em] uppercase transition-all py-2.5 border flex items-center justify-center gap-1.5 hover:scale-[1.01] cursor-pointer ${
+            className={`w-full font-mono text-[9px] font-bold tracking-[0.12em] uppercase transition-all py-2 border flex items-center justify-center gap-1.5 cursor-pointer ${
               added
                 ? "bg-[#EFFF00] text-black border-[#EFFF00]"
-                : "bg-black hover:bg-[#EFFF00] hover:text-black border-zinc-900 hover:border-[#EFFF00] text-zinc-400"
+                : "bg-[#0e0e10] hover:bg-[#EFFF00] hover:text-black border-zinc-800 hover:border-[#EFFF00] text-white"
             }`}
           >
             {adding ? (
               <>
                 <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
-                SECURING APPAREL...
+                <span>ADDING...</span>
               </>
             ) : added ? (
               <>
                 <Check size={11} className="animate-bounce" />
-                SECURED TO BAG
+                <span>ADDED TO BAG ({selectedSize})</span>
               </>
             ) : (
               <>
-                <ShoppingBag size={11} />
-                QUICK BUY ({product.sizes[0] || "L"})
+                <Plus size={11} />
+                <span>ADD TO BAG ({selectedSize})</span>
               </>
             )}
           </button>
-
         </div>
       </div>
 
@@ -671,12 +664,12 @@ export function ProductCardSkeleton() {
       </div>
 
       {/* Main product showcase box */}
-      <div className="relative h-[200px] sm:h-[280px] w-full flex items-center justify-center bg-gradient-to-b from-black/20 to-zinc-950/40 p-4 sm:p-6 overflow-hidden">
+      <div className="relative h-[175px] sm:h-[240px] w-full flex items-center justify-center bg-gradient-to-b from-black/20 to-zinc-950/40 p-3 sm:p-5 overflow-hidden">
         {/* Wishlist item placeholder */}
         <div className="absolute top-3 right-3 w-8 h-8 bg-black/65 border border-zinc-900" />
         
         {/* Central Vector mock placeholder */}
-        <div className="relative w-28 h-28 sm:w-36 sm:h-36 bg-zinc-950/70 border border-zinc-900/50 flex flex-col items-center justify-center p-3">
+        <div className="relative w-24 h-24 sm:w-32 sm:h-32 bg-zinc-950/70 border border-zinc-900/50 flex flex-col items-center justify-center p-3">
           {/* Tech layout aesthetics inside */}
           <div className="w-full h-full border border-dashed border-zinc-800/40 relative flex items-center justify-center">
             {/* Corner dots */}
@@ -692,49 +685,43 @@ export function ProductCardSkeleton() {
       </div>
 
       {/* Info Blocks and purchase commands */}
-      <div className="p-4 border-t border-zinc-900 bg-black/60">
-        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-start sm:gap-2">
-          {/* Product name skeleton */}
-          <div className="h-4 bg-zinc-900 rounded w-2/3 my-1" />
-          {/* Price skeleton */}
-          <div className="h-5 bg-zinc-900 rounded w-14" />
-        </div>
+      <div className="p-3 sm:p-3.5 border-t border-zinc-900 bg-black/60 flex flex-col justify-between flex-1">
+        <div>
+          <div className="flex justify-between items-start gap-2">
+            {/* Product name skeleton */}
+            <div className="h-3.5 bg-zinc-900 rounded w-2/3 my-0.5" />
+            {/* Price skeleton */}
+            <div className="h-4 bg-zinc-900 rounded w-14" />
+          </div>
 
-        {/* Description lines */}
-        <div className="space-y-2 mt-3">
-          <div className="h-2.5 bg-zinc-900 rounded w-full" />
-          <div className="h-2.5 bg-zinc-900 rounded w-4/5" />
+          {/* Description line */}
+          <div className="mt-2">
+            <div className="h-2.5 bg-zinc-900/80 rounded w-4/5" />
+          </div>
         </div>
 
         {/* Interfacing panel toggling colors and sizes */}
-        <div className="mt-4 flex flex-col gap-3.5 pt-3.5 border-t border-zinc-950">
-          {/* Colors row */}
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
-            <div className="h-2.5 bg-zinc-900 w-10 rounded" />
-            <div className="flex gap-1.5">
-              <div className="w-3.5 h-3.5 bg-zinc-900" />
-              <div className="w-3.5 h-3.5 bg-zinc-900" />
-              <div className="w-3.5 h-3.5 bg-zinc-900" />
-            </div>
-          </div>
-
-          {/* Sizing choosing row */}
-          <div className="flex flex-col gap-2.5 sm:flex-row sm:justify-between sm:items-center">
-            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-1.5">
-              <div className="h-2.5 bg-zinc-900 w-8 rounded" />
+        <div className="mt-3 pt-2.5 border-t border-zinc-900 flex flex-col gap-2.5">
+          {/* Colors and sizes row */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1">
+              <div className="h-2 bg-zinc-900 w-8" />
               <div className="flex gap-1">
-                <div className="w-6 h-4 bg-zinc-900" />
-                <div className="w-6 h-4 bg-zinc-900" />
-                <div className="w-6 h-4 bg-zinc-900" />
+                <div className="w-3 h-3 bg-zinc-900" />
+                <div className="w-3 h-3 bg-zinc-900" />
               </div>
             </div>
-
-            {/* Quick-add button placeholder */}
-            <div className="h-8 bg-zinc-900 w-full sm:w-8" />
+            <div className="flex items-center gap-1">
+              <div className="h-2 bg-zinc-900 w-6" />
+              <div className="flex gap-1">
+                <div className="w-5 h-3.5 bg-zinc-900" />
+                <div className="w-5 h-3.5 bg-zinc-900" />
+              </div>
+            </div>
           </div>
 
-          {/* Quick Buy Button Strip placeholder */}
-          <div className="w-full h-9 bg-zinc-900" />
+          {/* Action button placeholder */}
+          <div className="w-full h-8 bg-zinc-900" />
         </div>
       </div>
     </div>

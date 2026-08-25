@@ -46,6 +46,7 @@ import AdminWorkspaceModal from "./components/AdminWorkspaceModal";
 import OrdersLookupModal from "./components/OrdersLookupModal";
 import OrderHistoryModal from "./components/OrderHistoryModal";
 import PrivacyPolicyModal from "./components/PrivacyPolicyModal";
+import SearchModal from "./components/SearchModal";
 
 // Helper to synchronously parse URL route on component initialization
 const getInitialRoute = () => {
@@ -101,6 +102,7 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<ProductCat | "All">("All");
   const [selectedProductId, setSelectedProductId] = useState<string | null>(initialRoute.productId);
   const [headerSearchQuery, setHeaderSearchQuery] = useState<string>("");
+  const [searchModalOpen, setSearchModalOpen] = useState<boolean>(false);
   
   const [activePage, setActivePage] = useState<"home" | "collection" | "about" | "drop">(initialRoute.page);
   const [toasts, setToasts] = useState<{ id: string; message: string; type: "success" | "info" | "alert"; timestamp: string }[]>([]);
@@ -390,6 +392,24 @@ export default function App() {
     };
   }, []);
 
+  // Global Keyboard Shortcuts (Cmd+K / Ctrl+K / '/' to open search)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const isInput = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
+      
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchModalOpen((prev) => !prev);
+      } else if (e.key === "/" && !isInput) {
+        e.preventDefault();
+        setSearchModalOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   // Update browser URL hash when internal view state changes to persist state upon browser refresh
   const navigateToPage = (page: "home" | "collection" | "about" | "drop", scrollToTop: boolean = true) => {
     setSelectedProductId(null);
@@ -510,7 +530,11 @@ export default function App() {
       result = result.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q)
+          p.sku.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q) ||
+          (p.details && p.details.some((d) => d.toLowerCase().includes(q))) ||
+          (p.colors && p.colors.some((c) => c.name.toLowerCase().includes(q)))
       );
     }
     return result;
@@ -666,28 +690,46 @@ export default function App() {
 
          {/* Navigation Actions and login buttons */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Seek & Search Catalog Bar */}
-          <div className="relative flex items-center w-32 sm:w-40 border border-zinc-900 bg-zinc-950 py-1.5 px-2.5 transition-all focus-within:border-[#EFFF00]">
-            <Search size={11} className="text-zinc-600 mr-1.5 flex-shrink-0" />
+          {/* Interactive Seek & Search Catalog Bar */}
+          <div 
+            onClick={() => setSearchModalOpen(true)}
+            className="relative flex items-center w-36 sm:w-44 border border-zinc-900 hover:border-[#EFFF00]/70 bg-zinc-950 py-1.5 px-2.5 transition-all cursor-pointer group"
+            title="Search Catalog (Press Cmd+K or /)"
+          >
+            <Search size={12} className="text-zinc-500 group-hover:text-[#EFFF00] mr-1.5 flex-shrink-0 transition-colors" />
             <input
               type="text"
               value={headerSearchQuery}
+              onFocus={() => setSearchModalOpen(true)}
               onChange={(e) => {
                 setHeaderSearchQuery(e.target.value);
-                if (selectedProductId) {
-                  setSelectedProductId(null);
+                setSearchModalOpen(true);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  setSearchModalOpen(false);
+                  navigateToPage("collection");
                 }
               }}
-              placeholder="SEARCH CATALOGUE"
-              className="w-full bg-transparent font-mono text-[9px] uppercase tracking-[0.1em] text-white placeholder-zinc-700 outline-none"
+              placeholder="SEARCH CATALOG"
+              className="w-full bg-transparent font-mono text-[9px] uppercase tracking-[0.1em] text-white placeholder-zinc-550 outline-none cursor-pointer"
             />
-            {headerSearchQuery && (
+            {headerSearchQuery ? (
               <button
-                onClick={() => setHeaderSearchQuery("")}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setHeaderSearchQuery("");
+                }}
                 className="text-zinc-500 hover:text-white p-0.5 ml-1 flex-shrink-0 cursor-pointer"
+                title="Clear search"
               >
-                <X size={10} />
+                <X size={11} />
               </button>
+            ) : (
+              <span className="hidden sm:inline font-mono text-[8px] text-zinc-550 bg-zinc-900 border border-zinc-800 px-1 py-0.2 shrink-0">
+                ⌘K
+              </span>
             )}
           </div>
 
@@ -833,6 +875,26 @@ export default function App() {
             <span className="text-[9px] font-mono text-zinc-500 tracking-[0.3em] uppercase block border-b border-zinc-950 pb-2">
               ✦ NAVIGATE SHOP
             </span>
+
+            {/* Quick Search trigger in mobile menu */}
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setSearchModalOpen(true);
+              }}
+              className="flex items-center justify-between w-full bg-zinc-950 border border-zinc-850 hover:border-[#EFFF00] p-3 transition-colors cursor-pointer text-left group"
+            >
+              <div className="flex items-center gap-2.5">
+                <Search size={14} className="text-[#EFFF00]" />
+                <span className="font-mono text-xs uppercase tracking-wider text-zinc-300 group-hover:text-white">
+                  {headerSearchQuery ? `SEARCH: "${headerSearchQuery}"` : "SEARCH CATALOG & SKUS..."}
+                </span>
+              </div>
+              <span className="font-mono text-[9px] bg-zinc-900 border border-zinc-800 text-[#EFFF00] px-2 py-0.5 font-bold">
+                FIND
+              </span>
+            </button>
+
             <div className="flex flex-col gap-5 font-sans text-base font-black tracking-tight text-zinc-100 uppercase">
               <a
                 href="#/home"
@@ -1795,6 +1857,26 @@ export default function App() {
         isOpen={privacyModalOpen}
         onClose={() => setPrivacyModalOpen(false)}
         defaultTab={privacyTab}
+      />
+
+      {/* INSTANT INTERACTIVE SEARCH MODAL */}
+      <SearchModal
+        isOpen={searchModalOpen}
+        onClose={() => setSearchModalOpen(false)}
+        products={productsList}
+        searchQuery={headerSearchQuery}
+        onSearchQueryChange={setHeaderSearchQuery}
+        onSelectProduct={(productId) => {
+          navigateToProduct(productId);
+          setSearchModalOpen(false);
+        }}
+        onAddToCart={(item) => {
+          handleAddToCart(item);
+        }}
+        onNavigateToCatalog={() => {
+          setSelectedProductId(null);
+          navigateToPage("collection");
+        }}
       />
 
       {/* FLOATING BUBBLE NOTIFICATIONS CONTAINER */}
