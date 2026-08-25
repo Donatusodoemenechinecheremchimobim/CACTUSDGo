@@ -1295,7 +1295,7 @@ export default function App() {
                   [ CATALOG CURRENTLY BEING CURATED ]
                 </span>
                 <p className="text-zinc-400 font-mono text-xs max-w-md leading-relaxed">
-                  The studio is preparing custom pieces for this collection. Check our upcoming drop countdown below or open the admin workspace to publish new designs.
+                  The studio is preparing custom pieces for this collection. Check our upcoming drop countdown below or stay tuned for our official release.
                 </p>
                 <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
                   <button
@@ -1306,12 +1306,6 @@ export default function App() {
                     className="font-mono text-[10px] tracking-widest bg-[#EFFF00] text-black font-black px-5 py-2.5 uppercase hover:bg-white transition-colors cursor-pointer"
                   >
                     [ VIEW UPCOMING DROP ]
-                  </button>
-                  <button
-                    onClick={() => setAdminOpen(true)}
-                    className="font-mono text-[10px] tracking-widest bg-zinc-950 border border-zinc-800 hover:border-[#EFFF00] text-[#EFFF00] px-5 py-2.5 uppercase transition-colors cursor-pointer"
-                  >
-                    [ OPEN STUDIO ADMIN TO ADD PIECES ]
                   </button>
                 </div>
               </div>
