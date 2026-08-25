@@ -132,10 +132,20 @@ export function sanitizeForFirestore<T>(obj: T): T {
 }
 
 /**
- * Compresses an image client-side to ensure small document storage footprints
+ * Optimizes an image client-side to ensure sharp, high-definition product resolution
+ * while maintaining performant load speeds and fast rendering.
  */
-export function compressImage(file: File, maxWidth = 480, maxHeight = 480, quality = 0.6): Promise<string> {
+export function compressImage(file: File, maxWidth = 1920, maxHeight = 1920, quality = 0.90): Promise<string> {
   return new Promise((resolve, reject) => {
+    // If small image (e.g. SVG or small PNG/WebP under 500KB), read directly without lossy re-encoding
+    if (file.type === "image/svg+xml" || (file.size < 500 * 1024 && (file.type === "image/png" || file.type === "image/webp"))) {
+      const directReader = new FileReader();
+      directReader.onload = (ev) => resolve(ev.target?.result as string);
+      directReader.onerror = () => reject(new Error("Failed to read image."));
+      directReader.readAsDataURL(file);
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
@@ -159,14 +169,21 @@ export function compressImage(file: File, maxWidth = 480, maxHeight = 480, quali
         canvas.height = height;
         canvas.width = width;
 
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { alpha: true });
         if (!ctx) {
           resolve(e.target?.result as string);
           return;
         }
 
+        // Enable high-fidelity anti-aliased image smoothing
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+
         ctx.drawImage(img, 0, 0, width, height);
-        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+        
+        // Use WebP if source is webp/png or fallback to high-quality JPEG
+        const outputMime = file.type === "image/png" ? "image/png" : "image/jpeg";
+        const dataUrl = canvas.toDataURL(outputMime, quality);
         resolve(dataUrl);
       };
       img.onerror = () => {

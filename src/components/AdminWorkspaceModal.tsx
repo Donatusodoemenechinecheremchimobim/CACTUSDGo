@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X, Plus, Trash2, ShieldAlert, BadgeCheck, ClipboardList, Package, Truck, Calendar, Cpu, Terminal, Activity, Link2, RefreshCw, Upload, Globe, Smartphone, Copy, CreditCard, Sparkles } from "lucide-react";
+import { X, Plus, Trash2, Edit3, ShieldAlert, BadgeCheck, ClipboardList, Package, Truck, Calendar, Cpu, Terminal, Activity, Link2, RefreshCw, Upload, Globe, Smartphone, Copy, CreditCard, Sparkles, Check } from "lucide-react";
 import { Product, ProductCat, ApparelColor } from "../types";
 import { dbService, DbOrder, uploadProductImage } from "../services/firebase";
 import { generateSitemapXml, downloadSitemapFile } from "../utils/sitemapGenerator";
@@ -390,7 +390,8 @@ export default function AdminWorkspaceModal({
     }
   };
 
-  // Form states for creating a new product
+  // Form states for creating or editing a product
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [pName, setPName] = useState<string>("");
   const [pPrice, setPPrice] = useState<number>(120);
   const [pCategory, setPCategory] = useState<ProductCat>("Tees");
@@ -549,11 +550,59 @@ export default function AdminWorkspaceModal({
     }
   };
 
-  // Submit Product creation
+  // Cancel editing mode and reset form
+  const handleCancelEdit = () => {
+    setEditingProductId(null);
+    setPName("");
+    setPPrice(120);
+    setPCategory("Tees");
+    setPSku("");
+    setPDescription("");
+    setPMockupType("tee");
+    setPImage("");
+    setPGalleryImages([]);
+    setGalleryInput("");
+    setPDetails(["Heavy organic fabric run", "Pre-washed vintage style"]);
+    setPColors([
+      { name: "Obsidian Black", hex: "#0c0c0d", bgHex: "#0c0c0d" },
+      { name: "Alabaster White", hex: "#FFFFFF", bgHex: "#FFFFFF" }
+    ]);
+    setPSizes(["S", "M", "L", "XL"]);
+    setProductPublishError("");
+  };
+
+  // Populate form with existing product for editing
+  const handleStartEditProduct = (product: Product) => {
+    setEditingProductId(product.id);
+    setPName(product.name);
+    // If price is stored in NGN (e.g. 180000), keep it or if USD (120), keep it
+    setPPrice(product.price);
+    setPCategory(product.category);
+    setPSku(product.sku || "");
+    setPDescription(product.description || "");
+    setPMockupType(product.mockupType || "tee");
+    setPImage(product.imageUrl || "");
+    setPGalleryImages(product.images || (product.imageUrl ? [product.imageUrl] : []));
+    setGalleryInput("");
+    setPDetails(product.details && product.details.length > 0 ? product.details : ["Heavy organic fabric run"]);
+    setPColors(product.colors && product.colors.length > 0 ? product.colors : [
+      { name: "Obsidian Black", hex: "#0c0c0d", bgHex: "#0c0c0d" }
+    ]);
+    setPSizes(product.sizes && product.sizes.length > 0 ? product.sizes : ["S", "M", "L", "XL"]);
+    setProductPublishError("");
+
+    // Scroll to the builder form smoothly
+    const formElement = document.getElementById("product-form-container");
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  // Submit Product creation or modification
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!pName.trim()) {
-      setProductPublishError("Please enter a Piece Design Name before publishing.");
+      setProductPublishError("Please enter a Piece Design Name before saving.");
       return;
     }
 
@@ -565,7 +614,7 @@ export default function AdminWorkspaceModal({
         ? pSku.toUpperCase().trim() 
         : `CB-${pCategory.substring(0, 3).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-      const newId = "prod-" + finalSku.toLowerCase().replace(/[^a-z0-9]/g, "-") + "-" + Math.floor(Math.random() * 10000);
+      const finalId = editingProductId ? editingProductId : ("prod-" + finalSku.toLowerCase().replace(/[^a-z0-9]/g, "-") + "-" + Math.floor(Math.random() * 10000));
 
       // Collect all images
       const allGalleryImages = [...pGalleryImages];
@@ -578,8 +627,8 @@ export default function AdminWorkspaceModal({
         }
       });
 
-      const newProduct: Product = {
-        id: newId,
+      const updatedProduct: Product = {
+        id: finalId,
         name: pName.toUpperCase().trim(),
         category: pCategory,
         price: Number(pPrice) || 0,
@@ -595,34 +644,24 @@ export default function AdminWorkspaceModal({
         images: allGalleryImages.length > 0 ? allGalleryImages : undefined
       };
 
-      await dbService.addProduct(newProduct);
-      setProducts(prev => [newProduct, ...prev.filter(p => p.id !== newProduct.id)]);
+      await dbService.addProduct(updatedProduct);
+      setProducts(prev => [updatedProduct, ...prev.filter(p => p.id !== updatedProduct.id)]);
       onRefreshProducts();
       await refreshLocalState();
 
-      setAdminToast(`✦ "${newProduct.name}" published to live catalog!`);
+      if (editingProductId) {
+        setAdminToast(`✦ "${updatedProduct.name}" updated successfully in live catalog!`);
+      } else {
+        setAdminToast(`✦ "${updatedProduct.name}" published to live catalog!`);
+      }
       setTimeout(() => setAdminToast(null), 5000);
 
       // Reset Form
-      setPName("");
-      setPPrice(120);
-      setPCategory("Tees");
-      setPSku("");
-      setPDescription("");
-      setPMockupType("tee");
-      setPImage("");
-      setPGalleryImages([]);
-      setGalleryInput("");
-      setPDetails(["Heavy organic fabric run", "Pre-washed vintage style"]);
-      setPColors([
-        { name: "Obsidian Black", hex: "#0c0c0d", bgHex: "#0c0c0d" },
-        { name: "Alabaster White", hex: "#FFFFFF", bgHex: "#FFFFFF" }
-      ]);
-      setPSizes(["S", "M", "L", "XL"]);
+      handleCancelEdit();
     } catch (err: any) {
       console.error(err);
       let msg = err?.message || String(err);
-      setProductPublishError("Fail to publish: " + msg);
+      setProductPublishError("Fail to save piece: " + msg);
     } finally {
       setIsPublishing(false);
     }
@@ -838,10 +877,28 @@ export default function AdminWorkspaceModal({
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                   
                   {/* Left panel: builder form */}
-                  <form onSubmit={handleCreateProduct} className="lg:col-span-5 bg-black border border-zinc-900 p-6 flex flex-col gap-5">
-                    <span className="text-xs font-mono text-[#EFFF00] tracking-widest block uppercase border-b border-zinc-900 pb-2">
-                      ✦ DESIGN NEW COLLECTION PIECE
-                    </span>
+                  <form id="product-form-container" onSubmit={handleCreateProduct} className={`lg:col-span-5 bg-black border ${editingProductId ? "border-[#EFFF00] shadow-[0_0_25px_rgba(239,255,0,0.1)]" : "border-zinc-900"} p-6 flex flex-col gap-5 transition-all`}>
+                    <div className="flex items-center justify-between border-b border-zinc-900 pb-2">
+                      <span className="text-xs font-mono text-[#EFFF00] tracking-widest uppercase flex items-center gap-1.5 font-bold">
+                        {editingProductId ? (
+                          <>
+                            <Edit3 size={14} className="text-[#EFFF00]" />
+                            <span>✦ EDITING PUBLISHED PIECE</span>
+                          </>
+                        ) : (
+                          <span>✦ DESIGN NEW COLLECTION PIECE</span>
+                        )}
+                      </span>
+                      {editingProductId && (
+                        <button
+                          type="button"
+                          onClick={handleCancelEdit}
+                          className="font-mono text-[9px] text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800 px-2 py-0.5 uppercase tracking-wider cursor-pointer"
+                        >
+                          ✕ CANCEL EDIT
+                        </button>
+                      )}
+                    </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="flex flex-col gap-1">
@@ -1242,25 +1299,42 @@ export default function AdminWorkspaceModal({
                       </div>
                     )}
 
-                    <button
-                      type="submit"
-                      disabled={isPublishing || isUploadingImage}
-                      className="w-full bg-[#EFFF00] hover:bg-[#EFFF22] disabled:bg-zinc-900 disabled:text-zinc-500 text-black font-mono font-black text-xs py-4 tracking-widest uppercase rounded-none mt-2 cursor-pointer flex items-center justify-center gap-2"
-                    >
-                      {isUploadingImage ? (
-                        <>
-                          <RefreshCw className="animate-spin text-zinc-500" size={14} />
-                          UPLOADING DESIGN PICTURE...
-                        </>
-                      ) : isPublishing ? (
-                        <>
-                          <RefreshCw className="animate-spin text-black" size={14} />
-                          PUBLISHING TO ARCHIVE...
-                        </>
-                      ) : (
-                        "PUBLISH DESIGN TO COLLECTION CATALOG"
+                    <div className="flex flex-col gap-2">
+                      <button
+                        type="submit"
+                        disabled={isPublishing || isUploadingImage}
+                        className="w-full bg-[#EFFF00] hover:bg-[#EFFF22] disabled:bg-zinc-900 disabled:text-zinc-500 text-black font-mono font-black text-xs py-4 tracking-widest uppercase rounded-none mt-2 cursor-pointer flex items-center justify-center gap-2"
+                      >
+                        {isUploadingImage ? (
+                          <>
+                            <RefreshCw className="animate-spin text-zinc-500" size={14} />
+                            UPLOADING DESIGN PICTURE...
+                          </>
+                        ) : isPublishing ? (
+                          <>
+                            <RefreshCw className="animate-spin text-black" size={14} />
+                            {editingProductId ? "SAVING EDITS TO PIECE..." : "PUBLISHING TO ARCHIVE..."}
+                          </>
+                        ) : editingProductId ? (
+                          <>
+                            <Check size={14} />
+                            SAVE & UPDATE PUBLISHED PIECE
+                          </>
+                        ) : (
+                          "PUBLISH DESIGN TO COLLECTION CATALOG"
+                        )}
+                      </button>
+
+                      {editingProductId && (
+                        <button
+                          type="button"
+                          onClick={handleCancelEdit}
+                          className="w-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-mono text-[10px] py-2 tracking-wider uppercase border border-zinc-800 cursor-pointer text-center"
+                        >
+                          Cancel Editing & Create New Piece Instead
+                        </button>
                       )}
-                    </button>
+                    </div>
                   </form>
 
                   {/* Right panel: current catalog inspector view */}
@@ -1358,9 +1432,19 @@ export default function AdminWorkspaceModal({
 
                                 <button
                                   type="button"
+                                  onClick={() => handleStartEditProduct(prod)}
+                                  className={`h-8 px-2.5 rounded-none border ${editingProductId === prod.id ? "border-[#EFFF00] text-[#EFFF00] bg-[#EFFF00]/10" : "border-zinc-800 hover:border-[#EFFF00] text-zinc-300 hover:text-white bg-zinc-900"} font-mono text-[9px] uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer`}
+                                  title="Edit Product Details & Photos"
+                                >
+                                  <Edit3 size={11} className={editingProductId === prod.id ? "text-[#EFFF00]" : "text-zinc-400"} />
+                                  <span className="hidden sm:inline">{editingProductId === prod.id ? "EDITING" : "EDIT"}</span>
+                                </button>
+
+                                <button
+                                  type="button"
                                   onClick={() => handleDeleteProduct(prod.id)}
                                   disabled={isDeleting}
-                                  className="w-8 h-8 rounded-none border border-zinc-900 hover:border-red-500 text-zinc-500 hover:text-red-400 disabled:opacity-50 flex items-center justify-center transition-all bg-zinc-950 cursor-pointer ml-2"
+                                  className="w-8 h-8 rounded-none border border-zinc-900 hover:border-red-500 text-zinc-500 hover:text-red-400 disabled:opacity-50 flex items-center justify-center transition-all bg-zinc-950 cursor-pointer ml-1"
                                   title="Delete Product from Store"
                                 >
                                   {isDeleting ? (

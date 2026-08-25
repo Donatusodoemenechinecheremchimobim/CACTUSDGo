@@ -147,6 +147,8 @@ export default function ProductCard({ product, onAddToCart, onSelect, isWishlist
               key={selectedColor.imageUrl || product.imageUrl}
               src={selectedColor.imageUrl || product.imageUrl}
               alt={`${product.name} - ${selectedColor.name}`}
+              loading="eager"
+              decoding="async"
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover transition-all duration-300 animate-fadeIn"
             />
