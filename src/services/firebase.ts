@@ -696,6 +696,72 @@ class DatabaseService {
     }
   }
 
+  // Clear all product pictures from database to free storage space
+  public async clearAllProductPictures(): Promise<{ updatedCount: number; clearedPicturesCount: number }> {
+    safeLocalStorageSet("cactus_bear_catalog_customized", "true");
+    this.refreshLocal();
+
+    let clearedPicturesCount = 0;
+
+    // Clean all in-memory / local products
+    this.localProducts = this.localProducts.map(p => {
+      let count = 0;
+      if (p.imageUrl) count++;
+      if (p.images && p.images.length > 0) count += p.images.length;
+      if (p.colors) {
+        p.colors.forEach(c => {
+          if (c.imageUrl) count++;
+          if (c.images && c.images.length > 0) count += c.images.length;
+        });
+      }
+      clearedPicturesCount += count;
+
+      const cleanedColors = (p.colors || []).map(c => {
+        const { imageUrl, images, ...rest } = c;
+        return rest;
+      });
+
+      const { imageUrl, images, ...restProduct } = p;
+      return {
+        ...restProduct,
+        colors: cleanedColors
+      } as Product;
+    });
+
+    // Save cleaned products to high-capacity IndexedDB and localStorage
+    await idbSet(STORAGE_PRODUCTS_KEY, this.localProducts);
+    safeLocalStorageSet(STORAGE_PRODUCTS_KEY, JSON.stringify(this.localProducts));
+
+    // Clean in Firestore
+    if (isFirebaseConfigured && db) {
+      try {
+        const querySnapshot = await getDocs(collection(db, "products"));
+        const updatePromises: Promise<void>[] = [];
+        querySnapshot.forEach((docSnap) => {
+          const pData = docSnap.data() as Product;
+          const cleanedColors = (pData.colors || []).map(c => {
+            const { imageUrl, images, ...rest } = c;
+            return rest;
+          });
+          const { imageUrl, images, ...restDoc } = pData;
+          const cleanedDoc = sanitizeForFirestore({
+            ...restDoc,
+            colors: cleanedColors
+          });
+          updatePromises.push(setDoc(doc(db, "products", docSnap.id), cleanedDoc));
+        });
+        await Promise.all(updatePromises);
+      } catch (error) {
+        console.warn("Firestore bulk picture clear note:", error);
+      }
+    }
+
+    return {
+      updatedCount: this.localProducts.length,
+      clearedPicturesCount
+    };
+  }
+
   // Order Operations
   public async getOrders(): Promise<DbOrder[]> {
     if (isFirebaseConfigured && db) {

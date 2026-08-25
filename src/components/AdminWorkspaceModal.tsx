@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X, Plus, Trash2, Edit3, ShieldAlert, BadgeCheck, ClipboardList, Package, Truck, Calendar, Cpu, Terminal, Activity, Link2, RefreshCw, Upload, Globe, Smartphone, Copy, CreditCard, Sparkles, Check } from "lucide-react";
+import { X, Plus, Trash2, Edit3, ShieldAlert, BadgeCheck, ClipboardList, Package, Truck, Calendar, Cpu, Terminal, Activity, Link2, RefreshCw, Upload, Globe, Smartphone, Copy, CreditCard, Sparkles, Check, ImageOff, Database, HardDrive } from "lucide-react";
 import { Product, ProductCat, ApparelColor } from "../types";
 import { dbService, DbOrder, uploadProductImage } from "../services/firebase";
 import { safeLocalStorageSet, safeLocalStorageGet } from "../services/storage";
@@ -45,6 +45,8 @@ export default function AdminWorkspaceModal({
   const [deletingProductId, setDeletingProductId] = useState<string | null>(null);
   const [isClearingAll, setIsClearingAll] = useState<boolean>(false);
   const [confirmClearModal, setConfirmClearModal] = useState<boolean>(false);
+  const [isClearingPictures, setIsClearingPictures] = useState<boolean>(false);
+  const [confirmClearPicturesModal, setConfirmClearPicturesModal] = useState<boolean>(false);
   const [adminToast, setAdminToast] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -705,6 +707,24 @@ export default function AdminWorkspaceModal({
     }
   };
 
+  // Clear all pictures from database to free space
+  const handleClearAllPictures = async () => {
+    setIsClearingPictures(true);
+    try {
+      const res = await dbService.clearAllProductPictures();
+      await refreshLocalState();
+      setConfirmClearPicturesModal(false);
+      setAdminToast(`✦ Database Pictures Cleared! Stripped ${res.clearedPicturesCount} image files across ${res.updatedCount} pieces to free storage.`);
+      setTimeout(() => setAdminToast(null), 5000);
+    } catch (err: any) {
+      console.error("Error clearing database pictures:", err);
+      setAdminToast("Failed to clear pictures: " + (err?.message || String(err)));
+      setTimeout(() => setAdminToast(null), 4000);
+    } finally {
+      setIsClearingPictures(false);
+    }
+  };
+
   // Change delivery status dropdown
   const handleStatusChange = async (orderId: string, status: DbOrder["status"]) => {
     await dbService.updateOrderStatus(orderId, status);
@@ -1340,6 +1360,49 @@ export default function AdminWorkspaceModal({
 
                   {/* Right panel: current catalog inspector view */}
                   <div className="lg:col-span-7 flex flex-col gap-4">
+                    {/* Database Storage Management Banner */}
+                    <div className="bg-[#0c0c0e] border border-zinc-800 p-3.5 flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-none bg-amber-950/40 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+                          <Database size={15} />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-200 font-bold">
+                              DATABASE & STORAGE MEMORY
+                            </span>
+                            <span className="font-mono text-[9px] px-1.5 py-0.2 bg-zinc-900 border border-zinc-700 text-zinc-400">
+                              FIRESTORE + CACHE
+                            </span>
+                          </div>
+                          <p className="font-mono text-[10px] text-zinc-400 mt-0.5">
+                            {products.reduce((acc, p) => {
+                              let c = 0;
+                              if (p.imageUrl) c++;
+                              if (p.images && p.images.length > 0) c += p.images.length;
+                              if (p.colors) {
+                                p.colors.forEach(col => {
+                                  if (col.imageUrl) c++;
+                                  if (col.images && col.images.length > 0) c += col.images.length;
+                                });
+                              }
+                              return acc + c;
+                            }, 0)} pictures stored in catalog pieces.
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setConfirmClearPicturesModal(true)}
+                        className="border border-amber-600/70 bg-amber-950/40 hover:bg-amber-900/60 hover:border-amber-400 text-amber-300 font-mono text-[9px] px-3 py-1.5 uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer font-bold shrink-0"
+                        title="Strip all image payloads from database to reclaim Firestore and memory space"
+                      >
+                        <ImageOff size={12} />
+                        <span>CLEAR ALL PICTURES (FREE SPACE)</span>
+                      </button>
+                    </div>
+
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-900 pb-3">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-mono text-zinc-300 tracking-widest uppercase font-bold">
@@ -1352,16 +1415,29 @@ export default function AdminWorkspaceModal({
                         )}
                       </div>
 
-                      {products.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => setConfirmClearModal(true)}
-                          className="border border-red-900/60 bg-red-950/20 hover:bg-red-950/40 hover:border-red-500 text-red-400 font-mono text-[9px] px-3 py-1.5 uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
-                        >
-                          <Trash2 size={11} />
-                          <span>PURGE ALL SAMPLE PRODUCTS</span>
-                        </button>
-                      )}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {products.some(p => p.imageUrl || (p.images && p.images.length > 0)) && (
+                          <button
+                            type="button"
+                            onClick={() => setConfirmClearPicturesModal(true)}
+                            className="border border-amber-900/60 bg-amber-950/20 hover:bg-amber-950/40 hover:border-amber-500 text-amber-300 font-mono text-[9px] px-3 py-1.5 uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
+                          >
+                            <ImageOff size={11} />
+                            <span>WIPE PICTURES</span>
+                          </button>
+                        )}
+
+                        {products.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => setConfirmClearModal(true)}
+                            className="border border-red-900/60 bg-red-950/20 hover:bg-red-950/40 hover:border-red-500 text-red-400 font-mono text-[9px] px-3 py-1.5 uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
+                          >
+                            <Trash2 size={11} />
+                            <span>PURGE ALL SAMPLE PRODUCTS</span>
+                          </button>
+                        )}
+                      </div>
                     </div>
 
                     {products.length === 0 ? (
@@ -2571,6 +2647,73 @@ export default function AdminWorkspaceModal({
                           </>
                         ) : (
                           <span>YES, PURGE ALL ({products.length})</span>
+                        )}
+                      </button>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
+            </AnimatePresence>
+
+            {/* CONFIRMATION MODAL FOR CLEARING ALL PICTURES TO FREE STORAGE SPACE */}
+            <AnimatePresence>
+              {confirmClearPicturesModal && (
+                <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
+                  <motion.div
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.95, opacity: 0 }}
+                    className="bg-[#0c0c0d] border border-amber-500/50 p-6 sm:p-8 max-w-md w-full flex flex-col gap-5 text-white shadow-2xl"
+                  >
+                    <div className="flex items-center gap-3 text-amber-400">
+                      <div className="w-10 h-10 rounded-full bg-amber-950/40 border border-amber-500/30 flex items-center justify-center shrink-0">
+                        <ImageOff size={20} />
+                      </div>
+                      <div>
+                        <span className="font-mono text-[10px] uppercase tracking-widest text-amber-400 block font-bold">
+                          DATABASE STORAGE RECOVERY
+                        </span>
+                        <h3 className="font-sans font-black text-lg uppercase tracking-tight text-white">
+                          CLEAR ALL PICTURES IN DATABASE?
+                        </h3>
+                      </div>
+                    </div>
+
+                    <p className="font-mono text-xs text-zinc-300 leading-relaxed">
+                      This will strip and remove all image files and galleries from the {products.length} catalog items in Firestore and local databases, instantly freeing up storage capacity.
+                    </p>
+
+                    <div className="p-3 bg-black border border-zinc-800 font-mono text-[11px] text-zinc-300 space-y-1">
+                      <div className="text-emerald-400">✓ All product titles, prices, descriptions, and SKUs remain intact.</div>
+                      <div className="text-emerald-400">✓ Catalog displays lightweight animated vector schematics.</div>
+                      <div className="text-amber-300">✓ Reclaims database document storage and local memory immediately.</div>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-3 mt-2">
+                      <button
+                        type="button"
+                        onClick={() => setConfirmClearPicturesModal(false)}
+                        disabled={isClearingPictures}
+                        className="px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 font-mono text-xs uppercase tracking-wider cursor-pointer"
+                      >
+                        CANCEL
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleClearAllPictures}
+                        disabled={isClearingPictures}
+                        className="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 disabled:bg-zinc-800 text-black font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 cursor-pointer"
+                      >
+                        {isClearingPictures ? (
+                          <>
+                            <RefreshCw size={14} className="animate-spin" />
+                            <span>CLEARING PICTURES...</span>
+                          </>
+                        ) : (
+                          <>
+                            <ImageOff size={14} />
+                            <span>YES, CLEAR ALL PICTURES</span>
+                          </>
                         )}
                       </button>
                     </div>
