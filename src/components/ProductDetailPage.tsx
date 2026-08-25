@@ -338,11 +338,11 @@ export default function ProductDetailPage({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="bg-[#050505] border border-zinc-900 p-3 h-20 flex flex-col justify-between font-mono text-[9px] text-zinc-500">
               <span className="uppercase text-zinc-600 block">FABRIC ORIGIN</span>
-              <span className="text-white font-bold uppercase">100% ORGANIC WEAVE</span>
+              <span className="text-white font-bold uppercase">PREMIUM ATELIER KNIT</span>
             </div>
             <div className="bg-[#050505] border border-zinc-900 p-3 h-20 flex flex-col justify-between font-mono text-[9px] text-zinc-500">
-              <span className="uppercase text-zinc-600 block">WEIGHT PROFILE</span>
-              <span className="text-white font-bold uppercase">400GSM HEAVYWEIGHT</span>
+              <span className="uppercase text-zinc-600 block">GARMENT FINISH</span>
+              <span className="text-white font-bold uppercase">CUSTOM APPAREL</span>
             </div>
             <div className="bg-[#050505] border border-zinc-900 p-3 h-20 flex flex-col justify-between font-mono text-[9px] text-zinc-500">
               <span className="uppercase text-zinc-600 block">LAUNCH SERIES</span>
@@ -350,7 +350,7 @@ export default function ProductDetailPage({
             </div>
             <div className="bg-[#050505] border border-zinc-900 p-3 h-20 flex flex-col justify-between font-mono text-[9px] text-zinc-500">
               <span className="uppercase text-zinc-600 block">RESTOCK FREQUENCY</span>
-              <span className="text-white font-bold uppercase">VERY LIMITED</span>
+              <span className="text-white font-bold uppercase">LIMITED RUNS</span>
             </div>
           </div>
 
@@ -433,10 +433,6 @@ export default function ProductDetailPage({
               <div className="flex justify-between items-center mb-3">
                 <span className="text-[10px] font-mono text-zinc-550 uppercase tracking-widest font-black">
                   02 / SELECT SIZE
-                </span>
-                <span className="font-mono text-[10px] text-zinc-450 hover:text-white transition-colors cursor-pointer flex items-center gap-1">
-                  <Scissors size={10} className="text-[#EFFF00]" />
-                  SIZE GUIDE
                 </span>
               </div>
 
@@ -603,7 +599,7 @@ export default function ProductDetailPage({
                       ))}
                       <div className="flex items-start gap-2 text-zinc-350">
                         <span className="text-[#EFFF00]">✦</span>
-                        <span>Available in sizes {product.sizes.join(", ")}. Standard boxy fit.</span>
+                        <span>Available in sizes: {product.sizes.join(", ")}</span>
                       </div>
                     </motion.div>
                   )}

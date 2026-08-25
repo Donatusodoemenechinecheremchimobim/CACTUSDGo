@@ -6,8 +6,8 @@ export default function Lookbook() {
       {/* Decorative Ticker Tape scroller */}
       <div className="w-full overflow-hidden border-y border-zinc-900 py-2.5 bg-[#050505] absolute top-0 left-0">
         <div className="flex whitespace-nowrap animate-[marquee_25s_linear_infinite] font-mono text-[9px] text-[#EFFF00]/60 tracking-[0.25em]">
-          <span>CACTUS BEAR // HEAVYWEIGHT PREMIUM STREETWEAR // 100% SUPIMA COTTON // LAGOS YABA EXP-STUDIO // </span>
-          <span>CACTUS BEAR // HEAVYWEIGHT PREMIUM STREETWEAR // 100% SUPIMA COTTON // LAGOS YABA EXP-STUDIO // </span>
+          <span>CACTUS BEAR // CONTEMPORARY LUXURY STREETWEAR // LAGOS ATELIER // LIMITED CAPSULES // NATIONWIDE SHIPPING // </span>
+          <span>CACTUS BEAR // CONTEMPORARY LUXURY STREETWEAR // LAGOS ATELIER // LIMITED CAPSULES // NATIONWIDE SHIPPING // </span>
         </div>
       </div>
 
@@ -19,11 +19,11 @@ export default function Lookbook() {
               ATELIER ARCHIVE // 2026
             </span>
             <h2 className="font-sans font-black text-2xl sm:text-3xl md:text-4xl uppercase tracking-tight text-white">
-              CRAFT & <span className="text-[#EFFF00]">QUALITY</span>
+              CRAFT & <span className="text-[#EFFF00]">AESTHETICS</span>
             </h2>
           </div>
           <p className="text-zinc-400 text-xs font-sans max-w-md">
-            Engineered silhouettes, custom heavyweight cotton textiles, and hand-finished garment specifications crafted in Lagos.
+            Distinctive silhouettes, premium textiles, and signature graphic craftsmanship designed and curated in Lagos.
           </p>
         </div>
 
@@ -33,18 +33,18 @@ export default function Lookbook() {
           {/* Bento Card 1: Brand Concept story */}
           <div className="lg:col-span-6 bg-[#0b0b0c] border border-zinc-900 p-8 flex flex-col justify-between min-h-[250px] relative group hover:border-zinc-800 transition-colors">
             <span className="font-mono text-[#EFFF00] text-[9px] tracking-widest block font-bold mb-4">
-              01 // OUR MISSION
+              01 // OUR VISION
             </span>
             <div>
               <h3 className="font-sans font-black text-2xl uppercase tracking-tight mb-2">
                 BUILT TO <span className="text-[#EFFF00]">LAST</span>
               </h3>
               <p className="text-zinc-400 text-xs font-sans leading-relaxed">
-                We design streetwear that is made to last. Our heavy organic cotton is durable and comfortable, featuring double-stitch details for long wear.
+                We design streetwear with longevity in mind. Premium construction, reinforced seams, and timeless silhouettes built for lasting everyday wear.
               </p>
             </div>
             <div className="mt-6 flex justify-between items-center text-zinc-600 font-mono text-[9px]">
-              <span>FIT: BOXY</span>
+              <span>EDITION: LIMITED</span>
               <span>ORIGIN: NIGERIA</span>
             </div>
           </div>
@@ -52,19 +52,19 @@ export default function Lookbook() {
           {/* Bento Card 2: Fabric Blueprint */}
           <div className="lg:col-span-6 bg-[#0b0b0c] border border-zinc-900 p-8 flex flex-col justify-between min-h-[250px] relative group hover:border-zinc-800 transition-colors">
             <span className="font-mono text-[#EFFF00] text-[9px] tracking-widest block font-bold mb-4">
-              02 // PRESTIGE FABRICS
+              02 // SIGNATURE FINISHES
             </span>
             <div>
               <h3 className="font-sans font-black text-2xl uppercase tracking-tight mb-2">
-                PREMIUM <span className="text-[#EFFF00]">COTTON</span>
+                DISTINCTIVE <span className="text-[#EFFF00]">ARTISTRY</span>
               </h3>
               <p className="text-zinc-400 text-xs font-sans leading-relaxed">
-                We use 100% natural organic cotton fabrics. No polyester or synthetic blends. Our garments keep their shape and offer premium thickness and breathability.
+                From high-definition screenprints to refined embroidery, each piece showcases our iconic crown motif and thoughtful streetwear detailing.
               </p>
             </div>
             <div className="mt-6 flex justify-between items-center text-zinc-600 font-mono text-[9px]">
-              <span>FABRIC: 100% SUPIMA</span>
-              <span>WASH: VINTAGE MINERAL</span>
+              <span>CRAFT: ATELIER FINISH</span>
+              <span>RELEASE: CAPSULE '01</span>
             </div>
           </div>
 
@@ -79,7 +79,7 @@ export default function Lookbook() {
                   HAND-FINISHED <span className="text-[#EFFF00]">DESIGNS</span>
                 </h3>
                 <p className="text-zinc-400 text-xs font-sans leading-relaxed max-w-2xl">
-                  To maintain our high quality standards, we avoid mass production. Each streetwear item is custom designed, hand-inspected, and shipped from our studio in Lagos. That's our promise of simple, elegant everyday luxury.
+                  To maintain our high quality standards, we avoid mass production. Each streetwear item is custom designed, hand-inspected, and shipped directly from our studio in Lagos.
                 </p>
               </div>
               <div className="flex gap-6 mt-6">
@@ -102,10 +102,10 @@ export default function Lookbook() {
                 <span className="text-white font-bold">CB_SPECS</span>
               </div>
               <div className="flex flex-col gap-1.5 my-3 text-[10px]">
-                <div className="flex justify-between"><span>[01] COTTON YARN:</span> <span className="text-white">100% ORGANIC</span></div>
-                <div className="flex justify-between"><span>[02] HEM STITCH:</span> <span className="text-white">DOUBLE NEEDLE</span></div>
-                <div className="flex justify-between"><span>[03] DYE QUALITY:</span> <span className="text-white">REACTIVE VAT</span></div>
-                <div className="flex justify-between"><span>[04] WEIGHT CLASS:</span> <span className="text-[#EFFF00]">500GSM HEAVY</span></div>
+                <div className="flex justify-between"><span>[01] TEXTILE:</span> <span className="text-white">PREMIUM ATELIER KNIT</span></div>
+                <div className="flex justify-between"><span>[02] REINFORCEMENT:</span> <span className="text-white">DOUBLE SEAM</span></div>
+                <div className="flex justify-between"><span>[03] GRAPHIC ART:</span> <span className="text-white">ARCHIVAL PRINT</span></div>
+                <div className="flex justify-between"><span>[04] EDITION:</span> <span className="text-[#EFFF00]">CAPSULE RELEASE</span></div>
               </div>
               <div className="text-center bg-[#EFFF00]/10 text-[#EFFF00] py-1.5 border border-[#EFFF00]/20 font-bold tracking-wider">
                 CERTIFIED ATELIER

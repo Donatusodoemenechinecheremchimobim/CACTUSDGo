@@ -4,13 +4,13 @@ import {
   ChevronRight,
   ShieldCheck,
   Truck,
-  Ruler,
   Layers,
   Scissors,
   CheckCircle2,
   RefreshCw,
   ShoppingBag,
-  Sparkles
+  Sparkles,
+  Award
 } from "lucide-react";
 import GlowCrown from "./GlowCrown";
 import { ProductCat } from "../types";
@@ -18,75 +18,62 @@ import { ProductCat } from "../types";
 interface AboutPageProps {
   onBack: () => void;
   onExploreShop: (category?: ProductCat | "All") => void;
-  onOpenSizeGuide?: () => void;
 }
 
 export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
   const garments = [
     {
       category: "Tees" as ProductCat,
-      title: "Heavyweight Graphic Tees",
-      weight: "300 - 320 GSM",
-      cut: "Architectural Boxy Cut",
-      material: "100% Combed Organic Cotton",
-      desc: "Dense, structured drape that maintains its shape. Features a thick 1.25-inch high-ribbed collar that never sags after washing.",
+      title: "Signature Graphic Tees",
+      edition: "Limited Drop",
+      material: "Premium Knit Textile",
+      desc: "Structured silhouette with rich drape and color retention. Finished with a durable high-rib collar and archival chest and back prints.",
       points: [
-        "Pre-shrunk 100% organic cotton jersey",
-        "Reinforced twin-needle shoulder seams",
-        "Archival high-density screenprints",
-        "Relaxed boxy streetwear silhouette"
+        "High-density archival graphic screenprints",
+        "Reinforced shoulder seams for shape retention",
+        "Pre-washed to resist shrinkage or fading",
+        "Signature Cactus Bear crown monogram detailing"
       ]
     },
     {
       category: "Outerwear" as ProductCat,
-      title: "Ultra-Heavy Fleece Hoodies",
-      weight: "450 GSM Zero-Blend",
-      cut: "Oversized Street Cut",
-      material: "100% Heavy Brushed Cotton Fleece",
-      desc: "Our heaviest signature build. Engineered with a double-layer structured hood that stays upright without drawstrings, deep hidden kangaroo pouch, and snug rib cuffs.",
+      title: "Structured Fleece Hoodies",
+      edition: "Studio Archive",
+      material: "Custom Brushed Fleece",
+      desc: "Signature cold-weather outerwear featuring a double-layer structured hood, deep hidden kangaroo pouch, and snug ribbed cuffs.",
       points: [
-        "450 GSM zero-blend ultra-heavy cotton fleece",
+        "Plush interior with high-density outer weave",
         "Double-layer self-fabric structured hood",
         "Ribbed side-action panels for natural motion",
-        "Tonal embroidered crown monogram"
+        "Tonal embroidered crown insignia"
       ]
     },
     {
       category: "Outerwear" as ProductCat,
       title: "French Terry Sweatpants & Bottoms",
-      weight: "400 GSM Loopback",
-      cut: "Relaxed Straight / Tapered",
-      material: "100% Loopback French Terry",
-      desc: "Tailored for street presence and everyday comfort. Deep zippered pockets for oversized phones and custom dipped matte metal aglets.",
+      edition: "Core Collection",
+      material: "Loopback Terry",
+      desc: "Engineered for street presence and everyday comfort. Deep zippered pockets for smartphones and custom dipped matte metal aglets.",
       points: [
-        "Breathable heavyweight loopback interior",
+        "Breathable loopback interior construction",
         "Deep secure zippered side pockets",
-        "Thick custom braided cotton drawstrings",
-        "Engineered knee darts for clean draping"
+        "Custom braided drawstrings with matte tips",
+        "Clean structural paneling for everyday wear"
       ]
     },
     {
       category: "Headwear" as ProductCat,
       title: "Headwear & Street Essentials",
-      weight: "Heavyweight Chino Twill",
-      cut: "Structured Unisex Fit",
-      material: "100% Cotton Chino Twill",
-      desc: "Low-profile structured 6-panel caps and dense ribbed beanies featuring the signature Cactus Bear crown embroidery.",
+      edition: "Capsule Release",
+      material: "Structured Chino Twill",
+      desc: "Structured 6-panel caps and dense ribbed beanies featuring the signature Cactus Bear crown embroidery and custom hardware.",
       points: [
-        "Unstructured crown with pre-curved visor",
+        "Structured crown with pre-curved visor",
         "Custom brass buckle strap closure",
         "High-density 3D crown embroidery",
-        "Reinforced interior sweatband"
+        "Reinforced interior comfort sweatband"
       ]
     }
-  ];
-
-  const sizeTable = [
-    { size: "S", chest: '42" (107cm)', length: '28" (71cm)', shoulder: '21" (53cm)', rec: "5'4\" - 5'8\" (50-65kg)" },
-    { size: "M", chest: '45" (114cm)', length: '29" (74cm)', shoulder: '22" (56cm)', rec: "5'8\" - 5'11\" (65-78kg)" },
-    { size: "L", chest: '48" (122cm)', length: '30" (76cm)', shoulder: '23" (58cm)', rec: "5'10\" - 6'2\" (75-90kg)" },
-    { size: "XL", chest: '51" (130cm)', length: '31" (79cm)', shoulder: '24" (61cm)', rec: "6'1\" - 6'5\" (88-105kg)" },
-    { size: "XXL", chest: '54" (137cm)', length: '32" (81cm)', shoulder: '25" (64cm)', rec: "6'2\"+ (100kg+)" }
   ];
 
   return (
@@ -130,7 +117,7 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
           </h1>
 
           <p className="text-zinc-400 text-sm sm:text-base leading-relaxed font-sans">
-            Independent Nigerian luxury streetwear atelier creating heavy-gauge 100% organic cotton garments with architectural boxy cuts and minimalist durability.
+            Independent Nigerian luxury streetwear atelier creating contemporary garments with distinctive graphic artistry, clean lines, and long-lasting durability.
           </p>
         </div>
 
@@ -141,27 +128,27 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
             <span>01 // WHO WE ARE</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-sans font-black uppercase text-white mb-4">
-            BORN IN LAGOS, CRAFTED FOR LONGEVITY
+            BORN IN LAGOS, CRAFTED FOR DURABILITY
           </h2>
           <p className="text-zinc-300 text-sm sm:text-base leading-relaxed mb-4">
-            Founded in Lagos, Nigeria, <strong className="text-white">CACTUS BEAR</strong> was built to solve a simple problem: standard fast-fashion t-shirts are thin, lose collar tension, and shrink into misshapen rags after a couple of washes.
+            Founded in Lagos, Nigeria, <strong className="text-white">CACTUS BEAR</strong> was created to redefine African streetwear by prioritizing high craftsmanship, timeless aesthetics, and uncompromising quality over fast-fashion shortcuts.
           </p>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-            We engineer small-batch garments using dense 300–450 GSM pure combed cotton. Every piece carries our crown emblem—a symbol of self-made authority, discipline, and uncompromising African craftsmanship.
+            We produce small-batch collections where every piece carries our signature crown emblem—a symbol of self-made authority, resilience, and modern African creative expression.
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-6 border-t border-zinc-900">
             <div className="p-3 bg-zinc-900/60 rounded border border-zinc-800">
-              <span className="block font-mono text-[9px] text-zinc-500 uppercase">ATELIER</span>
+              <span className="block font-mono text-[9px] text-zinc-500 uppercase">STUDIO</span>
               <span className="font-mono text-xs sm:text-sm font-bold text-white uppercase">LAGOS, NIGERIA</span>
             </div>
             <div className="p-3 bg-zinc-900/60 rounded border border-zinc-800">
-              <span className="block font-mono text-[9px] text-zinc-500 uppercase">FABRICS</span>
-              <span className="font-mono text-xs sm:text-sm font-bold text-[#EFFF00] uppercase">300-450 GSM COTTON</span>
+              <span className="block font-mono text-[9px] text-zinc-500 uppercase">CRAFT</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-[#EFFF00] uppercase">LIMITED CAPSULES</span>
             </div>
             <div className="p-3 bg-zinc-900/60 rounded border border-zinc-800 col-span-2 sm:col-span-1">
-              <span className="block font-mono text-[9px] text-zinc-500 uppercase">EDITIONS</span>
-              <span className="font-mono text-xs sm:text-sm font-bold text-white uppercase">LIMITED CAPSULES</span>
+              <span className="block font-mono text-[9px] text-zinc-500 uppercase">DISTRIBUTION</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-white uppercase">NATIONWIDE & GLOBAL</span>
             </div>
           </div>
         </section>
@@ -174,7 +161,7 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
               <span>02 // WHAT WE DO</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-sans font-black uppercase text-white">
-              CRAFT & MANUFACTURING PRINCIPLES
+              DESIGN & MANUFACTURING PRINCIPLES
             </h2>
           </div>
 
@@ -184,10 +171,10 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
                 <div className="w-8 h-8 rounded bg-[#EFFF00]/10 border border-[#EFFF00]/20 flex items-center justify-center text-[#EFFF00]">
                   <Layers size={16} />
                 </div>
-                <h3 className="font-sans font-bold text-white text-base uppercase">Heavyweight Textiles</h3>
+                <h3 className="font-sans font-bold text-white text-base uppercase">Premium Textiles</h3>
               </div>
               <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed">
-                We exclusively source 300 to 450 GSM pure combed cotton. Zero polyester filler blends, zero pilling, and full breathability.
+                We select durable, breathable fabrics that hold their structure through daily wear, resisting pilling and stretching.
               </p>
             </div>
 
@@ -196,10 +183,10 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
                 <div className="w-8 h-8 rounded bg-[#EFFF00]/10 border border-[#EFFF00]/20 flex items-center justify-center text-[#EFFF00]">
                   <Scissors size={16} />
                 </div>
-                <h3 className="font-sans font-bold text-white text-base uppercase">Architectural Cuts</h3>
+                <h3 className="font-sans font-bold text-white text-base uppercase">Clean Silhouettes</h3>
               </div>
               <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed">
-                Drop-shoulder proportions, widened chests, tight high-ribbed necklines, and clean lengths designed for modern streetwear styling.
+                Refined proportions, balanced necklines, and clean lengths designed for modern, versatile streetwear styling.
               </p>
             </div>
 
@@ -208,10 +195,10 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
                 <div className="w-8 h-8 rounded bg-[#EFFF00]/10 border border-[#EFFF00]/20 flex items-center justify-center text-[#EFFF00]">
                   <Sparkles size={16} />
                 </div>
-                <h3 className="font-sans font-bold text-white text-base uppercase">Archival Screenprinting</h3>
+                <h3 className="font-sans font-bold text-white text-base uppercase">Archival Screenprints</h3>
               </div>
               <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed">
-                High-tension silk screens and cured puff ink formulas that resist cracking, peeling, or fading through repeated washing.
+                High-definition silk screens and cured ink formulas that resist cracking, peeling, or fading through repeated washing.
               </p>
             </div>
 
@@ -220,10 +207,10 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
                 <div className="w-8 h-8 rounded bg-[#EFFF00]/10 border border-[#EFFF00]/20 flex items-center justify-center text-[#EFFF00]">
                   <ShieldCheck size={16} />
                 </div>
-                <h3 className="font-sans font-bold text-white text-base uppercase">Manual Inspection</h3>
+                <h3 className="font-sans font-bold text-white text-base uppercase">Quality Inspection</h3>
               </div>
               <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed">
-                Every tee, hoodie, and cap is individually checked for seam alignment, tension, and embroidery finish before packaging.
+                Every piece is individually checked for seam alignment, tension, and embroidery finish before packaging and dispatch.
               </p>
             </div>
           </div>
@@ -259,10 +246,10 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-3">
                     <span className="px-2.5 py-1 bg-zinc-900 border border-zinc-800 text-[#EFFF00] font-mono text-[10px] font-bold uppercase">
-                      {g.weight}
+                      {g.edition}
                     </span>
                     <span className="font-mono text-[10px] text-zinc-500 uppercase">
-                      {g.cut}
+                      {g.material}
                     </span>
                   </div>
 
@@ -295,46 +282,7 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
           </div>
         </section>
 
-        {/* 4. INTEGRATED SIZE & FIT GUIDE */}
-        <section className="p-6 sm:p-8 bg-zinc-950 border border-zinc-850 rounded-lg">
-          <div className="flex items-center gap-2 text-[#EFFF00] font-mono text-xs font-bold uppercase tracking-widest mb-1">
-            <Ruler size={14} />
-            <span>04 // SIZING & FIT GUIDE</span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-sans font-black uppercase text-white mb-2">
-            HOW OUR GARMENTS FIT
-          </h2>
-          <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed mb-6">
-            Our tees and hoodies are cut with a signature boxy, drop-shoulder streetwear fit. For a tailored look, take your normal size. For an oversized drape, consider sizing up one size.
-          </p>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left font-mono text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-zinc-800 text-zinc-400 uppercase text-[10px]">
-                  <th className="py-2.5 px-3">SIZE</th>
-                  <th className="py-2.5 px-3">CHEST WIDTH</th>
-                  <th className="py-2.5 px-3">BODY LENGTH</th>
-                  <th className="py-2.5 px-3">SHOULDER</th>
-                  <th className="py-2.5 px-3">RECOMMENDED</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-900 text-zinc-300">
-                {sizeTable.map((row) => (
-                  <tr key={row.size} className="hover:bg-zinc-900/50 transition-colors">
-                    <td className="py-2.5 px-3 font-bold text-[#EFFF00]">{row.size}</td>
-                    <td className="py-2.5 px-3">{row.chest}</td>
-                    <td className="py-2.5 px-3">{row.length}</td>
-                    <td className="py-2.5 px-3">{row.shoulder}</td>
-                    <td className="py-2.5 px-3 text-zinc-400">{row.rec}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* 5. BRAND PROMISES */}
+        {/* 4. BRAND PROMISES */}
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="p-5 bg-zinc-950 border border-zinc-850 rounded-lg">
             <div className="w-8 h-8 rounded bg-[#EFFF00]/10 border border-[#EFFF00]/20 flex items-center justify-center text-[#EFFF00] mb-3">
@@ -342,17 +290,17 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
             </div>
             <h4 className="text-white font-mono text-xs font-bold uppercase mb-1">NATIONWIDE SHIPPING</h4>
             <p className="text-zinc-400 text-xs leading-relaxed">
-              1–3 days in Lagos, 2–5 days across Nigeria with doorstep live tracking.
+              1–3 days in Lagos, 2–5 days across Nigeria with live tracking.
             </p>
           </div>
 
           <div className="p-5 bg-zinc-950 border border-zinc-850 rounded-lg">
             <div className="w-8 h-8 rounded bg-[#EFFF00]/10 border border-[#EFFF00]/20 flex items-center justify-center text-[#EFFF00] mb-3">
-              <ShieldCheck size={16} />
+              <Award size={16} />
             </div>
-            <h4 className="text-white font-mono text-xs font-bold uppercase mb-1">100% ORGANIC COTTON</h4>
+            <h4 className="text-white font-mono text-xs font-bold uppercase mb-1">AUTHENTIC QUALITY</h4>
             <p className="text-zinc-400 text-xs leading-relaxed">
-              Heavyweight combed fibers with zero synthetic filler blends.
+              Limited batch runs engineered with durable materials and careful stitching.
             </p>
           </div>
 
@@ -360,9 +308,9 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
             <div className="w-8 h-8 rounded bg-[#EFFF00]/10 border border-[#EFFF00]/20 flex items-center justify-center text-[#EFFF00] mb-3">
               <RefreshCw size={16} />
             </div>
-            <h4 className="text-white font-mono text-xs font-bold uppercase mb-1">EASY SIZE SWAPS</h4>
+            <h4 className="text-white font-mono text-xs font-bold uppercase mb-1">HASSLE-FREE RETURNS</h4>
             <p className="text-zinc-400 text-xs leading-relaxed">
-              Need a different fit or drape? Exchange your unworn garment within 7 days.
+              Easy exchanges and support for any unworn pieces within 7 days.
             </p>
           </div>
         </section>
@@ -376,7 +324,7 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
             EXPLORE THE COLLECTION
           </h3>
           <p className="text-zinc-400 text-xs sm:text-sm max-w-md">
-            Heavyweight streetwear crafted in Lagos with nationwide delivery.
+            Contemporary luxury streetwear crafted in Lagos with nationwide delivery.
           </p>
           <button
             onClick={() => onExploreShop("All")}

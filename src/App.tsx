@@ -55,7 +55,7 @@ export default function App() {
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [headerSearchQuery, setHeaderSearchQuery] = useState<string>("");
   
-  const [activePage, setActivePage] = useState<"home" | "collection" | "about" | "story" | "drop" | "sizeguide">("home");
+  const [activePage, setActivePage] = useState<"home" | "collection" | "about" | "drop">("home");
   const [toasts, setToasts] = useState<{ id: string; message: string; type: "success" | "info" | "alert"; timestamp: string }[]>([]);
 
   // Legal & Privacy modal states
@@ -76,9 +76,9 @@ export default function App() {
   const [timerConfig, setTimerConfig] = useState<DropTimerConfig>({
     id: "active-drop-config",
     heading: "NEW LAGOS CAPSULE DROP",
-    subheading: "HEAVYWEIGHT COTTON CARGOS & TEES",
+    subheading: "SIGNATURE STREETWEAR CAPSULE",
     targetDate: new Date(Date.now() + 9 * 24 * 60 * 60 * 1000).toISOString(),
-    description: "Simple, heavyweight streetwear crafted from 100% premium cotton for everyday comfort and durability in Lagos and beyond.",
+    description: "Exclusive contemporary streetwear crafted for everyday style, comfort, and durability in Lagos and beyond.",
     isActivated: true,
     notifyEmails: []
   });
@@ -748,7 +748,7 @@ export default function App() {
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className={`hover:text-[#EFFF00] text-left transition-all block cursor-pointer ${
-                  activePage === "about" || activePage === "story" || activePage === "sizeguide" ? "text-[#EFFF00]" : ""
+                  activePage === "about" ? "text-[#EFFF00]" : ""
                 }`}
               >
                 ABOUT US
@@ -893,7 +893,7 @@ export default function App() {
             onSearchQueryChange={setHeaderSearchQuery}
             productsLoading={productsLoading}
           />
-        ) : activePage === "about" || activePage === "story" || activePage === "sizeguide" ? (
+        ) : activePage === "about" ? (
           <AboutPage
             onBack={() => {
               setActivePage("home");
@@ -1168,12 +1168,12 @@ export default function App() {
               <button
                 onClick={() => {
                   setSelectedProductId(null);
-                  setActivePage("sizeguide");
+                  setActivePage("about");
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className="bg-transparent border border-zinc-800 hover:border-[#EFFF00] font-mono hover:text-[#EFFF00] py-3.5 px-6 sm:px-8 text-xs tracking-widest transition-colors rounded-none uppercase cursor-pointer"
               >
-                SIZE & FIT GUIDE
+                ABOUT THE BRAND
               </button>
             </motion.div>
           </div>
@@ -1197,18 +1197,18 @@ export default function App() {
                 <ShieldCheck size={17} />
               </div>
               <div>
-                <h4 className="text-white font-mono text-[11px] font-bold uppercase tracking-wider">450GSM HEAVY COTTON</h4>
-                <p className="text-zinc-400 text-[10px]">100% organic, zero blends</p>
+                <h4 className="text-white font-mono text-[11px] font-bold uppercase tracking-wider">PREMIUM TEXTILES</h4>
+                <p className="text-zinc-400 text-[10px]">High-grade atelier fabrics</p>
               </div>
             </div>
 
             <div className="flex items-center gap-3 p-3 bg-zinc-900/40 rounded-lg border border-zinc-850/50">
               <div className="w-9 h-9 rounded-md bg-[#EFFF00]/10 border border-[#EFFF00]/20 flex items-center justify-center text-[#EFFF00] shrink-0">
-                <Ruler size={17} />
+                <Sparkles size={17} />
               </div>
               <div>
-                <h4 className="text-white font-mono text-[11px] font-bold uppercase tracking-wider">BOXY STREET FIT</h4>
-                <p className="text-zinc-400 text-[10px]">Tailored drop-shoulder cut</p>
+                <h4 className="text-white font-mono text-[11px] font-bold uppercase tracking-wider">LIMITED CAPSULES</h4>
+                <p className="text-zinc-400 text-[10px]">Authentic small-batch runs</p>
               </div>
             </div>
 
@@ -1238,7 +1238,7 @@ export default function App() {
                   SHOP THE <span className="text-zinc-700">COLLECTION</span>
                 </h2>
                 <p className="text-zinc-400 text-xs mt-1.5 max-w-md">
-                  Explore high-quality streetwear crafted from premium organic cotton, designed for comfort and durability.
+                  Explore contemporary luxury streetwear designed and crafted in Lagos.
                 </p>
               </div>
 
@@ -1528,7 +1528,7 @@ export default function App() {
               </div>
               <span className="font-sans font-black text-white text-sm tracking-wider uppercase">[ CACTUS BEAR ]</span>
             </div>
-            <span>HEAVYWEIGHT COTTON STREETWEAR</span>
+            <span>CONTEMPORARY NIGERIAN STREETWEAR</span>
             <span>LAGOS & YABA DESIGNS, NIGERIA</span>
           </div>
 
@@ -1589,7 +1589,7 @@ export default function App() {
 
           <div className="flex flex-col md:items-end gap-1 text-zinc-500">
             <span>Cactus Bear Studio</span>
-            <span>Lagos Streetwear & Heavyweight Garments</span>
+            <span>Lagos Streetwear & Design Atelier</span>
             <span>© 2026 CACTUS BEAR APPAREL GROUP. ALL RIGHTS RESERVED.</span>
           </div>
 
@@ -1746,10 +1746,10 @@ export default function App() {
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
               className={`flex flex-col items-center gap-1 flex-1 cursor-pointer transition-colors outline-none ${
-                activePage === "about" || activePage === "story" || activePage === "sizeguide" ? "text-[#EFFF00]" : "text-zinc-550 hover:text-white"
+                activePage === "about" ? "text-[#EFFF00]" : "text-zinc-550 hover:text-white"
               }`}
             >
-              <Sparkles size={18} className={activePage === "about" || activePage === "story" || activePage === "sizeguide" ? "text-[#EFFF00]" : "text-zinc-550"} />
+              <Sparkles size={18} className={activePage === "about" ? "text-[#EFFF00]" : "text-zinc-550"} />
               <span className="font-mono text-[8px] font-bold uppercase tracking-wider">ABOUT</span>
             </button>
 
