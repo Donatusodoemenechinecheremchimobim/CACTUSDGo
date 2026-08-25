@@ -290,7 +290,7 @@ const getInitialProducts = (): Product[] => {
   if (isCustomized === "true") {
     return [];
   }
-  localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(CACTUS_BEAR_PRODUCTS));
+  // Only use default on very first fresh load if not customized
   return CACTUS_BEAR_PRODUCTS;
 };
 
@@ -377,6 +377,8 @@ class DatabaseService {
 
   // Retrieve products list
   public async getProducts(): Promise<Product[]> {
+    const isCustomized = localStorage.getItem("cactus_bear_catalog_customized");
+
     if (isFirebaseConfigured && db) {
       try {
         const querySnapshot = await getDocs(collection(db, "products"));
@@ -385,18 +387,19 @@ class DatabaseService {
           list.push(docSnap.data() as Product);
         });
 
-        // Only seed initial products on brand-new installation if user has never customized/deleted
-        const isCustomized = localStorage.getItem("cactus_bear_catalog_customized");
-        if (list.length === 0 && isCustomized !== "true") {
-          console.log("Virgin boot: seeding initial starter catalog...");
-          for (const item of CACTUS_BEAR_PRODUCTS) {
-            try {
-              await setDoc(doc(db, "products", item.id), item);
-              list.push(item);
-            } catch (e) {
-              console.warn("Seeding item to Firestore failed:", e);
+        // If user has local custom products not yet in Firestore, merge them
+        const localSaved = localStorage.getItem(STORAGE_PRODUCTS_KEY);
+        if (localSaved) {
+          try {
+            const localList: Product[] = JSON.parse(localSaved);
+            for (const lp of localList) {
+              if (!list.some((p) => p.id === lp.id)) {
+                list.unshift(lp);
+                // Background sync up to Firestore
+                setDoc(doc(db, "products", lp.id), lp).catch(() => {});
+              }
             }
-          }
+          } catch {}
         }
 
         // Cache the actual catalog state

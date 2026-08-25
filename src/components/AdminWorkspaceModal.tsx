@@ -552,28 +552,56 @@ export default function AdminWorkspaceModal({
   // Submit Product creation
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!pName || !pSku) return;
+    if (!pName.trim()) {
+      setProductPublishError("Please enter a Piece Design Name before publishing.");
+      return;
+    }
 
     setIsPublishing(true);
     setProductPublishError("");
     try {
+      // Auto-generate SKU if omitted
+      const finalSku = pSku.trim() 
+        ? pSku.toUpperCase().trim() 
+        : `CB-${pCategory.substring(0, 3).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      const newId = "prod-" + finalSku.toLowerCase().replace(/[^a-z0-9]/g, "-") + "-" + Math.floor(Math.random() * 10000);
+
+      // Collect all images
+      const allGalleryImages = [...pGalleryImages];
+      if (pImage.trim() && !allGalleryImages.includes(pImage.trim())) {
+        allGalleryImages.unshift(pImage.trim());
+      }
+      pColors.forEach(c => {
+        if (c.imageUrl && !allGalleryImages.includes(c.imageUrl)) {
+          allGalleryImages.push(c.imageUrl);
+        }
+      });
+
       const newProduct: Product = {
-        id: "prod-" + pSku.toLowerCase().trim() + "-" + Math.floor(Math.random() * 1000),
+        id: newId,
         name: pName.toUpperCase().trim(),
         category: pCategory,
-        price: pPrice,
-        sku: pSku.toUpperCase().trim(),
-        description: pDescription.trim(),
-        details: pDetails,
-        sizes: pSizes,
-        colors: pColors,
+        price: Number(pPrice) || 0,
+        sku: finalSku,
+        description: pDescription.trim() || `Official Cactus Bear ${pCategory} design with custom detailing and premium construction.`,
+        details: pDetails.length > 0 ? pDetails : ["Heavy organic fabric run", "Pre-washed vintage style"],
+        sizes: pSizes.length > 0 ? pSizes : ["S", "M", "L", "XL"],
+        colors: pColors.length > 0 ? pColors : [
+          { name: "Obsidian Black", hex: "#0c0c0d", bgHex: "#0c0c0d" }
+        ],
         mockupType: pMockupType,
-        imageUrl: pImage.trim() || undefined,
-        images: pGalleryImages.length > 0 ? pGalleryImages : undefined
+        imageUrl: pImage.trim() || allGalleryImages[0] || undefined,
+        images: allGalleryImages.length > 0 ? allGalleryImages : undefined
       };
 
       await dbService.addProduct(newProduct);
+      setProducts(prev => [newProduct, ...prev.filter(p => p.id !== newProduct.id)]);
+      onRefreshProducts();
       await refreshLocalState();
+
+      setAdminToast(`✦ "${newProduct.name}" published to live catalog!`);
+      setTimeout(() => setAdminToast(null), 5000);
 
       // Reset Form
       setPName("");
@@ -594,11 +622,7 @@ export default function AdminWorkspaceModal({
     } catch (err: any) {
       console.error(err);
       let msg = err?.message || String(err);
-      if (msg.includes("permission-denied") || msg.includes("insufficient permissions")) {
-        setProductPublishError("Permission Denied: To publish a product, please log in with your admin account (chibundusadiq@gmail.com). Guest sessions are not authorized to edit products.");
-      } else {
-        setProductPublishError("Fail to publish: " + msg);
-      }
+      setProductPublishError("Fail to publish: " + msg);
     } finally {
       setIsPublishing(false);
     }
@@ -793,6 +817,22 @@ export default function AdminWorkspaceModal({
             {/* Dashboard main core workspace */}
             <div className="flex-1 overflow-y-auto p-6 md:p-8 bg-[#09090a]">
               
+              {/* Status Toast Banner */}
+              {adminToast && (
+                <div className="mb-6 p-4 bg-[#EFFF00]/10 border border-[#EFFF00] text-[#EFFF00] font-mono text-xs flex items-center justify-between shadow-[0_0_20px_rgba(239,255,0,0.15)] animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="flex items-center gap-2.5">
+                    <Sparkles size={16} className="text-[#EFFF00] shrink-0" />
+                    <span className="font-bold tracking-wide">{adminToast}</span>
+                  </div>
+                  <button
+                    onClick={() => setAdminToast(null)}
+                    className="text-[#EFFF00] hover:text-white p-1 cursor-pointer"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
+
               {/* TAB 1: PRODUCT CREATION AND CATALOG MODIFIER */}
               {activeTab === "products" && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -816,14 +856,16 @@ export default function AdminWorkspaceModal({
                         />
                       </div>
                       <div className="flex flex-col gap-1">
-                        <label className="font-mono text-[9px] text-zinc-500 uppercase">SKU REFERENCE CODE</label>
+                        <label className="font-mono text-[9px] text-zinc-500 uppercase flex justify-between">
+                          <span>SKU CODE</span>
+                          <span className="text-[8px] text-zinc-600">AUTO-GENERATES IF BLANK</span>
+                        </label>
                         <input
-                          required
                           type="text"
                           value={pSku}
                           onChange={(e) => setPSku(e.target.value)}
                           className="bg-zinc-950 border border-zinc-900 py-1.5 px-3 font-mono text-xs focus:border-[#EFFF00]"
-                          placeholder="CB-CAMO-POLO"
+                          placeholder="e.g. CB-TEE-01"
                         />
                       </div>
                     </div>
