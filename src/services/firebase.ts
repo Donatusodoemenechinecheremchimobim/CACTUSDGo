@@ -11,7 +11,9 @@ import {
   deleteDoc, 
   updateDoc,
   query,
-  where
+  where,
+  onSnapshot,
+  getDocFromServer
 } from "firebase/firestore";
 import { 
   getAuth, 
@@ -81,7 +83,8 @@ if (isFirebaseConfigured) {
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
     db = initializeFirestore(app, {
       experimentalAutoDetectLongPolling: true,
-      useFetchStreams: false
+      useFetchStreams: false,
+      ignoreUndefinedProperties: true
     } as any, (firebaseConfig as any).firestoreDatabaseId || "(default)");
     auth = getAuth(app);
     try {
@@ -94,11 +97,38 @@ if (isFirebaseConfigured) {
       console.warn("Storage initialization failed (likely bucket configuration missing):", stErr);
     }
     console.log("Firebase DB initialized successfully (Production Live Mode).");
+
+    // Optional quick connection test in background
+    getDocFromServer(doc(db, "drops", "active-drop-config")).catch(() => {});
   } catch (err) {
     console.error("Firebase startup exception:", err);
   }
 } else {
   console.log("Using LocalStorage fallback database mode.");
+}
+
+/**
+ * Strips undefined values so Firestore never rejects payloads
+ */
+export function sanitizeForFirestore<T>(obj: T): T {
+  if (obj === undefined) return null as any;
+  if (obj === null) return null as any;
+  if (Array.isArray(obj)) {
+    return obj
+      .filter((item) => item !== undefined)
+      .map((item) => sanitizeForFirestore(item)) as any;
+  }
+  if (typeof obj === "object") {
+    const clean: Record<string, any> = {};
+    for (const key of Object.keys(obj as any)) {
+      const val = (obj as any)[key];
+      if (val !== undefined) {
+        clean[key] = sanitizeForFirestore(val);
+      }
+    }
+    return clean as any;
+  }
+  return obj;
 }
 
 /**
@@ -396,7 +426,8 @@ class DatabaseService {
               if (!list.some((p) => p.id === lp.id)) {
                 list.unshift(lp);
                 // Background sync up to Firestore
-                setDoc(doc(db, "products", lp.id), lp).catch(() => {});
+                const clean = sanitizeForFirestore(lp);
+                setDoc(doc(db, "products", lp.id), clean).catch(() => {});
               }
             }
           } catch {}
@@ -414,6 +445,39 @@ class DatabaseService {
     // Local Storage Fallback Mode
     this.refreshLocal();
     return this.localProducts;
+  }
+
+  // Real-time synchronization for products
+  public subscribeProducts(callback: (products: Product[]) => void): () => void {
+    if (isFirebaseConfigured && db) {
+      try {
+        const unsubscribe = onSnapshot(
+          collection(db, "products"),
+          (snapshot) => {
+            const list: Product[] = [];
+            snapshot.forEach((docSnap) => {
+              list.push(docSnap.data() as Product);
+            });
+
+            this.localProducts = list;
+            localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(list));
+            callback(list);
+          },
+          (error) => {
+            console.warn("Firestore onSnapshot error, falling back to cached products:", error);
+            this.refreshLocal();
+            callback(this.localProducts);
+          }
+        );
+        return unsubscribe;
+      } catch (err) {
+        console.warn("Could not attach products listener:", err);
+      }
+    }
+
+    this.refreshLocal();
+    callback(this.localProducts);
+    return () => {};
   }
 
   // Refreshes data cache
@@ -525,15 +589,18 @@ class DatabaseService {
     if (exists) {
       this.localProducts = this.localProducts.map(item => item.id === p.id ? p : item);
     } else {
-      this.localProducts.push(p);
+      this.localProducts.unshift(p);
     }
     localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(this.localProducts));
 
     if (isFirebaseConfigured && db) {
       try {
-        await setDoc(doc(db, "products", p.id), p);
+        const cleanProduct = sanitizeForFirestore(p);
+        await setDoc(doc(db, "products", p.id), cleanProduct);
+        console.log("Product successfully stored to Firestore:", p.id);
       } catch (error) {
-        console.warn("Firestore addProduct note (saved locally):", error);
+        console.error("Firestore addProduct error:", error);
+        throw error;
       }
     }
   }

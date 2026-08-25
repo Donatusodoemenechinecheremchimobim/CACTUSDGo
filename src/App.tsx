@@ -173,9 +173,15 @@ export default function App() {
     return () => clearInterval(interval);
   }, [timerConfig.targetDate]);
 
-  // Load cart and auth on startup with database synchronization
+  // Load cart, products and auth on startup with real-time database synchronization
   useEffect(() => {
-    refreshDynamicProducts();
+    // Real-time products synchronization across all tabs and devices
+    const unsubscribeProducts = dbService.subscribeProducts((pList) => {
+      setProductsList(pList);
+      setProductsLoading(false);
+    });
+
+    dbService.getTimerConfig().then((tConf) => setTimerConfig(tConf)).catch(() => {});
     
     // Subscribe to Firebase Auth (or active simulation config)
     const unsubscribeAuth = authService.subscribe(async (session) => {
@@ -251,7 +257,6 @@ export default function App() {
         if (savedCart) {
           try { setCart(JSON.parse(savedCart)); } catch { setCart([]); }
         }
-
         const savedWishlist = localStorage.getItem("cactus_bear_wishlist_guest");
         if (savedWishlist) {
           try { setWishlist(JSON.parse(savedWishlist)); } catch { setWishlist([]); }
@@ -260,6 +265,7 @@ export default function App() {
     });
 
     return () => {
+      unsubscribeProducts();
       unsubscribeAuth();
     };
   }, []);
