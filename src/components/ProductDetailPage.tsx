@@ -776,7 +776,7 @@ export default function ProductDetailPage({
                       className="flex flex-col gap-2 h-full text-zinc-450"
                     >
                       <p>
-                        <strong className="text-white uppercase">[ SUSTAINABLE ]</strong> Crafted in small batches in Lagos, Nigeria to reduce manufacturing waste.
+                        <strong className="text-white uppercase">[ SUSTAINABLE ]</strong> Crafted in small batches in Port Harcourt, Nigeria to reduce manufacturing waste.
                       </p>
                       <p className="mt-2 text-zinc-500 font-bold block">
                         THREADS: Double-stitched seams built for maximum comfort and long wear.
@@ -797,7 +797,7 @@ export default function ProductDetailPage({
                         <span className="text-white uppercase font-bold">WORLDWIDE SHIPPING:</span>
                       </div>
                       <p>
-                        Delivers inside Lagos in 24-48 hours. National and international orders ship via tracked couriers in 3-5 business days.
+                        Delivers in Port Harcourt within 24-48 hours. National and international orders ship via tracked couriers in 2-5 business days.
                       </p>
                       <div className="flex items-center gap-2 border-t border-zinc-950 pt-3 text-zinc-500">
                         <RotateCcw size={11} className="text-[#EFFF00]" />

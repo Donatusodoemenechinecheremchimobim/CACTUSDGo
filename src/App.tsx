@@ -124,10 +124,10 @@ export default function App() {
   // Upcoming Drop Countdown states
   const [timerConfig, setTimerConfig] = useState<DropTimerConfig>({
     id: "active-drop-config",
-    heading: "NEW LAGOS CAPSULE DROP",
+    heading: "NEW PORT HARCOURT CAPSULE DROP",
     subheading: "SIGNATURE STREETWEAR CAPSULE",
     targetDate: new Date(Date.now() + 9 * 24 * 60 * 60 * 1000).toISOString(),
-    description: "Exclusive contemporary streetwear crafted for everyday style, comfort, and durability in Lagos and beyond.",
+    description: "Exclusive contemporary streetwear crafted for everyday style, comfort, and durability in Port Harcourt and beyond.",
     isActivated: true,
     notifyEmails: []
   });
@@ -554,16 +554,16 @@ export default function App() {
     "priceRange": "₦₦₦",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Agungi Area, Lekki-Epe Expressway",
-      "addressLocality": "Lagos",
-      "addressRegion": "Lagos State",
-      "postalCode": "105102",
+      "streetAddress": "Old GRA / Stadium Road Area",
+      "addressLocality": "Port Harcourt",
+      "addressRegion": "Rivers State",
+      "postalCode": "500101",
       "addressCountry": "NG"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 6.4311,
-      "longitude": 3.4758
+      "latitude": 4.8156,
+      "longitude": 7.0498
     },
     "openingHoursSpecification": {
       "@type": "OpeningHoursSpecification",
@@ -1133,7 +1133,7 @@ export default function App() {
                   UPCOMING <span className="text-[#EFFF00]">DROP</span>
                 </h2>
                 <p className="text-zinc-500 text-xs mt-1.5 max-w-md font-sans">
-                  Count down to the next Cactus Bear Lagos drop. Once the countdown reaches zero, pre-orders go live immediately.
+                  Count down to the next Cactus Bear Port Harcourt drop. Once the countdown reaches zero, pre-orders go live immediately.
                 </p>
               </div>
               <button
@@ -1398,7 +1398,7 @@ export default function App() {
               </div>
               <div>
                 <h4 className="text-white font-mono text-[11px] font-bold uppercase tracking-wider">NATIONWIDE SHIPPING</h4>
-                <p className="text-zinc-400 text-[10px]">1-3d Lagos, 2-5d Nigeria</p>
+                <p className="text-zinc-400 text-[10px]">1-2d Port Harcourt, 2-5d Nigeria</p>
               </div>
             </div>
 
@@ -1448,7 +1448,7 @@ export default function App() {
                   SHOP THE <span className="text-zinc-700">COLLECTION</span>
                 </h2>
                 <p className="text-zinc-400 text-xs mt-1.5 max-w-md">
-                  Explore contemporary luxury streetwear designed and crafted in Lagos.
+                  Explore contemporary luxury streetwear designed and crafted in Port Harcourt.
                 </p>
               </div>
 
@@ -1551,7 +1551,7 @@ export default function App() {
               <div className="lg:col-span-7 flex flex-col gap-6">
                 <div>
                   <span className="text-[#EFFF00] font-mono text-xs tracking-widest block font-black uppercase mb-1">
-                    ✦ NEXT LAGOS DROP
+                    ✦ NEXT PORT HARCOURT DROP
                   </span>
                   <h2 className="text-4xl md:text-5xl font-sans tracking-tighter font-extrabold uppercase text-white">
                     {timerConfig.heading}
@@ -1736,7 +1736,7 @@ export default function App() {
               <span className="font-sans font-black text-white text-sm tracking-wider uppercase">[ CACTUS BEAR ]</span>
             </div>
             <span>CONTEMPORARY NIGERIAN STREETWEAR</span>
-            <span>LAGOS & YABA DESIGNS, NIGERIA</span>
+            <span>PORT HARCOURT ATELIER, RIVERS STATE, NIGERIA</span>
           </div>
 
           <div className="flex flex-wrap gap-4 items-center">
@@ -1796,7 +1796,7 @@ export default function App() {
 
           <div className="flex flex-col md:items-end gap-1 text-zinc-500">
             <span>Cactus Bear Studio</span>
-            <span>Lagos Streetwear & Design Atelier</span>
+            <span>Port Harcourt Streetwear & Design Atelier</span>
             <span>© 2026 CACTUS BEAR APPAREL GROUP. ALL RIGHTS RESERVED.</span>
           </div>
 

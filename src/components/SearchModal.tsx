@@ -83,7 +83,7 @@ export default function SearchModal({
     { label: "HOODIES & OUTERWEAR", query: "outerwear" },
     { label: "HEAVYWEIGHT TEES", query: "tees" },
     { label: "HEADWEAR", query: "headwear" },
-    { label: "NIGERIA LUXURY", query: "lagos" },
+    { label: "NIGERIA LUXURY", query: "port harcourt" },
   ];
 
   const handleQuickAdd = (e: React.MouseEvent, product: Product) => {

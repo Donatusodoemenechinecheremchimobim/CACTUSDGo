@@ -121,7 +121,7 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-[#EFFF00] animate-pulse" />
             <span className="font-mono text-[10px] text-zinc-300 uppercase tracking-widest">
-              LAGOS STREETWEAR ATELIER
+              PORT HARCOURT STREETWEAR ATELIER
             </span>
           </div>
 
@@ -135,16 +135,16 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
         </div>
 
         {/* 1. WHO WE ARE */}
-        <section className="p-6 sm:p-8 bg-zinc-950 border border-zinc-850 rounded-lg">
+        <section className="p-6 sm:p-8 bg-zinc-950 border border-zinc-855 rounded-lg">
           <div className="flex items-center gap-2 text-[#EFFF00] font-mono text-xs font-bold uppercase tracking-widest mb-3">
             <Sparkles size={14} />
             <span>01 // WHO WE ARE</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-sans font-black uppercase text-white mb-4">
-            BORN IN LAGOS, CRAFTED FOR DURABILITY
+            BORN IN PORT HARCOURT, CRAFTED FOR DURABILITY
           </h2>
           <p className="text-zinc-300 text-sm sm:text-base leading-relaxed mb-4">
-            Founded in Lagos, Nigeria, <strong className="text-white">CACTUS BEAR</strong> was created to redefine African streetwear by prioritizing high craftsmanship, timeless aesthetics, and uncompromising quality over fast-fashion shortcuts.
+            Founded in Port Harcourt, Rivers State, Nigeria, <strong className="text-white">CACTUS BEAR</strong> was created to redefine African streetwear by prioritizing high craftsmanship, timeless aesthetics, and uncompromising quality over fast-fashion shortcuts.
           </p>
           <p className="text-zinc-400 text-sm leading-relaxed mb-6">
             We produce small-batch collections where every piece carries our signature crown emblem—a symbol of self-made authority, resilience, and modern African creative expression.
@@ -153,7 +153,7 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-6 border-t border-zinc-900">
             <div className="p-3 bg-zinc-900/60 rounded border border-zinc-800">
               <span className="block font-mono text-[9px] text-zinc-500 uppercase">STUDIO</span>
-              <span className="font-mono text-xs sm:text-sm font-bold text-white uppercase">LAGOS, NIGERIA</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-white uppercase">PORT HARCOURT, NIGERIA</span>
             </div>
             <div className="p-3 bg-zinc-900/60 rounded border border-zinc-800">
               <span className="block font-mono text-[9px] text-zinc-500 uppercase">CRAFT</span>
@@ -303,7 +303,7 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
             </div>
             <h4 className="text-white font-mono text-xs font-bold uppercase mb-1">NATIONWIDE SHIPPING</h4>
             <p className="text-zinc-400 text-xs leading-relaxed">
-              1–3 days in Lagos, 2–5 days across Nigeria with live tracking.
+              1–2 days in Port Harcourt, 2–5 days across Nigeria with live tracking.
             </p>
           </div>
 
@@ -337,7 +337,7 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
             EXPLORE THE COLLECTION
           </h3>
           <p className="text-zinc-400 text-xs sm:text-sm max-w-md">
-            Contemporary luxury streetwear crafted in Lagos with nationwide delivery.
+            Contemporary luxury streetwear crafted in Port Harcourt with nationwide delivery.
           </p>
           <button
             onClick={() => onExploreShop("All")}

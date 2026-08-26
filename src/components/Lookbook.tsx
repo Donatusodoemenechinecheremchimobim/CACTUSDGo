@@ -6,8 +6,8 @@ export default function Lookbook() {
       {/* Decorative Ticker Tape scroller */}
       <div className="w-full overflow-hidden border-y border-zinc-900 py-2.5 bg-[#050505] absolute top-0 left-0">
         <div className="flex whitespace-nowrap animate-[marquee_25s_linear_infinite] font-mono text-[9px] text-[#EFFF00]/60 tracking-[0.25em]">
-          <span>CACTUS BEAR // CONTEMPORARY LUXURY STREETWEAR // LAGOS ATELIER // LIMITED CAPSULES // NATIONWIDE SHIPPING // </span>
-          <span>CACTUS BEAR // CONTEMPORARY LUXURY STREETWEAR // LAGOS ATELIER // LIMITED CAPSULES // NATIONWIDE SHIPPING // </span>
+          <span>CACTUS BEAR // CONTEMPORARY LUXURY STREETWEAR // PORT HARCOURT ATELIER // LIMITED CAPSULES // NATIONWIDE SHIPPING // </span>
+          <span>CACTUS BEAR // CONTEMPORARY LUXURY STREETWEAR // PORT HARCOURT ATELIER // LIMITED CAPSULES // NATIONWIDE SHIPPING // </span>
         </div>
       </div>
 
@@ -23,7 +23,7 @@ export default function Lookbook() {
             </h2>
           </div>
           <p className="text-zinc-400 text-xs font-sans max-w-md">
-            Distinctive silhouettes, premium textiles, and signature graphic craftsmanship designed and curated in Lagos.
+            Distinctive silhouettes, premium textiles, and signature graphic craftsmanship designed and curated in Port Harcourt.
           </p>
         </div>
 
@@ -79,7 +79,7 @@ export default function Lookbook() {
                   HAND-FINISHED <span className="text-[#EFFF00]">DESIGNS</span>
                 </h3>
                 <p className="text-zinc-400 text-xs font-sans leading-relaxed max-w-2xl">
-                  To maintain our high quality standards, we avoid mass production. Each streetwear item is custom designed, hand-inspected, and shipped directly from our studio in Lagos.
+                  To maintain our high quality standards, we avoid mass production. Each streetwear item is custom designed, hand-inspected, and shipped directly from our studio in Port Harcourt.
                 </p>
               </div>
               <div className="flex gap-6 mt-6">

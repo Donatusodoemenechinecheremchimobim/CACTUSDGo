@@ -168,7 +168,7 @@ export const CACTUS_BEAR_PRODUCTS: Product[] = [
       "Tailored athletic silhouette with raw double hemline",
       "Reinforced neck and armhole binding",
       "Archival screenprinted crown of thorns logo",
-      "Designed and hand-finished in Lagos"
+      "Designed and hand-finished in Port Harcourt"
     ],
     sizes: ["S", "M", "L", "XL"],
     colors: [

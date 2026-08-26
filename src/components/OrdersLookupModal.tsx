@@ -382,7 +382,7 @@ export default function OrdersLookupModal({
             EXPEDITE PRE-ORDER NOTIFICATIONS
           </span>
           <p className="text-zinc-500 text-[10px] leading-relaxed mb-3.5">
-            Pre-orders are processed individually at our Lagos studio. Tap below to notify our handlers natively:
+            Pre-orders are processed individually at our Port Harcourt studio. Tap below to notify our handlers natively:
           </p>
           <div className="grid grid-cols-2 gap-2 text-black font-mono font-black text-[10px]">
             <a 

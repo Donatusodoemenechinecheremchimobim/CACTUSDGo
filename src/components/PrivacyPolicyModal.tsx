@@ -40,7 +40,7 @@ export default function PrivacyPolicyModal({
                     CACTUS BEAR // LEGAL & COMPLIANCE
                   </h3>
                   <p className="font-mono text-[9px] text-zinc-500 uppercase">
-                    LAST UPDATED: AUGUST 2026 • LAGOS, NIGERIA
+                    LAST UPDATED: AUGUST 2026 • PORT HARCOURT, NIGERIA
                   </p>
                 </div>
               </div>
@@ -150,7 +150,7 @@ export default function PrivacyPolicyModal({
                       <p className="text-white font-bold">CACTUS BEAR APPAREL GROUP</p>
                       <p>Email: <a href="mailto:chibundusadiq@gmail.com" className="text-[#EFFF00] underline">chibundusadiq@gmail.com</a></p>
                       <p>Website: <a href="https://www.cactusbear.store" className="text-[#EFFF00] underline">https://www.cactusbear.store</a></p>
-                      <p>Location: Lagos & Yaba Creative District, Nigeria</p>
+                      <p>Location: Port Harcourt, Rivers State, Nigeria</p>
                     </div>
                   </section>
                 </>
@@ -183,7 +183,7 @@ export default function PrivacyPolicyModal({
                       <span className="text-[#EFFF00]">03.</span> SHIPPING & DISPATCH
                     </h4>
                     <p className="text-zinc-400">
-                      We dispatch country-wide across all 36 Nigerian states and Abuja FCT. Delivery timelines range from 2–5 business days within Lagos and 3–7 business days nationwide following drop fulfillment.
+                      We dispatch country-wide across all 36 Nigerian states and Abuja FCT. Delivery timelines range from 1–3 business days within Port Harcourt and 2–5 business days nationwide following drop fulfillment.
                     </p>
                   </section>
 

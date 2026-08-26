@@ -309,7 +309,7 @@ export default function CartDrawer({
       cart.map(item => `• ${item.quantity}x ${item.product.name} (Size: ${item.selectedSize}, Color: ${item.selectedColor.name})`).join("\n") +
       `\n---------------------------------------------\n` +
       `*TOTAL VALUE:* ₦${vaultTotal.toLocaleString()}\n` +
-      `*CACTUS BEAR SECURE PLATFORM TRACKER - LAGOS, NIGERIA*`;
+      `*CACTUS BEAR SECURE PLATFORM TRACKER - PORT HARCOURT, NIGERIA*`;
 
     const whatsappUrl = `https://wa.me/${cleanPhoneForWhatsapp}?text=${encodeURIComponent(whatsappText)}`;
     
@@ -894,7 +894,7 @@ export default function CartDrawer({
                         </h3>
                         <p className="text-zinc-400 text-xs mt-3 leading-relaxed font-sans px-2">
                           {paymentMethod === "flutterwave" ? (
-                            `We have successfully verified your payment of ₦${vaultTotal.toLocaleString()} NGN via Flutterwave! Our Lagos atelier has logged your exact specifications and initiated priority production dispatch.`
+                            `We have successfully verified your payment of ₦${vaultTotal.toLocaleString()} NGN via Flutterwave! Our Port Harcourt atelier has logged your exact specifications and initiated priority production dispatch.`
                           ) : (
                             `Your order has been registered! To verify your reservation, please transfer ₦${vaultTotal.toLocaleString()} NGN to Sterling Bank PLC, Account: 1024558291 (Cactus Bear Apparel LTD). Click the WhatsApp button below to upload your payment receipt.`
                           )}
@@ -993,7 +993,7 @@ export default function CartDrawer({
                               `\n---------------------------------------------\n` +
                               `*TOTAL VALUE:* ₦${vaultTotal.toLocaleString()} NGN\n` +
                               `*STATUS:* ${paymentMethod === "flutterwave" ? "PAID // VERIFIED VIA FLUTTERWAVE" : "PENDING ESCROW VERIFICATION"}\n` +
-                              `*CACTUS BEAR SECURE PLATFORM TRACKER - LAGOS, NIGERIA*`
+                              `*CACTUS BEAR SECURE PLATFORM TRACKER - PORT HARCOURT, NIGERIA*`
                             )}`}
                             target="_blank"
                             rel="noopener noreferrer"

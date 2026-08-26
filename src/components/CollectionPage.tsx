@@ -120,7 +120,7 @@ export default function CollectionPage({
               SHOP THE <span className="text-zinc-800">COLLECTION</span>
             </h1>
             <p className="text-zinc-500 text-xs mt-2 max-w-xl font-mono">
-              [ {processedProducts.length} ARTICLES of {productsList.length} ] High-quality heavyweight cotton streetwear designed in Lagos, Nigeria.
+              [ {processedProducts.length} ARTICLES of {productsList.length} ] High-quality heavyweight cotton streetwear designed in Port Harcourt, Nigeria.
             </p>
           </div>
 

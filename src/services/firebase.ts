@@ -323,10 +323,10 @@ const getInitialTimer = (): DropTimerConfig => {
   
   const defaultTimer: DropTimerConfig = {
     id: "active-drop-config",
-    heading: "NEW LAGOS CAPSULE DROP",
+    heading: "NEW PORT HARCOURT CAPSULE DROP",
     subheading: "HEAVYWEIGHT COTTON CARGOS & TEES",
     targetDate: defaultTarget.toISOString(),
-    description: "Simple, heavyweight streetwear crafted from 100% premium cotton for everyday comfort and durability in Lagos and beyond.",
+    description: "Simple, heavyweight streetwear crafted from 100% premium cotton for everyday comfort and durability in Port Harcourt and beyond.",
     isActivated: true,
     notifyEmails: ["vip-patron@couture.com"],
     adminWhatsapp: "2348123456789", // Preset default WhatsApp (e.g. support line)
@@ -563,9 +563,9 @@ class DatabaseService {
           ) {
             const updatedTimer: DropTimerConfig = {
               ...data,
-              heading: "NEW LAGOS CAPSULE DROP",
+              heading: "NEW PORT HARCOURT CAPSULE DROP",
               subheading: "HEAVYWEIGHT COTTON CARGOS & TEES",
-              description: "Simple, heavyweight streetwear crafted from 100% premium cotton for everyday comfort and durability in Lagos and beyond."
+              description: "Simple, heavyweight streetwear crafted from 100% premium cotton for everyday comfort and durability in Port Harcourt and beyond."
             };
             await setDoc(doc(db, "drops", "active-drop-config"), updatedTimer);
             return updatedTimer;
@@ -1087,7 +1087,7 @@ class DatabaseService {
           id: "log-" + Math.floor(Math.random() * 100000),
           timestamp: new Date().toISOString(),
           type: "DISCORD HOOK",
-          payload: { orderId: order.id, region: order.city || "Lagos" },
+          payload: { orderId: order.id, region: order.city || "Port Harcourt" },
           status: 102,
           statusText: "Posting Embed"
         };

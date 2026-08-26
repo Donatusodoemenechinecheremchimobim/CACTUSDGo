@@ -200,10 +200,10 @@ export default function AdminWorkspaceModal({
       ],
       shippingAddress: {
         fullName: "Sadiq Chibundu",
-        city: "Lagos",
-        state: "Lagos State",
+        city: "Port Harcourt",
+        state: "Rivers State",
         phone: "+2348123456789",
-        addressLine: "Heir Apparent Studio, 12 Victoria Island"
+        addressLine: "Heir Apparent Studio, 12 Old GRA, Port Harcourt"
       }
     };
 
@@ -1836,7 +1836,7 @@ export default function AdminWorkspaceModal({
                         value={tHeading}
                         onChange={(e) => setTHeading(e.target.value)}
                         className="bg-zinc-950 border border-zinc-900 py-2 px-3 font-mono text-xs focus:border-[#EFFF00] text-white"
-                        placeholder="e.g. NEW LAGOS CAPSULE DROP"
+                        placeholder="e.g. NEW PORT HARCOURT CAPSULE DROP"
                       />
                     </div>
 
@@ -2410,7 +2410,7 @@ export default function AdminWorkspaceModal({
                         SEO & SITEMAP OPERATIONS DESK
                       </h3>
                       <p className="text-zinc-400 text-xs mt-1.5 max-w-xl font-sans leading-relaxed">
-                        Inject modern structured schemas and auto-generate sitemap configurations for Google, Bing, and social preview crawlers to index our Lagos-finished collections and catalog pieces on the fly.
+                        Inject modern structured schemas and auto-generate sitemap configurations for Google, Bing, and social preview crawlers to index our Port Harcourt-finished collections and catalog pieces on the fly.
                       </p>
                     </div>
                     <div className="flex gap-2">
@@ -2553,7 +2553,7 @@ export default function AdminWorkspaceModal({
                             <span className="font-mono text-[10px] font-black uppercase">Local Clothing Store Schema</span>
                           </div>
                           <p className="text-[10.5px] leading-relaxed text-zinc-400">
-                            Advertises Cactus Bear as an authorized premier garment atelier operating in Lagos State, Nigeria, indicating coordinates, active opening hours, and contact numbers.
+                            Advertises Cactus Bear as an authorized premier garment atelier operating in Rivers State, Nigeria, indicating coordinates, active opening hours, and contact numbers.
                           </p>
                         </div>
                       </div>

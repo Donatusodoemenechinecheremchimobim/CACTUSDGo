@@ -390,7 +390,7 @@ export default function SizeGuidePage({ onBack, onExploreShop }: SizeGuidePagePr
             </div>
 
             <div className="mt-6 pt-5 border-t border-zinc-900 font-mono text-[10px] text-zinc-500 flex justify-between items-center">
-              <span>LAGOS DESIGN ATELIER</span>
+              <span>PORT HARCOURT DESIGN ATELIER</span>
               <span className="text-[#EFFF00]">100% ORGANIC COTTON</span>
             </div>
           </div>
