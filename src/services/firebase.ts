@@ -675,6 +675,81 @@ class DatabaseService {
     }
   }
 
+  // Delete a specific picture of a product from the database
+  public async deleteProductImage(productId: string, imageUrlToDelete: string): Promise<Product | null> {
+    if (!productId || !imageUrlToDelete) return null;
+    safeLocalStorageSet("cactus_bear_catalog_customized", "true");
+    this.refreshLocal();
+
+    const targetIndex = this.localProducts.findIndex(item => item.id === productId);
+    let targetProduct: Product | undefined = targetIndex >= 0 ? this.localProducts[targetIndex] : undefined;
+
+    if (!targetProduct && isFirebaseConfigured && db) {
+      try {
+        const snap = await getDoc(doc(db, "products", productId));
+        if (snap.exists()) {
+          targetProduct = snap.data() as Product;
+        }
+      } catch (err) {
+        console.warn("Could not fetch product from Firestore for image deletion:", err);
+      }
+    }
+
+    if (!targetProduct) return null;
+
+    // Filter from gallery images
+    const updatedImages = (targetProduct.images || []).filter(img => img !== imageUrlToDelete);
+
+    // Update primary image if matching
+    let updatedImageUrl = targetProduct.imageUrl;
+    if (targetProduct.imageUrl === imageUrlToDelete) {
+      updatedImageUrl = updatedImages.length > 0 ? updatedImages[0] : undefined;
+    }
+
+    // Clean from colorway images
+    const updatedColors = (targetProduct.colors || []).map(color => {
+      const updatedColor = { ...color };
+      if (updatedColor.imageUrl === imageUrlToDelete) {
+        delete updatedColor.imageUrl;
+      }
+      if (updatedColor.images) {
+        updatedColor.images = updatedColor.images.filter(img => img !== imageUrlToDelete);
+      }
+      return updatedColor;
+    });
+
+    const updatedProduct: Product = {
+      ...targetProduct,
+      imageUrl: updatedImageUrl,
+      images: updatedImages.length > 0 ? updatedImages : undefined,
+      colors: updatedColors
+    };
+
+    // Update in-memory & storage
+    if (targetIndex >= 0) {
+      this.localProducts[targetIndex] = updatedProduct;
+    } else {
+      this.localProducts.unshift(updatedProduct);
+    }
+
+    await idbSet(STORAGE_PRODUCTS_KEY, this.localProducts);
+    safeLocalStorageSet(STORAGE_PRODUCTS_KEY, JSON.stringify(this.localProducts));
+
+    // Save to Firestore
+    if (isFirebaseConfigured && db) {
+      try {
+        const cleanProduct = sanitizeForFirestore(updatedProduct);
+        await setDoc(doc(db, "products", productId), cleanProduct);
+        console.log("Image deleted from Firestore product document:", productId);
+      } catch (error) {
+        console.error("Firestore deleteProductImage error:", error);
+        throw error;
+      }
+    }
+
+    return updatedProduct;
+  }
+
   // Clear all products (Admin Purge to start fresh)
   public async clearAllProducts(): Promise<void> {
     safeLocalStorageSet("cactus_bear_catalog_customized", "true");

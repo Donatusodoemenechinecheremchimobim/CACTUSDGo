@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { X, Plus, Trash2, Edit3, ShieldAlert, BadgeCheck, ClipboardList, Package, Truck, Calendar, Cpu, Terminal, Activity, Link2, RefreshCw, Upload, Globe, Smartphone, Copy, CreditCard, Sparkles, Check, ImageOff, Database, HardDrive } from "lucide-react";
+import { X, Plus, Trash2, Edit3, ShieldAlert, BadgeCheck, ClipboardList, Package, Truck, Calendar, Cpu, Terminal, Activity, Link2, RefreshCw, Upload, Globe, Smartphone, Copy, CreditCard, Sparkles, Check, ImageOff, Database, HardDrive, Image as ImageIcon, Star, Eye, Layers } from "lucide-react";
 import { Product, ProductCat, ApparelColor } from "../types";
 import { dbService, DbOrder, uploadProductImage } from "../services/firebase";
 import { safeLocalStorageSet, safeLocalStorageGet } from "../services/storage";
@@ -43,6 +43,8 @@ export default function AdminWorkspaceModal({
   const [imageUploadError, setImageUploadError] = useState<string>("");
   const [productPublishError, setProductPublishError] = useState<string>("");
   const [deletingProductId, setDeletingProductId] = useState<string | null>(null);
+  const [deletingPictureUrl, setDeletingPictureUrl] = useState<string | null>(null);
+  const [previewZoomImage, setPreviewZoomImage] = useState<string | null>(null);
   const [isClearingAll, setIsClearingAll] = useState<boolean>(false);
   const [confirmClearModal, setConfirmClearModal] = useState<boolean>(false);
   const [isClearingPictures, setIsClearingPictures] = useState<boolean>(false);
@@ -506,6 +508,125 @@ export default function AdminWorkspaceModal({
     }
   };
 
+  // Delete a specific picture from the product and database
+  const handleDeleteSpecificPicture = async (imageUrlToDelete: string) => {
+    if (!imageUrlToDelete) return;
+
+    if (editingProductId) {
+      setDeletingPictureUrl(imageUrlToDelete);
+      try {
+        const updated = await dbService.deleteProductImage(editingProductId, imageUrlToDelete);
+
+        // Update local form states to match
+        const nextGallery = pGalleryImages.filter(img => img !== imageUrlToDelete);
+        setPGalleryImages(nextGallery);
+
+        if (pImage === imageUrlToDelete) {
+          setPImage(nextGallery.length > 0 ? nextGallery[0] : (updated?.imageUrl || ""));
+        }
+
+        setPColors(prev => prev.map(c => {
+          if (c.imageUrl === imageUrlToDelete) {
+            const { imageUrl, ...rest } = c;
+            return rest;
+          }
+          return c;
+        }));
+
+        if (updated) {
+          setProducts(prev => prev.map(p => p.id === editingProductId ? updated : p));
+        } else {
+          setProducts(prev => prev.map(p => {
+            if (p.id === editingProductId) {
+              const uImgs = (p.images || []).filter(img => img !== imageUrlToDelete);
+              return {
+                ...p,
+                imageUrl: p.imageUrl === imageUrlToDelete ? (uImgs[0] || undefined) : p.imageUrl,
+                images: uImgs.length > 0 ? uImgs : undefined
+              };
+            }
+            return p;
+          }));
+        }
+
+        onRefreshProducts();
+        await refreshLocalState();
+        setAdminToast("✦ Photo permanently deleted from database & product catalog!");
+        setTimeout(() => setAdminToast(null), 5000);
+      } catch (err: any) {
+        console.error("Failed to delete picture from database:", err);
+        setProductPublishError("Failed to delete picture from database: " + (err?.message || String(err)));
+      } finally {
+        setDeletingPictureUrl(null);
+      }
+    } else {
+      // In new piece drafting mode, remove from active form states
+      const nextGallery = pGalleryImages.filter(img => img !== imageUrlToDelete);
+      setPGalleryImages(nextGallery);
+
+      if (pImage === imageUrlToDelete) {
+        setPImage(nextGallery.length > 0 ? nextGallery[0] : "");
+      }
+
+      setPColors(prev => prev.map(c => {
+        if (c.imageUrl === imageUrlToDelete) {
+          const { imageUrl, ...rest } = c;
+          return rest;
+        }
+        return c;
+      }));
+
+      setAdminToast("✦ Photo removed from design draft.");
+      setTimeout(() => setAdminToast(null), 4000);
+    }
+  };
+
+  // Set a specific image as the primary cover photo
+  const handleSetAsPrimaryImage = (imgUrl: string) => {
+    if (!imgUrl) return;
+    const oldPrimary = pImage;
+    setPImage(imgUrl);
+
+    setPGalleryImages(prev => {
+      const set = new Set([imgUrl, ...prev]);
+      if (oldPrimary && oldPrimary.trim() && oldPrimary !== imgUrl) {
+        set.add(oldPrimary.trim());
+      }
+      return Array.from(set);
+    });
+
+    setAdminToast("✦ Primary cover photo updated. Click 'SAVE & UPDATE' to publish.");
+    setTimeout(() => setAdminToast(null), 4000);
+  };
+
+  // Aggregate all unique pictures currently attached to this product/form
+  const allProductPictures = useMemo(() => {
+    const list: { url: string; role: string; type: "primary" | "gallery" | "color" }[] = [];
+    const seen = new Set<string>();
+
+    if (pImage && pImage.trim()) {
+      seen.add(pImage.trim());
+      list.push({ url: pImage.trim(), role: "PRIMARY COVER PHOTO", type: "primary" });
+    }
+
+    pGalleryImages.forEach((img, idx) => {
+      const trimmed = img.trim();
+      if (trimmed && !seen.has(trimmed)) {
+        seen.add(trimmed);
+        list.push({ url: trimmed, role: `GALLERY PHOTO #${idx + 1}`, type: "gallery" });
+      }
+    });
+
+    pColors.forEach(c => {
+      if (c.imageUrl && c.imageUrl.trim() && !seen.has(c.imageUrl.trim())) {
+        seen.add(c.imageUrl.trim());
+        list.push({ url: c.imageUrl.trim(), role: `COLORWAY: ${c.name.toUpperCase()}`, type: "color" });
+      }
+    });
+
+    return list;
+  }, [pImage, pGalleryImages, pColors]);
+
   // Add gallery image manually or from upload
   const handleAddGalleryImage = () => {
     if (galleryInput.trim() && !pGalleryImages.includes(galleryInput.trim())) {
@@ -515,7 +636,12 @@ export default function AdminWorkspaceModal({
   };
 
   const handleRemoveGalleryImage = (index: number) => {
-    setPGalleryImages(pGalleryImages.filter((_, idx) => idx !== index));
+    const targetUrl = pGalleryImages[index];
+    if (targetUrl) {
+      handleDeleteSpecificPicture(targetUrl);
+    } else {
+      setPGalleryImages(pGalleryImages.filter((_, idx) => idx !== index));
+    }
   };
 
   const handleGalleryFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1015,15 +1141,34 @@ export default function AdminWorkspaceModal({
 
                     <div className="flex flex-col gap-1.5">
                       <label className="font-mono text-[9px] text-zinc-500 uppercase flex justify-between items-center">
-                        <span>PIECE DESIGN IMAGE (FIREBASE STORAGE & FALLBACK)</span>
+                        <span>PRIMARY COVER PHOTO (FIREBASE STORAGE & FALLBACK)</span>
                         {pImage && (
-                          <button
-                            type="button"
-                            onClick={() => setPImage("")}
-                            className="text-[8px] text-red-400 hover:text-red-300 font-bold tracking-widest uppercase cursor-pointer"
-                          >
-                            ✕ CLEAR IMAGE
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setPImage("")}
+                              className="text-[8px] text-zinc-400 hover:text-white font-bold tracking-widest uppercase cursor-pointer"
+                              title="Clear primary photo without deleting other gallery items"
+                            >
+                              CLEAR
+                            </button>
+                            {editingProductId && (
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteSpecificPicture(pImage)}
+                                disabled={deletingPictureUrl === pImage}
+                                className="text-[8px] text-red-400 hover:text-red-300 font-bold tracking-widest uppercase cursor-pointer flex items-center gap-1"
+                                title="Delete this primary photo permanently from Firestore database"
+                              >
+                                {deletingPictureUrl === pImage ? (
+                                  <RefreshCw size={8} className="animate-spin" />
+                                ) : (
+                                  <Trash2 size={8} />
+                                )}
+                                <span>DELETE FROM DB</span>
+                              </button>
+                            )}
+                          </div>
                         )}
                       </label>
                       
@@ -1069,11 +1214,11 @@ export default function AdminWorkspaceModal({
                               />
                             </div>
                             <div className="flex-1 text-left min-w-0">
-                              <span className="font-mono text-[9px] text-zinc-500 block uppercase tracking-wider">Active Product Image</span>
-                              <span className="font-mono text-[10.5px] text-[#EFFF00] block truncate pr-4">
+                              <span className="font-mono text-[9px] text-[#EFFF00] block uppercase tracking-wider font-bold">★ Active Primary Cover Photo</span>
+                              <span className="font-mono text-[10px] text-zinc-300 block truncate pr-4">
                                 {pImage.startsWith("data:") ? "✦ SECURE CLIENT-SIDE DATA STORE (BASE64)" : pImage}
                               </span>
-                              <span className="font-mono text-[8.5px] text-zinc-500 block">Click or Drop another file to replace</span>
+                              <span className="font-mono text-[8.5px] text-zinc-500 block">Click or Drop another file to replace cover photo</span>
                             </div>
                           </div>
                         ) : (
@@ -1148,28 +1293,164 @@ export default function AdminWorkspaceModal({
                       </div>
 
                       {pGalleryImages.length > 0 && (
-                        <div className="grid grid-cols-4 gap-2 mt-1 max-h-28 overflow-y-auto p-1 bg-black border border-zinc-900">
-                          {pGalleryImages.map((imgUrl, idx) => (
-                            <div key={idx} className="relative group w-full h-14 bg-zinc-900 border border-zinc-800 overflow-hidden">
-                              <img
-                                src={imgUrl}
-                                alt={`Gallery item ${idx + 1}`}
-                                className="w-full h-full object-cover"
-                                referrerPolicy="no-referrer"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveGalleryImage(idx)}
-                                className="absolute top-1 right-1 bg-black/80 hover:bg-red-600 text-white p-0.5 rounded-none text-[8px] opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                                title="Remove photo"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          ))}
+                        <div className="grid grid-cols-4 gap-2 mt-1 max-h-32 overflow-y-auto p-1.5 bg-black border border-zinc-900">
+                          {pGalleryImages.map((imgUrl, idx) => {
+                            const isDeletingThis = deletingPictureUrl === imgUrl;
+                            const isCurrentPrimary = imgUrl === pImage;
+
+                            return (
+                              <div key={idx} className={`relative group w-full h-16 bg-zinc-900 border ${isCurrentPrimary ? "border-[#EFFF00]" : "border-zinc-800"} overflow-hidden`}>
+                                <img
+                                  src={imgUrl}
+                                  alt={`Gallery item ${idx + 1}`}
+                                  className="w-full h-full object-cover"
+                                  referrerPolicy="no-referrer"
+                                />
+
+                                {isCurrentPrimary && (
+                                  <span className="absolute bottom-0.5 left-0.5 bg-[#EFFF00] text-black font-mono text-[6.5px] font-black px-1 uppercase tracking-tighter">
+                                    COVER
+                                  </span>
+                                )}
+
+                                <div className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 p-1">
+                                  {!isCurrentPrimary && (
+                                    <button
+                                      type="button"
+                                      onClick={() => handleSetAsPrimaryImage(imgUrl)}
+                                      className="p-1 bg-[#EFFF00] text-black hover:scale-110 transition-transform cursor-pointer"
+                                      title="Set as primary cover photo"
+                                    >
+                                      <Star size={10} className="fill-black" />
+                                    </button>
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteSpecificPicture(imgUrl)}
+                                    disabled={isDeletingThis}
+                                    className="p-1 bg-red-600 hover:bg-red-500 text-white hover:scale-110 transition-transform cursor-pointer"
+                                    title={editingProductId ? "Delete from Firestore database permanently" : "Remove photo"}
+                                  >
+                                    {isDeletingThis ? (
+                                      <RefreshCw size={10} className="animate-spin text-white" />
+                                    ) : (
+                                      <Trash2 size={10} />
+                                    )}
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
                     </div>
+
+                    {/* DEDICATED PRODUCT PHOTOS & PICTURES ARCHIVE MANAGER */}
+                    {allProductPictures.length > 0 && (
+                      <div className="flex flex-col gap-2 p-3 bg-black border border-zinc-800">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <ImageIcon size={13} className="text-[#EFFF00]" />
+                            <label className="font-mono text-[9.5px] text-[#EFFF00] uppercase font-bold tracking-wider">
+                              PIECE PHOTOS ARCHIVE ({allProductPictures.length} {allProductPictures.length === 1 ? "PICTURE" : "PICTURES"})
+                            </label>
+                          </div>
+                          {editingProductId && (
+                            <span className="font-mono text-[7.5px] text-[#EFFF00] uppercase tracking-widest bg-zinc-950 px-1.5 py-0.5 border border-[#EFFF00]/30 font-bold">
+                              [ INSTANT DB DELETE ENABLED ]
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="font-mono text-[8.5px] text-zinc-400 leading-tight">
+                          {editingProductId
+                            ? "Select any specific photo below to permanently delete it from Firestore database and the live piece catalog immediately."
+                            : "Manage all uploaded photos and angles before publishing your new piece."}
+                        </p>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mt-1">
+                          {allProductPictures.map((item, idx) => {
+                            const isThisDeleting = deletingPictureUrl === item.url;
+                            const isPrimary = item.url === pImage;
+
+                            return (
+                              <div
+                                key={idx}
+                                className={`relative group bg-zinc-950 border ${isPrimary ? "border-[#EFFF00] shadow-[0_0_12px_rgba(239,255,0,0.12)]" : "border-zinc-800 hover:border-zinc-700"} flex flex-col overflow-hidden transition-all`}
+                              >
+                                {/* Thumbnail Container */}
+                                <div className="relative w-full h-24 bg-zinc-900 overflow-hidden flex items-center justify-center">
+                                  <img
+                                    src={item.url}
+                                    alt={`Product visual ${idx + 1}`}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    referrerPolicy="no-referrer"
+                                  />
+
+                                  {/* Badge Tag */}
+                                  <div className="absolute top-1 left-1 max-w-[85%]">
+                                    {isPrimary ? (
+                                      <span className="bg-[#EFFF00] text-black font-mono text-[7.5px] font-black px-1.5 py-0.5 uppercase tracking-wider flex items-center gap-1 shadow-sm truncate">
+                                        <Star size={8} className="fill-black shrink-0" /> PRIMARY COVER
+                                      </span>
+                                    ) : (
+                                      <span className="bg-black/85 text-zinc-300 border border-zinc-800 font-mono text-[7px] px-1 py-0.5 uppercase tracking-wider block truncate">
+                                        {item.role}
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  {/* Zoom Preview Button */}
+                                  <button
+                                    type="button"
+                                    onClick={() => setPreviewZoomImage(item.url)}
+                                    className="absolute top-1 right-1 w-5 h-5 bg-black/85 hover:bg-[#EFFF00] hover:text-black text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-[9px]"
+                                    title="View full-size photo"
+                                  >
+                                    <Eye size={10} />
+                                  </button>
+                                </div>
+
+                                {/* Controls */}
+                                <div className="p-1.5 bg-black border-t border-zinc-900 flex flex-col gap-1">
+                                  {!isPrimary && (
+                                    <button
+                                      type="button"
+                                      onClick={() => handleSetAsPrimaryImage(item.url)}
+                                      className="w-full py-1 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white font-mono text-[8px] uppercase tracking-wider flex items-center justify-center gap-1 cursor-pointer transition-colors border border-zinc-800"
+                                      title="Set this picture as the main storefront cover"
+                                    >
+                                      <Star size={9} className="text-[#EFFF00]" />
+                                      <span>SET AS COVER</span>
+                                    </button>
+                                  )}
+
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteSpecificPicture(item.url)}
+                                    disabled={isThisDeleting}
+                                    className="w-full py-1 bg-red-950/40 hover:bg-red-600 text-red-400 hover:text-white font-mono text-[8px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 cursor-pointer transition-all border border-red-900/60 disabled:opacity-50"
+                                    title={editingProductId ? "Delete this specific photo from Firestore database permanently" : "Remove photo from piece"}
+                                  >
+                                    {isThisDeleting ? (
+                                      <>
+                                        <RefreshCw size={9} className="animate-spin text-white" />
+                                        <span>DELETING FROM DB...</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Trash2 size={9} />
+                                        <span>{editingProductId ? "DELETE FROM DATABASE" : "REMOVE PHOTO"}</span>
+                                      </>
+                                    )}
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
 
                     <div className="flex flex-col gap-1">
                       <label className="font-mono text-[9px] text-zinc-500 uppercase">EDITORIAL DESCRIPTION</label>
@@ -1295,6 +1576,14 @@ export default function AdminWorkspaceModal({
                                 <div className="flex items-center gap-1.5 text-[8px] text-green-400 bg-green-950/40 px-1.5 py-0.5 border border-green-800/60">
                                   <img src={color.imageUrl} className="w-3.5 h-3.5 object-cover border border-green-700" referrerPolicy="no-referrer" />
                                   <span>Has Variant Photo</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteSpecificPicture(color.imageUrl!)}
+                                    className="text-red-400 hover:text-white bg-red-950/80 hover:bg-red-800 border border-red-800 px-1 py-0.2 text-[7px] uppercase font-bold ml-1 cursor-pointer"
+                                    title="Delete this colorway photo from database"
+                                  >
+                                    ✕ PHOTO
+                                  </button>
                                 </div>
                               ) : (
                                 <span className="text-[8px] text-zinc-600">Vector color</span>
@@ -1303,8 +1592,8 @@ export default function AdminWorkspaceModal({
                             <button
                               type="button"
                               onClick={() => handleRemoveColor(i)}
-                              className="text-red-400 hover:text-red-200 ml-2 font-bold px-1"
-                              title="Delete colorway"
+                              className="text-red-400 hover:text-red-200 ml-2 font-bold px-1 cursor-pointer"
+                              title="Delete entire colorway"
                             >
                               ✕
                             </button>
@@ -2715,6 +3004,59 @@ export default function AdminWorkspaceModal({
                             <span>YES, CLEAR ALL PICTURES</span>
                           </>
                         )}
+                      </button>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
+            </AnimatePresence>
+
+            {/* PREVIEW IMAGE ZOOM MODAL */}
+            <AnimatePresence>
+              {previewZoomImage && (
+                <div 
+                  className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md"
+                  onClick={() => setPreviewZoomImage(null)}
+                >
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    className="relative max-w-2xl max-h-[85vh] bg-black border border-zinc-800 p-2 flex flex-col items-center"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="w-full flex justify-between items-center pb-2 px-2 border-b border-zinc-900 mb-2">
+                      <span className="font-mono text-[9px] text-[#EFFF00] uppercase tracking-widest">
+                        ✦ FULL RESOLUTION PREVIEW
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setPreviewZoomImage(null)}
+                        className="text-zinc-400 hover:text-white font-mono text-xs cursor-pointer p-1"
+                      >
+                        ✕ CLOSE
+                      </button>
+                    </div>
+                    <img
+                      src={previewZoomImage}
+                      alt="Zoomed Product Visual"
+                      className="max-h-[70vh] w-auto object-contain"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="w-full pt-2 flex justify-between items-center">
+                      <code className="text-[8.5px] font-mono text-zinc-500 truncate max-w-[300px]">
+                        {previewZoomImage.startsWith("data:") ? "Client Base64" : previewZoomImage}
+                      </code>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleDeleteSpecificPicture(previewZoomImage);
+                          setPreviewZoomImage(null);
+                        }}
+                        className="bg-red-950/60 hover:bg-red-600 border border-red-800 text-red-300 hover:text-white px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 cursor-pointer"
+                      >
+                        <Trash2 size={10} />
+                        <span>{editingProductId ? "DELETE FROM DB" : "REMOVE PHOTO"}</span>
                       </button>
                     </div>
                   </motion.div>
