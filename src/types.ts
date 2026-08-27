@@ -24,6 +24,7 @@ export interface Product {
   imageUrl?: string;
   images?: string[];
   stock?: number;
+  shippingPrice?: number; // Custom delivery fee in NGN (0 = Free Shipping, undefined = Standard store rate)
 }
 
 export interface CartItem {

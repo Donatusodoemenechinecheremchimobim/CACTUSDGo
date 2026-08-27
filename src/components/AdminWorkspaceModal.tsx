@@ -399,6 +399,7 @@ export default function AdminWorkspaceModal({
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [pName, setPName] = useState<string>("");
   const [pPrice, setPPrice] = useState<number>(120);
+  const [pShippingPrice, setPShippingPrice] = useState<string>("");
   const [pCategory, setPCategory] = useState<ProductCat>("Tees");
   const [pSku, setPSku] = useState<string>("");
   const [pDescription, setPDescription] = useState<string>("");
@@ -684,6 +685,7 @@ export default function AdminWorkspaceModal({
     setEditingProductId(null);
     setPName("");
     setPPrice(120);
+    setPShippingPrice("");
     setPCategory("Tees");
     setPSku("");
     setPDescription("");
@@ -706,6 +708,7 @@ export default function AdminWorkspaceModal({
     setPName(product.name);
     // If price is stored in NGN (e.g. 180000), keep it or if USD (120), keep it
     setPPrice(product.price);
+    setPShippingPrice(product.shippingPrice !== undefined ? String(product.shippingPrice) : "");
     setPCategory(product.category);
     setPSku(product.sku || "");
     setPDescription(product.description || "");
@@ -756,11 +759,14 @@ export default function AdminWorkspaceModal({
         }
       });
 
+      const parsedShippingPrice = pShippingPrice.trim() === "" ? undefined : Math.max(0, Number(pShippingPrice));
+
       const updatedProduct: Product = {
         id: finalId,
         name: pName.toUpperCase().trim(),
         category: pCategory,
         price: Number(pPrice) || 0,
+        shippingPrice: parsedShippingPrice,
         sku: finalSku,
         description: pDescription.trim() || `Official Cactus Bear ${pCategory} design with custom detailing and premium construction.`,
         details: pDetails.length > 0 ? pDetails : ["Heavy organic fabric run", "Pre-washed vintage style"],
@@ -1099,6 +1105,105 @@ export default function AdminWorkspaceModal({
                           <option value="Headwear">HEADWEAR</option>
                           <option value="Accessories">ACCESSORIES</option>
                         </select>
+                      </div>
+                    </div>
+
+                    {/* DEDICATED PRODUCT SHIPPING & DELIVERY RATE */}
+                    <div className="flex flex-col gap-1.5 p-3 bg-zinc-950 border border-zinc-900">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-1.5">
+                          <Truck size={12} className="text-[#EFFF00]" />
+                          <label className="font-mono text-[9px] text-zinc-300 font-bold uppercase tracking-wider">
+                            SHIPPING & DELIVERY FEE (₦ NAIRA)
+                          </label>
+                        </div>
+                        <span className="font-mono text-[8.5px] font-bold px-1.5 py-0.5 border uppercase tracking-wider text-[#EFFF00] border-[#EFFF00]/40 bg-[#EFFF00]/10">
+                          {pShippingPrice === "" 
+                            ? "STORE DEFAULT (₦15,000)" 
+                            : pShippingPrice === "0" 
+                            ? "FREE DELIVERY (₦0)" 
+                            : `₦${Number(pShippingPrice).toLocaleString()}`}
+                        </span>
+                      </div>
+
+                      <div className="relative mt-0.5">
+                        <input
+                          type="number"
+                          min="0"
+                          value={pShippingPrice}
+                          onChange={(e) => setPShippingPrice(e.target.value)}
+                          className="w-full bg-black border border-zinc-800 py-1.5 px-3 font-mono text-xs focus:border-[#EFFF00] text-white pr-16"
+                          placeholder="Leave blank for Store Default (₦15,000), or enter 0 for Free..."
+                        />
+                        {pShippingPrice !== "" && (
+                          <button
+                            type="button"
+                            onClick={() => setPShippingPrice("")}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-[8px] font-mono text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 cursor-pointer uppercase"
+                            title="Reset to default store shipping rate"
+                          >
+                            RESET
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-1 mt-1">
+                        <span className="font-mono text-[7.5px] text-zinc-600 uppercase mr-1">QUICK RATES:</span>
+                        <button
+                          type="button"
+                          onClick={() => setPShippingPrice("0")}
+                          className={`px-2 py-0.5 font-mono text-[8px] border cursor-pointer uppercase transition-colors ${
+                            pShippingPrice === "0" 
+                              ? "bg-[#EFFF00] text-black border-[#EFFF00] font-bold" 
+                              : "bg-black border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700"
+                          }`}
+                        >
+                          FREE (₦0)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPShippingPrice("5000")}
+                          className={`px-2 py-0.5 font-mono text-[8px] border cursor-pointer uppercase transition-colors ${
+                            pShippingPrice === "5000" 
+                              ? "bg-[#EFFF00] text-black border-[#EFFF00] font-bold" 
+                              : "bg-black border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700"
+                          }`}
+                        >
+                          ₦5,000
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPShippingPrice("15000")}
+                          className={`px-2 py-0.5 font-mono text-[8px] border cursor-pointer uppercase transition-colors ${
+                            pShippingPrice === "15000" 
+                              ? "bg-[#EFFF00] text-black border-[#EFFF00] font-bold" 
+                              : "bg-black border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700"
+                          }`}
+                        >
+                          ₦15,000 (STD)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPShippingPrice("25000")}
+                          className={`px-2 py-0.5 font-mono text-[8px] border cursor-pointer uppercase transition-colors ${
+                            pShippingPrice === "25000" 
+                              ? "bg-[#EFFF00] text-black border-[#EFFF00] font-bold" 
+                              : "bg-black border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700"
+                          }`}
+                        >
+                          ₦25,000 (EXPRESS/HEAVY)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPShippingPrice("")}
+                          className={`px-2 py-0.5 font-mono text-[8px] border cursor-pointer uppercase transition-colors ${
+                            pShippingPrice === "" 
+                              ? "bg-white text-black border-white font-bold" 
+                              : "bg-black border-zinc-800 text-zinc-500 hover:text-zinc-300"
+                          }`}
+                        >
+                          STORE DEFAULT
+                        </button>
                       </div>
                     </div>
 
@@ -1772,6 +1877,16 @@ export default function AdminWorkspaceModal({
                                   <div className="flex flex-wrap gap-3 mt-1.5 text-[9px] font-mono text-zinc-500">
                                     <span>
                                       PRICE: <strong className="text-[#EFFF00]">₦{displayPrice.toLocaleString()}</strong>
+                                    </span>
+                                    <span>
+                                      SHIPPING:{" "}
+                                      {prod.shippingPrice === 0 ? (
+                                        <strong className="text-emerald-400 font-black bg-emerald-950/40 px-1 py-0.2 border border-emerald-800">FREE SHIPPING</strong>
+                                      ) : prod.shippingPrice !== undefined ? (
+                                        <strong className="text-[#EFFF00]">₦{prod.shippingPrice.toLocaleString()}</strong>
+                                      ) : (
+                                        <strong className="text-zinc-400">₦15,000 (Store Std)</strong>
+                                      )}
                                     </span>
                                     <span>
                                       CATEGORY: <strong className="text-white">{prod.category}</strong>

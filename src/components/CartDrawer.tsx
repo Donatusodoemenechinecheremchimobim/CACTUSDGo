@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Trash2, ShieldCheck, Truck, ShoppingCart, KeyRound, MapPin, Smartphone, Mail, Heart, CreditCard, Lock, UserCheck } from "lucide-react";
 import { CartItem, Product } from "../types";
@@ -105,9 +105,32 @@ export default function CartDrawer({
     }
   }, [isOpen]);
 
-  // Math equations
+  // Math equations & Shipping computation
   const cartSubtotal = cart.reduce((acc, curr) => acc + (curr.product.price * curr.quantity), 0);
-  const coreShippingFee = cartSubtotal > 300000 ? 0 : cart.length > 0 ? 15000 : 0;
+  
+  const coreShippingFee = useMemo(() => {
+    if (cart.length === 0) return 0;
+    // Orders exceeding ₦300,000 get free shipping automatically
+    if (cartSubtotal > 300000) return 0;
+
+    // Check if every product in the cart has free shipping (shippingPrice === 0)
+    const allFree = cart.every(item => item.product.shippingPrice === 0);
+    if (allFree) return 0;
+
+    // Compute effective shipping: take highest configured product shipping fee, or standard ₦15,000
+    let hasCustomShipping = false;
+    let maxShippingFee = 0;
+
+    for (const item of cart) {
+      if (item.product.shippingPrice !== undefined) {
+        hasCustomShipping = true;
+        maxShippingFee = Math.max(maxShippingFee, item.product.shippingPrice);
+      }
+    }
+
+    return hasCustomShipping ? maxShippingFee : 15000;
+  }, [cart, cartSubtotal]);
+
   const vaultTotal = cartSubtotal + coreShippingFee;
 
   const loadFlutterwaveScript = (): Promise<boolean> => {
@@ -578,13 +601,22 @@ export default function CartDrawer({
                             </div>
 
                             {/* Aggregation pricing display */}
-                            <div className="text-right">
+                            <div className="text-right flex flex-col items-end">
                               <span className="font-mono text-xs font-extrabold block text-white select-all">
                                 ₦{(item.product.price * item.quantity).toLocaleString()}
                               </span>
                               <span className="text-[9px] font-mono text-zinc-500">
                                 @ ₦{item.product.price.toLocaleString()}
                               </span>
+                              {item.product.shippingPrice === 0 ? (
+                                <span className="text-[7.5px] font-mono font-black text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-1 py-0.2 mt-1 uppercase tracking-tighter">
+                                  FREE DELIVERY
+                                </span>
+                              ) : item.product.shippingPrice !== undefined ? (
+                                <span className="text-[7.5px] font-mono text-[#EFFF00] bg-[#EFFF00]/10 border border-[#EFFF00]/20 px-1 py-0.2 mt-1 uppercase tracking-tighter">
+                                  ₦{item.product.shippingPrice.toLocaleString()} SHIP
+                                </span>
+                              ) : null}
                             </div>
                           </div>
                         );
@@ -1043,10 +1075,19 @@ export default function CartDrawer({
                       ₦{cartSubtotal.toLocaleString()}
                     </span>
                   </div>
-                  <div className="flex justify-between text-zinc-500">
-                    <span>STANDARD SHIPPING:</span>
-                    <span className="text-[#EFFF00] font-bold text-right">
-                      {coreShippingFee === 0 ? "FREE" : `₦${coreShippingFee.toLocaleString()}`}
+                  <div className="flex justify-between items-center text-zinc-500">
+                    <span className="flex items-center gap-1">
+                      <span>SHIPPING & DELIVERY:</span>
+                      {cartSubtotal > 300000 && (
+                        <span className="text-[8px] text-emerald-400 font-mono font-bold">(₦300K+ BONUS)</span>
+                      )}
+                    </span>
+                    <span className="text-[#EFFF00] font-bold text-right font-mono">
+                      {coreShippingFee === 0 ? (
+                        <span className="text-emerald-400 font-black">COMPLIMENTARY / FREE</span>
+                      ) : (
+                        `₦${coreShippingFee.toLocaleString()}`
+                      )}
                     </span>
                   </div>
                   <div className="border-t border-zinc-950 pt-3 flex justify-between items-center text-sm font-semibold">

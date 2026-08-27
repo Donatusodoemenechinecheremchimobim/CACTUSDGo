@@ -225,7 +225,7 @@ export default function ProductDetailPage({
         "@type": "OfferShippingDetails",
         "shippingRate": {
           "@type": "MonetaryAmount",
-          "value": 0,
+          "value": product.shippingPrice !== undefined ? product.shippingPrice : 15000,
           "currency": "NGN"
         },
         "shippingDestination": {
@@ -790,18 +790,29 @@ export default function ProductDetailPage({
                       initial={{ opacity: 0, y: 3 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
-                      className="flex flex-col gap-3.5 h-full"
+                      className="flex flex-col gap-3 h-full"
                     >
-                      <div className="flex items-center gap-2">
-                        <Truck size={12} className="text-[#EFFF00]" />
-                        <span className="text-white uppercase font-bold">WORLDWIDE SHIPPING:</span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Truck size={12} className="text-[#EFFF00]" />
+                          <span className="text-white uppercase font-bold">DELIVERY & DISPATCH:</span>
+                        </div>
+                        <span className="font-mono text-[9px] font-bold text-[#EFFF00] bg-[#EFFF00]/10 border border-[#EFFF00]/30 px-2 py-0.5 uppercase">
+                          {product.shippingPrice === 0 
+                            ? "✦ FREE SHIPPING" 
+                            : product.shippingPrice !== undefined 
+                            ? `₦${product.shippingPrice.toLocaleString()} FLAT RATE` 
+                            : "₦15,000 STANDARD (FREE OVER ₦300K)"}
+                        </span>
                       </div>
                       <p>
-                        Delivers in Port Harcourt within 24-48 hours. National and international orders ship via tracked couriers in 2-5 business days.
+                        {product.shippingPrice === 0 
+                          ? "This piece qualifies for complimentary priority dispatch nationwide. Dispatched within 24-48 hours with door-to-door tracking."
+                          : "Delivers in Port Harcourt within 24-48 hours. Nationwide deliveries ship via tracked express couriers within 2-5 business days."}
                       </p>
-                      <div className="flex items-center gap-2 border-t border-zinc-950 pt-3 text-zinc-500">
-                        <RotateCcw size={11} className="text-[#EFFF00]" />
-                        <span>30-day hassle-free returns and exchanges.</span>
+                      <div className="flex items-center gap-2 border-t border-zinc-950 pt-2.5 text-zinc-500 text-[9.5px]">
+                        <RotateCcw size={11} className="text-[#EFFF00] shrink-0" />
+                        <span>30-day hassle-free returns and sizing exchanges.</span>
                       </div>
                     </motion.div>
                   )}
