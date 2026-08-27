@@ -232,19 +232,17 @@ export default function AdminWorkspaceModal({
         const color = it.selectedColor.name;
         const qty = it.quantity || 1;
         const price = it.product.price;
-        const total = price * qty;
-        const actualPrice = price < 1000 ? price * 1500 : price;
-        const actualTotal = actualPrice * qty;
+        const actualTotal = price * qty;
         return `[Item ${i + 1}] ${pName}\n` +
                `   • SKU/ID: ${sku}\n` +
                `   • Size: ${size}\n` +
                `   • Color: ${color}\n` +
                `   • Quantity: ${qty}\n` +
-               `   • Unit Price: ₦${actualPrice.toLocaleString()} NGN\n` +
+               `   • Unit Price: ₦${price.toLocaleString()} NGN\n` +
                `   • Total for Item: ₦${actualTotal.toLocaleString()} NGN`;
       }).join("\n\n");
 
-      const actualTestTotal = testOrder.totalPrice < 1000 ? testOrder.totalPrice * 1500 : testOrder.totalPrice;
+      const actualTestTotal = testOrder.totalPrice;
       const formattedMessage = 
         `✦ MANUAL TEST CACTUS BEAR ORDER: ${testOrder.id} ✦\n\n` +
         `• Customer Email: ${testOrder.email}\n` +
@@ -263,7 +261,7 @@ export default function AdminWorkspaceModal({
         id: "log-" + Math.floor(Math.random() * 100000),
         timestamp: new Date().toISOString(),
         type: "MANUAL TRIGGER TEST",
-        payload: { orderId: testOrder.id, value: 420 },
+        payload: { orderId: testOrder.id, value: testOrder.totalPrice },
         status: 200,
         statusText: "Initiating multi-channel test dispatch..."
       };
@@ -290,8 +288,7 @@ export default function AdminWorkspaceModal({
             city: testOrder.shippingAddress.city,
             country: "Nigeria",
             orderId: testOrder.id,
-            totalNgn: `₦${(testOrder.totalPrice * 1500).toLocaleString()}`,
-            totalUsd: `$${testOrder.totalPrice}`,
+            totalNgn: `₦${testOrder.totalPrice.toLocaleString()}`,
             itemsOrdered: testOrder.items.map((it) => `${it.product.name} (Size: ${it.selectedSize || "N/A"}, Color: ${it.selectedColor?.name || "N/A"}, Qty: ${it.quantity || 1})`).join("; "),
             itemsOrderedDetailed: detailedItemsList,
             creationDate: new Date().toISOString(),
@@ -1851,7 +1848,7 @@ export default function AdminWorkspaceModal({
                     ) : (
                       <div className="flex flex-col gap-3 max-h-[750px] overflow-y-auto pr-2">
                         {products.map((prod) => {
-                          const displayPrice = prod.price < 1000 ? prod.price * 1500 : prod.price;
+                          const displayPrice = prod.price;
                           const isDeleting = deletingProductId === prod.id;
 
                           return (
@@ -1977,7 +1974,7 @@ export default function AdminWorkspaceModal({
                   ) : (
                     <div className="flex flex-col gap-5">
                       {orders.map((or) => {
-                        const totalNaira = or.totalPrice < 1000 ? or.totalPrice * 1500 : or.totalPrice;
+                        const totalNaira = or.totalPrice;
                         const isPaidOnline = or.paymentStatus === "Paid" || or.paymentMethod === "flutterwave" || Boolean(or.flutterwaveTxId);
                         
                         const handleCopySlip = () => {
@@ -1997,10 +1994,10 @@ export default function AdminWorkspaceModal({
                             `----------------------------------------`,
                             `ITEMS ORDERED:`,
                             ...or.items.map((item, idx) => 
-                              `${idx + 1}. [${item.product.name}] | Size: ${item.selectedSize} | Color: ${item.selectedColor.name} | Qty: ${item.quantity} | ₦${((item.product.price < 1000 ? item.product.price * 1500 : item.product.price) * item.quantity).toLocaleString()} NGN`
+                              `${idx + 1}. [${item.product.name}] | Size: ${item.selectedSize} | Color: ${item.selectedColor.name} | Qty: ${item.quantity} | ₦${(item.product.price * item.quantity).toLocaleString()} NGN`
                             ),
                             `----------------------------------------`,
-                            `TOTAL CHARGED: ₦${totalNaira.toLocaleString()} NGN`,
+                            `TOTAL CHARGED: ₦${(totalNaira || 0).toLocaleString()} NGN`,
                             `STATUS: ${or.status.toUpperCase()}`,
                             `========================================`
                           ].join("\n");
@@ -2147,7 +2144,7 @@ export default function AdminWorkspaceModal({
 
                                   <div className="flex flex-col gap-3">
                                     {or.items.map((item, idx) => {
-                                      const itemPrice = item.product.price < 1000 ? item.product.price * 1500 : item.product.price;
+                                      const itemPrice = item.product.price;
                                       return (
                                         <div
                                           key={idx}

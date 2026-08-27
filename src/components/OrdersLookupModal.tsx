@@ -154,8 +154,8 @@ export default function OrdersLookupModal({
     }
   };
 
-  const formatNgn = (usdAmount: number) => {
-    return `₦${(usdAmount * 1500).toLocaleString()}`;
+  const formatNgn = (nairaAmount: number) => {
+    return `₦${(nairaAmount || 0).toLocaleString()} NGN`;
   };
 
   // Status visual renderer
@@ -252,9 +252,9 @@ export default function OrdersLookupModal({
     const adminWhatsappHost = "2348123456789"; 
     const adminEmailAddress = "chibundusadiq@gmail.com";
     
-    const whatsappMsgText = `Hello Cactus Bear Team,\n\nI am tracking my pre-order!\n\nOrder Ref: ${order.id}\nStatus: ${order.status}\nPatron Name: ${order.name}\nTotal: $${order.totalPrice}.00`;
+    const whatsappMsgText = `Hello Cactus Bear Team,\n\nI am tracking my pre-order!\n\nOrder Ref: ${order.id}\nStatus: ${order.status}\nPatron Name: ${order.name}\nTotal: ₦${(order.totalPrice || 0).toLocaleString()} NGN`;
     const emailSubjectLine = `Cactus Bear Pre-Order Inquiry: ${order.id}`;
-    const emailBodyText = `Hello,\n\nI would like an update on my pre-order ${order.id} under name ${order.name}.\n\nDelivery Address: ${order.address}, ${order.city}\nTotal Price: $${order.totalPrice}.00`;
+    const emailBodyText = `Hello,\n\nI would like an update on my pre-order ${order.id} under name ${order.name}.\n\nDelivery Address: ${order.address}, ${order.city}\nTotal Price: ₦${(order.totalPrice || 0).toLocaleString()} NGN`;
 
     return {
       whatsapp: `https://wa.me/${adminWhatsappHost}?text=${encodeURIComponent(whatsappMsgText)}`,
@@ -298,7 +298,7 @@ export default function OrdersLookupModal({
           </span>
           <div className="border border-zinc-900 bg-black/40 font-mono text-xs divide-y divide-zinc-950">
             {order.items && order.items.map((item, idx) => {
-              const itemPrice = item.product.price < 1000 ? item.product.price * 1500 : item.product.price;
+              const itemPrice = item.product.price;
               return (
                 <div key={idx} className="p-3 flex justify-between items-start gap-4">
                   <div className="flex items-center gap-2.5">
@@ -345,7 +345,7 @@ export default function OrdersLookupModal({
           <div className="border-t border-zinc-900 pt-2 flex justify-between text-xs font-black text-[#EFFF00]">
             <span>TOTAL VALUE:</span>
             <span>
-              ₦{(order.totalPrice < 1000 ? order.totalPrice * 1500 : order.totalPrice).toLocaleString()} NGN
+              ₦{(order.totalPrice || 0).toLocaleString()} NGN
             </span>
           </div>
         </div>
@@ -490,7 +490,7 @@ export default function OrdersLookupModal({
                                 </div>
                                 <div className="flex justify-between items-center text-xs">
                                   <span className="text-zinc-400 font-mono text-[11px]">
-                                    {order.items.length} item(s) • <strong className="text-white">${order.totalPrice}.00</strong>
+                                    {order.items.length} item(s) • <strong className="text-[#EFFF00]">₦{(order.totalPrice || 0).toLocaleString()}</strong>
                                   </span>
                                   {renderStatusBadge(order.status)}
                                 </div>

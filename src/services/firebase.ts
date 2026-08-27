@@ -375,7 +375,7 @@ const getInitialOrders = (): DbOrder[] => {
       country: "Italy",
       status: "Pending",
       createdAt: new Date().toISOString(),
-      totalPrice: 205,
+      totalPrice: CACTUS_BEAR_PRODUCTS[0]?.price || 180000,
       items: [
         {
           id: "std-cb-jersey-01-Woodland Green Camo-L",
@@ -893,19 +893,18 @@ class DatabaseService {
         const color = it.selectedColor?.name || "N/A";
         const qty = it.quantity || 1;
         const price = it.product?.price || 0;
-        const actualPrice = price < 1000 ? price * 1500 : price;
-        const total = actualPrice * qty;
+        const total = price * qty;
         const cPosition = it.customPrintPosition ? ` (Custom Design: ${it.customPrintPosition})` : "";
         return `[Item ${i + 1}] ${pName}${cPosition}\n` +
                `   • SKU/ID: ${sku}\n` +
                `   • Size: ${size}\n` +
                `   • Color: ${color}\n` +
                `   • Quantity: ${qty}\n` +
-               `   • Unit Price: ₦${actualPrice.toLocaleString()} NGN\n` +
+               `   • Unit Price: ₦${price.toLocaleString()} NGN\n` +
                `   • Total for Item: ₦${total.toLocaleString()} NGN`;
       }).join("\n\n");
 
-      const actualOrderTotal = order.totalPrice < 1000 ? order.totalPrice * 1500 : order.totalPrice;
+      const actualOrderTotal = order.totalPrice;
       const paymentMethodLabel = order.paymentMethod === "flutterwave" 
         ? "Flutterwave (Card / Bank Transfer / USSD)" 
         : order.paymentMethod === "paystack" 
@@ -1126,7 +1125,7 @@ class DatabaseService {
           statusText: "Posting Alert"
         };
 
-        const actualLogTotal = order.totalPrice < 1000 ? order.totalPrice * 1500 : order.totalPrice;
+        const actualLogTotal = order.totalPrice;
         const slackText = `✦ *NEW PRE-ORDER DISPATCHED:* ${order.id} ✦\n• *Client:* ${order.email}\n• *Total:* ₦${actualLogTotal.toLocaleString()} NGN\n• *Items:* ${order.items.map((it: any) => `${it.product?.name || "Premium Item"} (${it.selectedSize || "N/A"})`).join(", ")}`;
 
         fetch(slackUrl, {
