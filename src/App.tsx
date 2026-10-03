@@ -1455,7 +1455,7 @@ export default function App() {
               {/* Dynamic Categories Tab filters with horizontal swipe for mobile */}
               <div className="w-full md:w-auto overflow-x-auto scrollbar-none pb-2 md:pb-0">
                 <div className="flex gap-1.5 p-1 bg-[#050505] border border-zinc-900 rounded-none w-max max-w-full">
-                  {(["All", "Outerwear", "Tees", "Tank Tops", "Headwear"] as const).map((cat) => {
+                  {(["All", "Outerwear", "Tees", "Tank Tops", "Armless", "Headwear", "Accessories"] as const).map((cat) => {
                     const isChose = selectedCategory === cat;
                     const count = cat === "All" ? productsList.length : productsList.filter(p => p.category === cat).length;
                     return (

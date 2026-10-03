@@ -49,6 +49,19 @@ export default function AboutPage({ onBack, onExploreShop }: AboutPageProps) {
       ]
     },
     {
+      category: "Armless" as ProductCat,
+      title: "Raw-Cut Armless Vests & Muscle Tees",
+      edition: "Street Core Edition",
+      material: "360GSM Combed French Terry",
+      desc: "Heavyweight street silhouettes featuring raw cut dropped armholes, ribbed crew neck collar, and signature archival thorn prints.",
+      points: [
+        "Heavyweight 360GSM combed cotton construction",
+        "Dropped raw armhole cut with anti-fray lockstitch",
+        "Wide-shoulder armless cut with natural relaxed drape",
+        "High-density tactile puff crown print at back yoke"
+      ]
+    },
+    {
       category: "Outerwear" as ProductCat,
       title: "Structured Fleece Hoodies",
       edition: "Studio Archive",

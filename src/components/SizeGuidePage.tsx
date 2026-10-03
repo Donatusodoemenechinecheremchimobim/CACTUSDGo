@@ -6,7 +6,7 @@ interface SizeGuidePageProps {
   onExploreShop: () => void;
 }
 
-type GarmentType = "tees" | "hoodies" | "sweatpants" | "headwear";
+type GarmentType = "tees" | "armless" | "hoodies" | "sweatpants" | "headwear";
 type UnitType = "cm" | "in";
 
 interface SizeRow {
@@ -27,6 +27,17 @@ const SIZE_DATA: Record<GarmentType, { name: string; fitDescription: string; row
       { size: "L", chestOrWaist: 120, length: 76, shoulderOrInseam: 56, sleeve: 24 },
       { size: "XL", chestOrWaist: 126, length: 78, shoulderOrInseam: 58, sleeve: 25 },
       { size: "XXL", chestOrWaist: 132, length: 80, shoulderOrInseam: 60, sleeve: 26 },
+    ],
+  },
+  armless: {
+    name: "Armless Muscle Tees & Tank Tops",
+    fitDescription: "Tailored with deep armholes, reinforced rib collar, and a modern relaxed straight drape. Ideal for athletic layering or summer wear.",
+    rows: [
+      { size: "S", chestOrWaist: 104, length: 70, shoulderOrInseam: 46, sleeve: 0 },
+      { size: "M", chestOrWaist: 110, length: 72, shoulderOrInseam: 48, sleeve: 0 },
+      { size: "L", chestOrWaist: 116, length: 74, shoulderOrInseam: 50, sleeve: 0 },
+      { size: "XL", chestOrWaist: 122, length: 76, shoulderOrInseam: 52, sleeve: 0 },
+      { size: "XXL", chestOrWaist: 128, length: 78, shoulderOrInseam: 54, sleeve: 0 },
     ],
   },
   hoodies: {
@@ -143,6 +154,7 @@ export default function SizeGuidePage({ onBack, onExploreShop }: SizeGuidePagePr
             {(
               [
                 { id: "tees", label: "Heavyweight Tees", icon: Shirt },
+                { id: "armless", label: "Armless & Tanks", icon: Shirt },
                 { id: "hoodies", label: "Outerwear & Hoodies", icon: Scissors },
                 { id: "sweatpants", label: "Bottoms & Pants", icon: Ruler },
                 { id: "headwear", label: "Caps & Headwear", icon: Sparkles },

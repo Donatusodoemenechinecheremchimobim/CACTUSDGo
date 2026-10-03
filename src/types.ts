@@ -7,7 +7,7 @@ export interface ApparelColor {
   images?: string[];
 }
 
-export type ProductCat = "Outerwear" | "Tees" | "Tank Tops" | "Headwear" | "Accessories";
+export type ProductCat = "Outerwear" | "Tees" | "Tank Tops" | "Armless" | "Headwear" | "Accessories";
 
 export interface Product {
   id: string;
@@ -20,7 +20,7 @@ export interface Product {
   colors: ApparelColor[];
   sku: string;
   hasBackPrint?: boolean;
-  mockupType: "hoodie" | "puffer" | "tee" | "cap" | "tank";
+  mockupType: "hoodie" | "puffer" | "tee" | "cap" | "tank" | "armless";
   imageUrl?: string;
   images?: string[];
   stock?: number;

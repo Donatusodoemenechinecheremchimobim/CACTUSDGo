@@ -50,7 +50,7 @@ export default function SearchModal({
   }, [isOpen, onClose]);
 
   // Categories list
-  const categories: (ProductCat | "All")[] = ["All", "Outerwear", "Tees", "Tank Tops", "Headwear", "Accessories"];
+  const categories: (ProductCat | "All")[] = ["All", "Outerwear", "Tees", "Tank Tops", "Armless", "Headwear", "Accessories"];
 
   // Filtered matching items
   const matchingProducts = useMemo(() => {
@@ -79,6 +79,7 @@ export default function SearchModal({
   }, [products, searchQuery, selectedCategory]);
 
   const trendingTags = [
+    { label: "ARMLESS & TANKS", query: "armless" },
     { label: "STONER TANKS", query: "stoner" },
     { label: "HOODIES & OUTERWEAR", query: "outerwear" },
     { label: "HEAVYWEIGHT TEES", query: "tees" },

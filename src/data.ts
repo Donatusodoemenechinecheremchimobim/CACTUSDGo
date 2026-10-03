@@ -182,6 +182,33 @@ export const CACTUS_BEAR_PRODUCTS: Product[] = [
     ],
     mockupType: "tank",
     stock: 8
+  },
+  {
+    id: "cb-armless-07",
+    name: "RAW CUT HEAVYWEIGHT ARMLESS TEE",
+    category: "Armless",
+    price: 88000,
+    sku: "CB-AL-07",
+    description: "Heavyweight 360GSM combed French terry armless muscle silhouette featuring deep-drop armholes, reinforced rib neck binding, and archival screenprinted thorn insignia.",
+    details: [
+      "Heavyweight 360GSM combed cotton construction",
+      "Dropped raw armhole cut with anti-fray stitch reinforcement",
+      "Thick 1.25-inch high-density ribbed collar",
+      "Subtle monochrome Cactus Bear crown of thorns insignia",
+      "Pre-shrunk and enzyme-washed in Port Harcourt"
+    ],
+    sizes: ["S", "M", "L", "XL", "XXL"],
+    colors: [
+      { name: "Washed Obsidian", hex: "#121214", bgHex: "#121214", imageUrl: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=95&w=1600&auto=format&fit=crop" },
+      { name: "Military Olive", hex: "#283424", bgHex: "#283424", imageUrl: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=95&w=1600&auto=format&fit=crop" },
+      { name: "Chalk Bone", hex: "#edece8", bgHex: "#edece8", imageUrl: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=95&w=1600&auto=format&fit=crop" }
+    ],
+    images: [
+      "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=95&w=1600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=95&w=1600&auto=format&fit=crop"
+    ],
+    mockupType: "armless",
+    stock: 12
   }
 ];
 

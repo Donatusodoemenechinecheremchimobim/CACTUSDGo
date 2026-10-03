@@ -1098,6 +1098,7 @@ export default function AdminWorkspaceModal({
                         >
                           <option value="Tees">TEES</option>
                           <option value="Tank Tops">TANK TOPS</option>
+                          <option value="Armless">ARMLESS</option>
                           <option value="Outerwear">OUTERWEAR</option>
                           <option value="Headwear">HEADWEAR</option>
                           <option value="Accessories">ACCESSORIES</option>
@@ -1214,6 +1215,7 @@ export default function AdminWorkspaceModal({
                         >
                           <option value="tee">BOXY TEE SHAPE</option>
                           <option value="tank">SLEEVELESS TANK TOP</option>
+                          <option value="armless">ARMLESS MUSCLE CUT</option>
                           <option value="hoodie">OVERSIZED HOODIE</option>
                           <option value="puffer">QUILTED PUFFER</option>
                           <option value="cap">TRUCKER / BEANIE</option>

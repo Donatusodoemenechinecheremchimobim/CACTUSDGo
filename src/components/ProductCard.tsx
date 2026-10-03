@@ -367,7 +367,7 @@ export default function ProductCard({ product, onAddToCart, onSelect, isWishlist
                     </svg>
                   )}
 
-                  {product.mockupType === "tank" && (
+                  {(product.mockupType === "tank" || product.mockupType === "armless") && (
                     <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]">
                       <path
                         d="M 30,90 L 30,34 L 26,18 L 36,18 L 40,28 C 40,28 44,22 50,22 C 56,22 60,28 60,28 L 64,18 L 74,18 L 70,34 L 70,90 Z"
