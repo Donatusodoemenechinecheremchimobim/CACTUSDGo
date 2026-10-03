@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { X, Trash2, ShieldCheck, Truck, ShoppingCart, KeyRound, MapPin, Smartphone, Mail, Heart, CreditCard, Lock, UserCheck } from "lucide-react";
 import { CartItem, Product } from "../types";
 import GlowCrown from "./GlowCrown";
@@ -352,24 +352,26 @@ export default function CartDrawer({
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Overlay backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.7 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black z-50 backdrop-blur-sm"
-          />
+        <motion.div
+          key="cart-backdrop"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.7 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.28, ease: "easeInOut" }}
+          onClick={onClose}
+          className="fixed inset-0 bg-black z-50 backdrop-blur-sm"
+        />
+      )}
 
-          {/* Core sliding vault cart drawer sidepane */}
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 180 }}
-            className="fixed inset-y-0 right-0 w-full sm:max-w-md bg-[#09090a] border-l border-zinc-900 z-50 text-white flex flex-col justify-between"
-          >
+      {isOpen && (
+        <motion.div
+          key="cart-drawer-panel"
+          initial={{ x: "100%" }}
+          animate={{ x: 0 }}
+          exit={{ x: "100%" }}
+          transition={{ type: "spring", damping: 30, stiffness: 280, mass: 0.8 }}
+          className="fixed inset-y-0 right-0 w-full sm:max-w-md bg-[#09090a] border-l border-zinc-900 z-50 text-white flex flex-col justify-between shadow-2xl"
+        >
             {/* Header section with ticker detail */}
             <div className="p-6 border-b border-zinc-900 bg-black/50">
               <div className="flex justify-between items-center mb-2">
@@ -1160,8 +1162,7 @@ export default function CartDrawer({
               </div>
             )}
           </motion.div>
-        </>
-      )}
+        )}
     </AnimatePresence>
   );
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Plus, Trash2, Edit3, ShieldAlert, BadgeCheck, ClipboardList, Package, Truck, Calendar, Cpu, Terminal, Activity, Link2, RefreshCw, Upload, Globe, Smartphone, Copy, CreditCard, Sparkles, Check, ImageOff, Database, HardDrive, Image as ImageIcon, Star, Eye, Layers } from "lucide-react";
 import { Product, ProductCat, ApparelColor } from "../types";
-import { dbService, DbOrder, uploadProductImage } from "../services/firebase";
+import { dbService, DbOrder, uploadProductImage, compressImage } from "../services/firebase";
 import { safeLocalStorageSet, safeLocalStorageGet } from "../services/storage";
 import { generateSitemapXml, downloadSitemapFile } from "../utils/sitemapGenerator";
 
@@ -479,17 +479,32 @@ export default function AdminWorkspaceModal({
 
   // Add color swatch
   const handleAddColor = () => {
-    if (colorName.trim() && colorHex) {
-      setPColors([...pColors, {
-        name: colorName.trim(),
-        hex: colorHex,
-        bgHex: colorHex,
-        isYellowTint: colorHex.toLowerCase() === "#efff00",
-        imageUrl: colorImage.trim() || undefined
-      }]);
-      setColorName("");
-      setColorImage("");
+    const trimmedHex = colorHex || "#000000";
+    const resolvedName = colorName.trim() || `Colorway ${pColors.length + 1}`;
+    const resolvedImage = colorImage.trim();
+
+    setPColors(prev => [
+      ...prev,
+      {
+        name: resolvedName,
+        hex: trimmedHex,
+        bgHex: trimmedHex,
+        isYellowTint: trimmedHex.toLowerCase() === "#efff00",
+        imageUrl: resolvedImage || undefined
+      }
+    ]);
+
+    // If product has no primary image, set this as primary image
+    if (resolvedImage && !pImage.trim()) {
+      setPImage(resolvedImage);
     }
+    // Also include in gallery images so product detail page gallery has it
+    if (resolvedImage && !pGalleryImages.includes(resolvedImage)) {
+      setPGalleryImages(prev => [...prev, resolvedImage]);
+    }
+
+    setColorName("");
+    setColorImage("");
   };
 
   const handleColorFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -497,12 +512,47 @@ export default function AdminWorkspaceModal({
     if (!file) return;
     setIsUploadingColorImage(true);
     try {
-      const uploadedUrl = await uploadProductImage(file);
-      setColorImage(uploadedUrl);
+      // 1. Immediately compress so colorImage has the picture instantaneously
+      const localPreview = await compressImage(file);
+      setColorImage(localPreview);
+
+      // 2. Upload to storage if available in background
+      try {
+        const uploadedUrl = await uploadProductImage(file);
+        if (uploadedUrl && uploadedUrl !== localPreview) {
+          setColorImage(uploadedUrl);
+        }
+      } catch (cloudErr) {
+        console.warn("Cloud upload fallback:", cloudErr);
+      }
     } catch (err: any) {
-      console.error(err);
+      console.error("Color photo read failed:", err);
     } finally {
       setIsUploadingColorImage(false);
+      if (e.target) e.target.value = "";
+    }
+  };
+
+  // Attach or update photo on an existing colorway in the list
+  const handleAttachPhotoToExistingColor = async (colorIdx: number, file: File) => {
+    try {
+      const localPreview = await compressImage(file);
+      setPColors(prev => prev.map((c, idx) => idx === colorIdx ? { ...c, imageUrl: localPreview } : c));
+      if (!pImage.trim()) setPImage(localPreview);
+      if (!pGalleryImages.includes(localPreview)) setPGalleryImages(prev => [...prev, localPreview]);
+
+      try {
+        const uploadedUrl = await uploadProductImage(file);
+        if (uploadedUrl && uploadedUrl !== localPreview) {
+          setPColors(prev => prev.map((c, idx) => idx === colorIdx ? { ...c, imageUrl: uploadedUrl } : c));
+          if (pImage === localPreview) setPImage(uploadedUrl);
+          setPGalleryImages(prev => prev.map(img => img === localPreview ? uploadedUrl : img));
+        }
+      } catch (err) {
+        console.warn("Background upload fallback for colorway:", err);
+      }
+    } catch (err) {
+      console.error("Failed to attach photo to colorway:", err);
     }
   };
 
@@ -1618,33 +1668,40 @@ export default function AdminWorkspaceModal({
                           type="text"
                           value={colorName}
                           onChange={(e) => setColorName(e.target.value)}
-                          className="col-span-4 bg-zinc-950 border border-zinc-900 py-1 px-2 font-mono text-xs focus:border-[#EFFF00]"
-                          placeholder="e.g. Alpine Forest Green"
+                          className="col-span-4 bg-zinc-950 border border-zinc-900 py-1.5 px-2 font-mono text-xs focus:border-[#EFFF00] text-white"
+                          placeholder="e.g. Olive Green"
                         />
                         <input
                           type="color"
                           value={colorHex}
                           onChange={(e) => setColorHex(e.target.value)}
-                          className="col-span-2 bg-transparent h-7 w-full border border-zinc-900 cursor-pointer p-0"
+                          className="col-span-2 bg-transparent h-8 w-full border border-zinc-900 cursor-pointer p-0"
                           title="Choose Color Swatch Hex"
                         />
                         <button
                           type="button"
                           onClick={() => colorFileInputRef.current?.click()}
-                          className={`col-span-3 border py-1 font-mono text-[9px] truncate cursor-pointer transition-colors ${
+                          className={`col-span-3 border py-1.5 px-1 font-mono text-[9px] truncate cursor-pointer transition-colors flex items-center justify-center gap-1 ${
                             colorImage 
-                              ? "bg-green-950/40 border-green-700 text-green-300" 
+                              ? "bg-emerald-950/60 border-emerald-500 text-emerald-300 font-bold" 
                               : "bg-zinc-900 border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-white"
                           }`}
                         >
-                          {isUploadingColorImage ? "Uploading..." : colorImage ? "✓ Photo Added" : "+ Color Photo"}
+                          {isUploadingColorImage ? (
+                            <span>Uploading...</span>
+                          ) : colorImage ? (
+                            <span className="flex items-center gap-1">✓ Photo Ready</span>
+                          ) : (
+                            <span>+ Color Photo</span>
+                          )}
                         </button>
                         <button
                           type="button"
                           onClick={handleAddColor}
-                          className="col-span-3 bg-[#EFFF00] hover:bg-yellow-450 text-black font-mono font-bold text-[9px] py-1 cursor-pointer"
+                          className="col-span-3 bg-[#EFFF00] hover:bg-yellow-400 text-black font-mono font-black text-[9px] py-1.5 tracking-wider uppercase cursor-pointer flex items-center justify-center gap-1"
+                          title="Add this colorway to the garment"
                         >
-                          + ADD COLOR
+                          {colorImage ? "+ ADD WITH PHOTO" : "+ ADD COLOR"}
                         </button>
                         <input
                           type="file"
@@ -1655,6 +1712,24 @@ export default function AdminWorkspaceModal({
                         />
                       </div>
 
+                      {/* Photo preview banner when picture is loaded */}
+                      {colorImage && (
+                        <div className="flex items-center justify-between p-1.5 bg-emerald-950/30 border border-emerald-800/60 font-mono text-[8px] text-emerald-300">
+                          <div className="flex items-center gap-2">
+                            <img src={colorImage} alt="Color preview" className="w-6 h-6 object-cover border border-emerald-600 rounded-none" referrerPolicy="no-referrer" />
+                            <span>Photo attached to {colorName || "this colorway"}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setColorImage("")}
+                            className="text-red-400 hover:text-red-200 px-1 font-bold cursor-pointer"
+                            title="Remove attached photo"
+                          >
+                            ✕ Remove
+                          </button>
+                        </div>
+                      )}
+
                       {/* Optional direct color image URL field */}
                       <input
                         type="text"
@@ -1664,7 +1739,7 @@ export default function AdminWorkspaceModal({
                         placeholder="Or paste color photo URL directly..."
                       />
 
-                      <div className="flex flex-col gap-1.5 mt-1 max-h-32 overflow-y-auto bg-black p-2 border border-zinc-900">
+                      <div className="flex flex-col gap-1.5 mt-1 max-h-40 overflow-y-auto bg-black p-2 border border-zinc-900">
                         {pColors.map((color, i) => (
                           <div
                             key={i}
@@ -1678,19 +1753,44 @@ export default function AdminWorkspaceModal({
                               <span className="font-bold text-white truncate max-w-[110px]">{color.name}</span>
                               {color.imageUrl ? (
                                 <div className="flex items-center gap-1.5 text-[8px] text-green-400 bg-green-950/40 px-1.5 py-0.5 border border-green-800/60">
-                                  <img src={color.imageUrl} className="w-3.5 h-3.5 object-cover border border-green-700" referrerPolicy="no-referrer" />
-                                  <span>Has Variant Photo</span>
+                                  <img src={color.imageUrl} className="w-5 h-5 object-cover border border-green-700" referrerPolicy="no-referrer" />
+                                  <span>Has Photo</span>
+                                  <label className="text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-700 px-1 py-0.2 text-[7px] uppercase font-bold cursor-pointer">
+                                    Change
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      className="hidden"
+                                      onChange={(e) => {
+                                        const f = e.target.files?.[0];
+                                        if (f) handleAttachPhotoToExistingColor(i, f);
+                                        e.target.value = "";
+                                      }}
+                                    />
+                                  </label>
                                   <button
                                     type="button"
                                     onClick={() => handleDeleteSpecificPicture(color.imageUrl!)}
-                                    className="text-red-400 hover:text-white bg-red-950/80 hover:bg-red-800 border border-red-800 px-1 py-0.2 text-[7px] uppercase font-bold ml-1 cursor-pointer"
+                                    className="text-red-400 hover:text-white bg-red-950/80 hover:bg-red-800 border border-red-800 px-1 py-0.2 text-[7px] uppercase font-bold cursor-pointer"
                                     title="Delete this colorway photo from database"
                                   >
-                                    ✕ PHOTO
+                                    ✕
                                   </button>
                                 </div>
                               ) : (
-                                <span className="text-[8px] text-zinc-600">Vector color</span>
+                                <label className="text-[8px] text-yellow-400 hover:text-black bg-yellow-950/30 hover:bg-[#EFFF00] border border-yellow-700/60 px-1.5 py-0.5 cursor-pointer uppercase transition-colors flex items-center gap-1">
+                                  + Attach Photo
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      const f = e.target.files?.[0];
+                                      if (f) handleAttachPhotoToExistingColor(i, f);
+                                      e.target.value = "";
+                                    }}
+                                  />
+                                </label>
                               )}
                             </div>
                             <button

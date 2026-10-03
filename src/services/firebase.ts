@@ -235,7 +235,7 @@ export async function uploadProductImage(file: File): Promise<string> {
       })();
 
       const timeoutPromise = new Promise<string>((_, reject) =>
-        setTimeout(() => reject(new Error("Firebase Storage operation timed out")), 20000)
+        setTimeout(() => reject(new Error("Firebase Storage operation timed out")), 3500)
       );
 
       const downloadUrl = await Promise.race([uploadPromise, timeoutPromise]);

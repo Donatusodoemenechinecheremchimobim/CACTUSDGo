@@ -134,6 +134,8 @@ export default function ProductDetailPage({
       setActiveImage(color.imageUrl);
     } else if (color.images && color.images.length > 0) {
       setActiveImage(color.images[0]);
+    } else {
+      setActiveImage(product.imageUrl || null);
     }
   };
 
